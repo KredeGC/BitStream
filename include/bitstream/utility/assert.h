@@ -1,0 +1,1 @@
+#define BS_ASSERT(x)
