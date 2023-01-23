@@ -35,6 +35,7 @@ int main(int argc, const char** argv)
     std::cout << quat_in.w << ", " << quat_in.x << ", " << quat_in.y << ", " << quat_in.z << '\n';
     std::cout << quat_out.w << ", " << quat_out.x << ", " << quat_out.y << ", " << quat_out.z << '\n';
 
+
     // protocol version
     uint32_t protocol_version = 0xDEADC0DE;
 
@@ -47,6 +48,7 @@ int main(int argc, const char** argv)
     uint32_t in_value = 42;
     writer.serialize_bits(in_value, 6);
     writer.serialize(range, float_in);
+    writer.serialize(in_value, 28U, 83U);
 
     uint32_t num_bytes = writer.serialize_checksum(protocol_version);
 

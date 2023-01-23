@@ -1,13 +1,9 @@
 #pragma once
-#include "../quantization/bounded_range.h"
-#include "../quantization/smallest_three.h"
 #include "../utility/crc.h"
 #include "../utility/endian.h"
 
 #include <cstdint>
 #include <memory>
-#include <string>
-#include <type_traits>
 
 namespace bitstream::stream
 {
@@ -25,15 +21,17 @@ namespace bitstream::stream
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
 
-		bit_writer(void* bytes, uint32_t total_bits) :
+		bit_writer(void* bytes, uint32_t num_bytes) :
 			m_Buffer(static_cast<uint32_t*>(bytes)),
 			m_NumBitsWritten(0),
-			m_TotalBits(total_bits),
+			m_TotalBits(num_bytes * 8),
 			m_Scratch(0),
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
 
 		uint32_t get_num_bits_written() { return m_NumBitsWritten; }
+
+		bool can_write_bits(uint32_t num_bits) { return m_NumBitsWritten + num_bits <= m_TotalBits; }
 
 		uint32_t get_remaining_bits() { return m_TotalBits - m_NumBitsWritten; }
 
@@ -127,12 +125,10 @@ namespace bitstream::stream
 			return true;
 		}
 
-		template<typename T, typename... Args>
-		bool serialize(T&&, Args&&...)
+		template<typename... Args>
+		bool serialize(Args&&... args)
 		{
-			static_assert(std::false_type::value, "No serialization specialization found for these arguments");
-
-			return false;
+			return serialize_traits<Args..., void>::serialize(*this, std::forward<Args>(args)...);
 		}
 
 	private:
@@ -144,12 +140,4 @@ namespace bitstream::stream
 		uint32_t m_ScratchBits;
 		uint32_t m_WordIndex;
 	};
-
-	template<>
-	bool bit_writer::serialize<quantization::bounded_range&, float&>(quantization::bounded_range& range, float& value)
-	{
-		uint32_t int_value = range.quantize(value);
-
-		return serialize_bits(int_value, range.get_bits_required());
-	}
 }
