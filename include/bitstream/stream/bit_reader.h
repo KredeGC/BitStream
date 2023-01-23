@@ -13,8 +13,8 @@ namespace bitstream::stream
 	class bit_reader
 	{
 	public:
-		static constexpr bool WRITING = false;
-		static constexpr bool READING = true;
+		static constexpr bool writing = false;
+		static constexpr bool reading = true;
 
 		uint32_t* buffer;
 		uint32_t num_bits_read;
@@ -39,44 +39,35 @@ namespace bitstream::stream
 			this->num_bits_read = 0;
 		}
 
-		bool can_read_bits(uint32_t num_bits)
-		{
-			return num_bits_read + num_bits <= total_bits;
-		}
+		uint32_t get_num_bits_read() { return num_bits_read; }
 
-		uint16_t get_remaining_bits()
-		{
-			return total_bits - num_bits_read;
-		}
+		bool can_read_bits(uint32_t num_bits) { return num_bits_read + num_bits <= total_bits; }
 
-		bool serialize_checksum(uint8_t* protocol_version, uint32_t protocol_size)
+		uint32_t get_remaining_bits() { return total_bits - num_bits_read; }
+
+		bool serialize_checksum(uint32_t protocol_version)
 		{
 			uint32_t num_bytes = (total_bits - 1) / 8 + 1;
+
+			// Read the checksum
 			uint32_t checksum;
+			std::memcpy(&checksum, buffer, sizeof(uint32_t));
 
-			// Read the data
-			std::memcpy(&checksum, buffer, 4);
-
-			// Combine the data with version
-			uint8_t* combined_data = new uint8_t[(size_t)num_bytes - 4 + protocol_size];
-
-			std::memcpy(combined_data, protocol_version, protocol_size);
-			std::memcpy(combined_data + protocol_size, buffer + 1, num_bytes - 4);
+			// Copy protocol version to buffer
+			std::memcpy(buffer, &protocol_version, sizeof(uint32_t));
 
 			// Generate checksum to compare against
-			uint32_t generated_checksum = utility::crc_uint32(combined_data, num_bytes - 4 + protocol_size);
+			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(buffer), num_bytes);
 
-			delete[] combined_data;
+			// Write the checksum back, just in case
+			std::memcpy(buffer, &checksum, sizeof(uint32_t));
 
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			word_index++;
 			num_bits_read += 32;
 
 			// Compare the checksum
-			if (generated_checksum == checksum)
-				return true;
-
-			return false;
+			return generated_checksum == checksum;
 		}
 
 		bool pad_to_size(uint32_t size)
@@ -144,8 +135,8 @@ namespace bitstream::stream
 			return true;
 		}
 
-		template<typename... Args>
-		bool serialize(Args&&...)
+		template<typename T, typename... Args>
+		bool serialize(T&&, Args&&...)
 		{
 			static_assert(std::false_type::value, "No serialization specialization found for these arguments");
 

@@ -35,18 +35,25 @@ int main(int argc, const char** argv)
     std::cout << quat_in.w << ", " << quat_in.x << ", " << quat_in.y << ", " << quat_in.z << '\n';
     std::cout << quat_out.w << ", " << quat_out.x << ", " << quat_out.y << ", " << quat_out.z << '\n';
 
+    // protocol version
+    uint32_t protocol_version = 0xDEADC0DE;
+
     // bit_writer
     uint8_t bytes[1024];
-    bitstream::stream::bit_writer writer(bytes);
+    bitstream::stream::bit_writer writer(bytes, 1024);
+
+    writer.prepend_checksum();
 
     uint32_t in_value = 42;
     writer.serialize_bits(in_value, 6);
     writer.serialize(range, float_in);
 
-    writer.flush();
+    uint32_t num_bytes = writer.serialize_checksum(protocol_version);
 
     // bit_reader
-    bitstream::stream::bit_reader reader(bytes, 1024);
+    bitstream::stream::bit_reader reader(bytes, num_bytes);
+
+    bool status = reader.serialize_checksum(protocol_version);
 
     uint32_t out_value;
     float float_out2;

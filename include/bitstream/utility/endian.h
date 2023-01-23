@@ -6,12 +6,13 @@ namespace bitstream::utility
 {
 	const inline bool LITTLE_ENDIAN = []()
 	{
-		union {
+		union
+		{
 			uint16_t i;
 			char c[2];
 		} bint = { 0x0102 };
 
-		return bint.c[0] != 1;
+		return bint.c[0] != 0x01;
 	}();
 
 	inline uint32_t endian_swap_32(uint32_t value)
