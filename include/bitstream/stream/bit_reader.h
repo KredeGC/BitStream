@@ -128,12 +128,10 @@ namespace bitstream::stream
 			return true;
 		}
 
-		template<typename T, typename... Args>
-		bool serialize(T&&, Args&&...)
+		template<typename... Args>
+		bool serialize(Args&&... args)
 		{
-			static_assert(std::false_type::value, "No serialization specialization found for these arguments");
-
-			return false;
+			return serialize_traits<Args..., void>::deserialize(*this, std::forward<Args>(args)...);
 		}
 
 	private:
@@ -145,19 +143,4 @@ namespace bitstream::stream
 		uint32_t m_ScratchBits;
 		uint32_t m_WordIndex;
 	};
-
-	template<>
-	bool bit_reader::serialize<quantization::bounded_range&, float&>(quantization::bounded_range& range, float& value)
-	{
-		if (!can_read_bits(range.get_bits_required()))
-			return false;
-
-		uint32_t int_value;
-		if (!serialize_bits(int_value, range.get_bits_required()))
-			return false;
-
-		value = range.dequantize(int_value);
-
-		return true;
-	}
 }
