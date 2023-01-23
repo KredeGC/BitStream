@@ -1,4 +1,16 @@
-/Makefile
-/Test.make
-/bin
-/bin-obj
+# Binaries
+**/bin/
+**/bin-obj/
+
+# Generated files
+*.log
+*.user
+Makefile
+*.make
+
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
