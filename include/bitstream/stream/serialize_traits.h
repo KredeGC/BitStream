@@ -248,10 +248,7 @@ namespace bitstream::stream
 			if (!writer.serialize_bits(length, num_bits))
 				return false;
 
-			if (!writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value), length))
-				return false;
-
-			return true;
+			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value), length);
 		}
 
 		static bool deserialize(bit_reader& reader, char* value, uint32_t max_size)
@@ -281,6 +278,64 @@ namespace bitstream::stream
 				return false;
 
 			value[length] = '\0';
+
+			return true;
+		}
+	};
+#pragma endregion
+
+#pragma region std::basic_string
+	template<typename T, typename Traits, typename Alloc>
+	struct serialize_traits<std::basic_string<T, Traits, Alloc>>
+	{
+		static bool serialize(bit_writer& writer, const std::basic_string<T, Traits, Alloc>& value, uint32_t max_size)
+		{
+			uint32_t length = static_cast<uint32_t>(value.size());
+			if (length >= max_size)
+				return false;
+
+			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+
+			BS_ASSERT_RETURN(writer.can_write_bits(num_bits));
+
+			BS_ASSERT_RETURN(writer.serialize_bits(length, num_bits));
+
+			BS_ASSERT_RETURN(writer.can_write_bits(length * 8 * sizeof(T)));
+
+			if (length == 0)
+				return true;
+
+			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value.c_str()), length * sizeof(T));
+		}
+
+		static bool deserialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value, uint32_t max_size)
+		{
+			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+
+			BS_ASSERT_RETURN(reader.can_read_bits(num_bits));
+
+			uint32_t length;
+			BS_ASSERT_RETURN(reader.serialize_bits(length, num_bits));
+
+			if (length >= max_size)
+				return false;
+
+			if (length == 0)
+			{
+				value.clear();
+				return true;
+			}
+
+			BS_ASSERT_RETURN(reader.can_read_bits(length * 8 * sizeof(T)));
+
+			auto allocator = value.get_allocator();
+			T* chars = allocator.allocate(length);
+
+			BS_ASSERT_RETURN(reader.serialize_bytes(reinterpret_cast<uint8_t*>(chars), length * sizeof(T)));
+
+			value.assign(chars, length);
+
+			allocator.deallocate(chars, length);
 
 			return true;
 		}

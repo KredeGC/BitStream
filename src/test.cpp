@@ -3,12 +3,12 @@
 #include <iostream>
 
 #if defined(_WIN32) // Windows
-#define KTL_BREAKPOINT() __debugbreak()
+#define BS_BREAKPOINT() __debugbreak()
 #elif defined(__linux__) // Linux
 #include <csignal>
-#define KTL_BREAKPOINT() std::raise(SIGTRAP)
+#define BS_BREAKPOINT() std::raise(SIGTRAP)
 #else // Non-supported
-#define KTL_BREAKPOINT() throw
+#define BS_BREAKPOINT() throw
 #endif
 
 namespace bitstream::test
@@ -64,6 +64,6 @@ namespace bitstream::test
 		std::cout << passed << " out of " << count << " tests passed" << std::endl;
 
 		if (passed < count)
-			KTL_BREAKPOINT();
+			BS_BREAKPOINT();
 	}
 }

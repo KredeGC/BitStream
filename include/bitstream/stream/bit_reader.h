@@ -26,8 +26,8 @@ namespace bitstream::stream
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
 
-		bit_reader(void* bytes, uint32_t num_bytes) :
-			m_Buffer(static_cast<uint32_t*>(bytes)),
+		bit_reader(const void* bytes, uint32_t num_bytes) :
+			m_Buffer(static_cast<const uint32_t*>(bytes)),
 			m_NumBitsRead(0),
 			m_TotalBits(num_bytes * 8),
 			m_Scratch(0),
@@ -49,13 +49,14 @@ namespace bitstream::stream
 			std::memcpy(&checksum, m_Buffer, sizeof(uint32_t));
 
 			// Copy protocol version to buffer
-			std::memcpy(m_Buffer, &protocol_version, sizeof(uint32_t));
+			uint32_t* buffer = const_cast<uint32_t*>(m_Buffer); // Somewhat of a hack, but it's faster to change the checksum twice than allocate memory for it
+			std::memcpy(buffer, &protocol_version, sizeof(uint32_t));
 
 			// Generate checksum to compare against
-			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(m_Buffer), num_bytes);
+			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(buffer), num_bytes);
 
 			// Write the checksum back, just in case
-			std::memcpy(m_Buffer, &checksum, sizeof(uint32_t));
+			std::memcpy(buffer, &checksum, sizeof(uint32_t));
 
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
@@ -115,7 +116,7 @@ namespace bitstream::stream
 
 			if (m_ScratchBits < num_bits)
 			{
-				uint32_t* ptr = m_Buffer + m_WordIndex;
+				const uint32_t* ptr = m_Buffer + m_WordIndex;
 
 				uint64_t ptr_value = static_cast<uint64_t>(utility::endian_swap_32(*ptr)) << (32 - m_ScratchBits);
 				m_Scratch |= ptr_value;
@@ -182,7 +183,7 @@ namespace bitstream::stream
 		}
 
 	private:
-		uint32_t* m_Buffer;
+		const uint32_t* m_Buffer;
 		uint32_t m_NumBitsRead;
 		uint32_t m_TotalBits;
 

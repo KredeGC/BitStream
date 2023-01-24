@@ -227,4 +227,48 @@ namespace bitstream::test::serialization
 		BS_TEST_ASSERT(out_padding == padding);
 		BS_TEST_ASSERT(strcmp(out_value, value) == 0);
 	}
+
+	BS_ADD_TEST(test_serialize_string_aligned)
+	{
+		// Test std strings
+		std::string value = "Hello, world!";
+
+		// Write a string, but make sure the word count isn't whole
+		uint8_t buffer[32];
+		stream::bit_writer writer(buffer, 32);
+		BS_TEST_ASSERT(writer.serialize<std::string>(value, 32U));
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 14);
+
+		// Read the array back and validate
+		std::string out_value;
+		stream::bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize<std::string>(out_value, 32U));
+
+		BS_TEST_ASSERT(out_value == value);
+	}
+
+	BS_ADD_TEST(test_serialize_wstring_aligned)
+	{
+		// Test widechar strings
+		std::wstring value = L"Hello, world!";
+
+		// Write a widechar string, but make sure the word count isn't whole
+		uint8_t buffer[32];
+		stream::bit_writer writer(buffer, 32);
+		BS_TEST_ASSERT(writer.serialize<std::wstring>(value, 32U));
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 27);
+
+		// Read the array back and validate
+		std::wstring out_value;
+		stream::bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize<std::wstring>(out_value, 32U));
+
+		BS_TEST_ASSERT(out_value == value);
+	}
 }
