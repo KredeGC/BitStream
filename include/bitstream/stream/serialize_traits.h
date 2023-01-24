@@ -134,10 +134,10 @@ namespace bitstream::stream
 	template<>
 	struct serialize_traits<const char*>
 	{
-		static bool serialize(bit_writer& writer, char* value, uint32_t max_size)
+		static bool serialize(bit_writer& writer, const char* value, uint32_t max_size)
 		{
 			uint32_t length = static_cast<uint32_t>(strlen(value));
-			if (length >= max_size - 1)
+			if (length >= max_size)
 				return false;
 
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
@@ -169,7 +169,7 @@ namespace bitstream::stream
 			if (!reader.serialize_bits(length, num_bits))
 				return false;
 
-			if (length >= max_size - 1)
+			if (length >= max_size)
 				return false;
 
 			if (length == 0)

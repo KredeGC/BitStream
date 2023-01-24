@@ -128,7 +128,7 @@ namespace bitstream::test::serialization
 	{
 		// Test c-style strings
 		uint32_t padding = 233;
-		char* value = (char*)"Hello, world!";
+		const char* value = "Hello, world!";
 
 		// Write a char array, but make sure the word count isn't whole
 		uint8_t buffer[32];
