@@ -1,3 +1,7 @@
-#define BS_ASSERT(x)
+#pragma once
 
-#define BS_ASSERT_RETURN(x)
+#if 1 //#ifdef BS_ENABLE_ASSERT
+#define BS_ASSERT(x) if (!(x)) return false
+#else
+#define BS_ASSERT(x)
+#endif

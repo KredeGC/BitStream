@@ -1,9 +1,12 @@
 #pragma once
+#include "../utility/assert.h"
 #include "../utility/crc.h"
 #include "../utility/endian.h"
 
 #include <cstdint>
+#include <cstring>
 #include <memory>
+#include <type_traits>
 
 namespace bitstream::stream
 {
@@ -89,7 +92,7 @@ namespace bitstream::stream
 
 		bool align()
 		{
-			const uint32_t remainder = m_ScratchBits % 8;
+			uint32_t remainder = m_ScratchBits % 8;
 			if (remainder != 0)
 			{
 				uint32_t zero = 0;
@@ -100,12 +103,13 @@ namespace bitstream::stream
 			return true;
 		}
 
-		bool serialize_bits(uint32_t& value, uint32_t num_bits)
+		bool serialize_bits(const uint32_t& value, uint32_t num_bits)
 		{
-			BS_ASSERT_RETURN(num_bits > 0 && num_bits <= 32);
+			BS_ASSERT(num_bits > 0 && num_bits <= 32);
+
+			BS_ASSERT(can_write_bits(num_bits));
 
 			uint32_t offset = 64 - num_bits - m_ScratchBits;
-
 			uint64_t ls_value = static_cast<uint64_t>(value) << offset;
 
 			m_Scratch |= ls_value;
@@ -120,6 +124,46 @@ namespace bitstream::stream
 				m_Scratch <<= 32;
 				m_ScratchBits -= 32;
 				m_WordIndex++;
+			}
+
+			return true;
+		}
+
+		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bytes)
+		{
+			if (!align())
+				return false;
+
+			if (!can_write_bits(num_bytes * 8))
+				return false;
+
+			// Serialize the first bits normally
+			int offset = 0;
+			while (m_ScratchBits > 0)
+			{
+				uint32_t byte_value = static_cast<uint32_t>(bytes[offset]);
+				if (!serialize_bits(byte_value, 8))
+					return false;
+
+				offset++;
+			}
+
+			// Do a straight memcpy with the middle values
+			int size = num_bytes - offset;
+			int last_size = size % 4;
+			int middle_size = size - last_size;
+
+			std::memcpy(m_Buffer + m_WordIndex, bytes + offset, middle_size); // TODO: Fix warning
+
+			m_NumBitsWritten += (size - last_size) * 8;
+			m_WordIndex += (size - last_size) / 4;
+
+			// Serialize the last bits normally
+			for (int i = 0; i < last_size; i++)
+			{
+				uint32_t byte_value = static_cast<uint32_t>(bytes[num_bytes - last_size + i]);
+				if (!serialize_bits(byte_value, 8))
+					return false;
 			}
 
 			return true;

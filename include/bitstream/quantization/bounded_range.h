@@ -1,7 +1,5 @@
 #pragma once
 
-#include "../utility/assert.h"
-
 #include <cstdint>
 
 /*
@@ -38,8 +36,6 @@ namespace bitstream::quantization
             m_Max(max),
             m_Precision(precision)
         {
-            BS_ASSERT(m_Min < m_Max);
-
             m_BitsRequired = log2(static_cast<uint32_t>((m_Max - m_Min) * (1.0f / precision) + 0.5f)) + 1;
             m_Mask = static_cast<uint32_t>((1L << m_BitsRequired) - 1);
         }
