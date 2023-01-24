@@ -12,12 +12,12 @@
 
 namespace bitstream::stream
 {
-	template<typename...>
+	template<typename, typename = void>
 	struct serialize_traits;
 
 #pragma region bounded_range
 	template<>
-	struct serialize_traits<quantization::bounded_range&, float&, void>
+	struct serialize_traits<quantization::bounded_range>
 	{
 		static bool serialize(bit_writer& writer, quantization::bounded_range& range, float& value)
 		{
@@ -46,10 +46,10 @@ namespace bitstream::stream
 #pragma endregion
 
 #pragma region integral types
-	template<typename T, typename Min, typename Max>
-	struct serialize_traits<T&, Min, Max, typename std::enable_if_t<std::is_integral<T>::value>>
+	template<typename T>
+	struct serialize_traits<T, typename std::enable_if_t<std::is_integral<T>::value>>
 	{
-		static bool serialize(bit_writer& writer, T& value, std::decay_t<Min> min, std::decay_t<Max> max)
+		static bool serialize(bit_writer& writer, T& value, T min, T max)
 		{
 			BS_ASSERT_RETURN(min < max);
 
@@ -84,7 +84,7 @@ namespace bitstream::stream
 			return true;
 		}
 
-		static bool deserialize(bit_reader& reader, T& value, std::decay_t<Min> min, std::decay_t<Max> max)
+		static bool deserialize(bit_reader& reader, T& value, T min, T max)
 		{
 			BS_ASSERT_RETURN(min < max);
 
@@ -130,9 +130,9 @@ namespace bitstream::stream
 	};
 #pragma endregion
 
-#pragma region char*
+#pragma region const char*
 	template<>
-	struct serialize_traits<char*, uint32_t, void>
+	struct serialize_traits<const char*>
 	{
 		static bool serialize(bit_writer& writer, char* value, uint32_t max_size)
 		{

@@ -47,7 +47,7 @@ namespace bitstream::test::serialization
 
 		uint8_t buffer[16]{ 0 };
 		stream::bit_writer writer(buffer, 16);
-		BS_TEST_ASSERT(writer.serialize(value, 0U, 127U));
+		BS_TEST_ASSERT(writer.serialize<uint8_t>(value, 0U, 127U));
 		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT(num_bytes <= sizeof(uint8_t));
@@ -56,7 +56,7 @@ namespace bitstream::test::serialization
 		uint8_t out_value = 0;
 		stream::bit_reader reader(buffer, num_bytes);
 
-		BS_TEST_ASSERT(reader.serialize(out_value, 0U, 127U));
+		BS_TEST_ASSERT(reader.serialize<uint8_t>(out_value, 0U, 127U));
 
 		BS_TEST_ASSERT(out_value == value);
 	}
@@ -68,7 +68,7 @@ namespace bitstream::test::serialization
 
 		uint8_t buffer[16];
 		stream::bit_writer writer(buffer, 16);
-		BS_TEST_ASSERT(writer.serialize(value, 0U, 400U));
+		BS_TEST_ASSERT(writer.serialize<uint16_t>(value, 0U, 400U));
 		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT(num_bytes <= sizeof(uint16_t));
@@ -77,7 +77,7 @@ namespace bitstream::test::serialization
 		uint16_t out_value = 0;
 		stream::bit_reader reader(buffer, num_bytes);
 
-		BS_TEST_ASSERT(reader.serialize(out_value, 0U, 400U));
+		BS_TEST_ASSERT(reader.serialize<uint16_t>(out_value, 0U, 400U));
 
 		BS_TEST_ASSERT(out_value == value);
 	}
@@ -89,7 +89,7 @@ namespace bitstream::test::serialization
 
 		uint8_t buffer[16];
 		stream::bit_writer writer(buffer, 16);
-		BS_TEST_ASSERT(writer.serialize(value, 0U, 400U));
+		BS_TEST_ASSERT(writer.serialize<uint32_t>(value, 0U, 400U));
 		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT(num_bytes <= sizeof(uint32_t));
@@ -98,7 +98,7 @@ namespace bitstream::test::serialization
 		uint32_t out_value = 0;
 		stream::bit_reader reader(buffer, num_bytes);
 
-		BS_TEST_ASSERT(reader.serialize(out_value, 0U, 400U));
+		BS_TEST_ASSERT(reader.serialize<uint32_t>(out_value, 0U, 400U));
 
 		BS_TEST_ASSERT(out_value == value);
 	}
@@ -110,7 +110,7 @@ namespace bitstream::test::serialization
 
 		uint8_t buffer[16];
 		stream::bit_writer writer(buffer, 16);
-		BS_TEST_ASSERT(writer.serialize(value, 0ULL, 4398046511104ULL));
+		BS_TEST_ASSERT(writer.serialize<uint64_t>(value, 0ULL, 4398046511104ULL));
 		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT(num_bytes <= sizeof(uint64_t));
@@ -119,7 +119,7 @@ namespace bitstream::test::serialization
 		uint64_t out_value = 0;
 		stream::bit_reader reader(buffer, num_bytes);
 
-		BS_TEST_ASSERT(reader.serialize(out_value, 0ULL, 4398046511104ULL));
+		BS_TEST_ASSERT(reader.serialize<uint64_t>(out_value, 0ULL, 4398046511104ULL));
 
 		BS_TEST_ASSERT(out_value == value);
 	}
@@ -134,7 +134,7 @@ namespace bitstream::test::serialization
 		uint8_t buffer[32];
 		stream::bit_writer writer(buffer, 32);
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 8));
-		BS_TEST_ASSERT(writer.serialize(&(*value), 32U));
+		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
 		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT(num_bytes == 15);
@@ -145,7 +145,7 @@ namespace bitstream::test::serialization
 		stream::bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 8));
-		BS_TEST_ASSERT(reader.serialize(&(*out_value), 32U));
+		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
 
 		BS_TEST_ASSERT(out_padding == padding);
 		BS_TEST_ASSERT(strcmp(out_value, value) == 0);
