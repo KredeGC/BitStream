@@ -131,10 +131,10 @@ namespace bitstream::stream
 #pragma endregion
 
 #pragma region char*
-	template<typename T, typename U>
-	struct serialize_traits<T, U, void>
+	template<>
+	struct serialize_traits<char*, uint32_t, void>
 	{
-		static bool serialize(bit_writer& writer, std::decay_t<T> value, U max_size)
+		static bool serialize(bit_writer& writer, char* value, uint32_t max_size)
 		{
 			uint32_t length = static_cast<uint32_t>(strlen(value));
 			if (length >= max_size - 1)
@@ -158,7 +158,7 @@ namespace bitstream::stream
 			return true;
 		}
 
-		static bool deserialize(bit_reader& reader, std::decay_t<T> value, U max_size)
+		static bool deserialize(bit_reader& reader, char* value, uint32_t max_size)
 		{
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 

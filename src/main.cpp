@@ -43,46 +43,9 @@ int main(int argc, const char** argv)
         std::cout << quat_out.w << ", " << quat_out.x << ", " << quat_out.y << ", " << quat_out.z << '\n';
     }
 
-    // Writing & reading
-    {
-        bitstream::quantization::bounded_range range(0.0f, 1.0f, 1.0f / 128.0f);
-
-        // protocol version
-        uint32_t protocol_version = 0xDEADC0DE;
-
-        // bit_writer
-        uint8_t bytes[1024];
-        bitstream::stream::bit_writer writer(bytes, 1024);
-
-        writer.prepend_checksum();
-
-        uint32_t in_u32 = 42;
-        float in_float = 0.68798f;
-        int16_t in_i16 = -28;
-
-        writer.serialize_bits(in_u32, 6);
-        writer.serialize(range, in_float);
-        writer.serialize(in_i16, -32, 31);
-
-        uint32_t num_bytes = writer.serialize_checksum(protocol_version);
-
-        // bit_reader
-        bitstream::stream::bit_reader reader(bytes, num_bytes);
-
-        bool status = reader.serialize_checksum(protocol_version);
-
-        uint32_t out_u32;
-        float out_float;
-        int16_t out_i16;
-
-        reader.serialize_bits(out_u32, 6);
-        reader.serialize(range, out_float);
-        reader.serialize(out_i16, -32, 31);
-
 #ifdef _WIN32
         system("pause");
 #endif
-    }
     
     return 0;
 }
