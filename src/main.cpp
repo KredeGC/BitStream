@@ -1,3 +1,5 @@
+#include "test.h"
+
 #include <bitstream/bitstream.h>
 
 #include <iostream>
@@ -17,6 +19,8 @@ struct quaternion
 
 int main(int argc, const char** argv)
 {
+    bitstream::test::unit::run_all_tests();
+
     // Bounded range
     {
         bitstream::quantization::bounded_range range(0.0f, 1.0f, 1.0f / 128.0f);

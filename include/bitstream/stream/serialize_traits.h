@@ -12,7 +12,7 @@
 
 namespace bitstream::stream
 {
-	template<typename... Args>
+	template<typename...>
 	struct serialize_traits;
 
 #pragma region bounded_range
@@ -46,10 +46,10 @@ namespace bitstream::stream
 #pragma endregion
 
 #pragma region integral types
-	template<typename T, typename U, typename V>
-	struct serialize_traits<T&, U, V, typename std::enable_if_t<std::is_integral<T>::value>>
+	template<typename T, typename Min, typename Max>
+	struct serialize_traits<T&, Min, Max, typename std::enable_if_t<std::is_integral<T>::value>>
 	{
-		static bool serialize(bit_writer& writer, T& value, U min, V max)
+		static bool serialize(bit_writer& writer, T& value, std::decay_t<Min> min, std::decay_t<Max> max)
 		{
 			BS_ASSERT_RETURN(min < max);
 
@@ -84,7 +84,7 @@ namespace bitstream::stream
 			return true;
 		}
 
-		static bool deserialize(bit_reader& reader, T& value, U min, V max)
+		static bool deserialize(bit_reader& reader, T& value, std::decay_t<Min> min, std::decay_t<Max> max)
 		{
 			BS_ASSERT_RETURN(min < max);
 
@@ -124,6 +124,72 @@ namespace bitstream::stream
 
 			if (value < min || value > max)
 				return false;
+
+			return true;
+		}
+	};
+#pragma endregion
+
+#pragma region char*
+	template<typename T, typename U>
+	struct serialize_traits<T, U, void>
+	{
+		static bool serialize(bit_writer& writer, std::decay_t<T> value, U max_size)
+		{
+			uint32_t length = static_cast<uint32_t>(strlen(value));
+			if (length >= max_size - 1)
+				return false;
+
+			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+
+			if (!writer.can_write_bits(length * 8 + num_bits))
+				return false;
+
+			if (!writer.serialize_bits(length, num_bits))
+				return false;
+
+			for (uint32_t i = 0; i < length; i++)
+			{
+				uint32_t byte_value = static_cast<uint32_t>(value[i]);
+				if (!writer.serialize_bits(byte_value, 8))
+					return false;
+			}
+
+			return true;
+		}
+
+		static bool deserialize(bit_reader& reader, std::decay_t<T> value, U max_size)
+		{
+			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+
+			if (!reader.can_read_bits(num_bits))
+				return false;
+
+			uint32_t length;
+			if (!reader.serialize_bits(length, num_bits))
+				return false;
+
+			if (length >= max_size - 1)
+				return false;
+
+			if (length == 0)
+			{
+				value[0] = '\0';
+				return true;
+			}
+
+			if (!reader.can_read_bits(length * 8))
+				return false;
+
+			for (uint32_t i = 0; i < length; i++)
+			{
+				uint32_t byte_value;
+				if (!reader.serialize_bits(byte_value, 8))
+					return false;
+				value[i] = byte_value;
+			}
+
+			value[length] = '\0';
 
 			return true;
 		}

@@ -109,17 +109,18 @@ namespace bitstream::stream
 		{
 			BS_ASSERT_RETURN(num_bits > 0 && num_bits <= 32);
 
-			if (m_ScratchBits < num_bits) {
+			if (m_ScratchBits < num_bits)
+			{
 				uint32_t* ptr = m_Buffer + m_WordIndex;
 
-				uint64_t ptr_value = (uint64_t)utility::endian_swap_32(*ptr) << (32 - m_ScratchBits);
+				uint64_t ptr_value = static_cast<uint64_t>(utility::endian_swap_32(*ptr)) << (32 - m_ScratchBits);
 				m_Scratch |= ptr_value;
 				m_ScratchBits += 32;
 				m_WordIndex++;
 			}
 
 			uint32_t offset = 64 - num_bits;
-			value = (uint32_t)(m_Scratch >> offset);
+			value = static_cast<uint32_t>(m_Scratch >> offset);
 
 			m_Scratch <<= num_bits;
 			m_ScratchBits -= num_bits;

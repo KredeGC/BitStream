@@ -5,22 +5,22 @@
 
 namespace bitstream::utility
 {
-	constexpr inline size_t bits_to_represent(size_t n)
+	constexpr inline uint32_t bits_to_represent(uintmax_t n)
 	{
-		size_t r = 0;
+		uint32_t r = 0;
 
-		if (n >> 32) { r += 32; n >>= 32; }
-		if (n >> 16) { r += 16; n >>= 16; }
-		if (n >> 8) { r += 8; n >>= 8; }
-		if (n >> 4) { r += 4; n >>= 4; }
-		if (n >> 2) { r += 2; n >>= 2; }
-		if (n - 1) ++r;
+		if (n >> 32) { r += 32U; n >>= 32U; }
+		if (n >> 16) { r += 16U; n >>= 16U; }
+		if (n >> 8) { r += 8U; n >>= 8U; }
+		if (n >> 4) { r += 4U; n >>= 4U; }
+		if (n >> 2) { r += 2U; n >>= 2U; }
+		if (n >> 1) { r += 1U; n >>= 1U; }
 
-		return r;
+		return r + static_cast<uint32_t>(n);
 	}
 
-	constexpr inline size_t bits_in_range(size_t min, size_t max)
+	constexpr inline uint32_t bits_in_range(intmax_t min, intmax_t max)
 	{
-		return bits_to_represent(max - min);
+		return bits_to_represent(static_cast<uintmax_t>(max) - static_cast<uintmax_t>(min));
 	}
 }
