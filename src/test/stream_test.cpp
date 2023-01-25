@@ -5,7 +5,7 @@
 #include <bitstream/stream/bit_writer.h>
 #include <bitstream/utility/bits.h>
 
-namespace bitstream::serialization
+namespace bitstream::test::stream
 {
 	BS_ADD_TEST(test_serialize_bits)
 	{
@@ -42,7 +42,6 @@ namespace bitstream::serialization
 		BS_TEST_ASSERT(out_value3 == in_value3);
 	}
 
-#if 1
 	BS_ADD_TEST(test_serialize_bytes_small)
 	{
 		// Test serializing bits
@@ -73,9 +72,7 @@ namespace bitstream::serialization
 		for (int i = 0; i < 2; i++)
 			BS_TEST_ASSERT(out_value[i] == in_value[i]);
 	}
-#endif
 
-#if 1
 	BS_ADD_TEST(test_serialize_bytes_medium)
 	{
 		// Test serializing bits
@@ -106,7 +103,6 @@ namespace bitstream::serialization
 		for (int i = 0; i < 5; i++)
 			BS_TEST_ASSERT(out_value[i] == in_value[i]);
 	}
-#endif
 
 	BS_ADD_TEST(test_serialize_bytes_large)
 	{
@@ -163,7 +159,6 @@ namespace bitstream::serialization
 		BS_TEST_ASSERT(out_value == value);
 	}
 
-#if 1
 	BS_ADD_TEST(test_serialize_nested_write)
 	{
 		// Test nested writers
@@ -274,5 +269,4 @@ namespace bitstream::serialization
 		BS_TEST_ASSERT(out_nested_value2 == nested_value);
 		BS_TEST_ASSERT(out_nested_value3 == nested_value);
 	}
-#endif
 }
