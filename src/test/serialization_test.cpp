@@ -163,8 +163,8 @@ namespace bitstream::test::serialization
 		BS_TEST_ASSERT(out_value == value);
 	}
 
-#if 0
-	BS_ADD_TEST(test_serialize_nested)
+#if 1
+	BS_ADD_TEST(test_serialize_nested_write)
 	{
 		// Test nested writers
 		uint32_t value = 3;
@@ -185,7 +185,59 @@ namespace bitstream::test::serialization
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
-			uint16_t num_nested_bytes = nested_writer.flush();
+			uint32_t num_nested_bytes = nested_writer.flush();
+
+			// Copy the nested buffer into the main writer
+			BS_TEST_ASSERT(nested_writer.serialize_into(writer));
+		}
+
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 5);
+
+		// Read the values back, as if it was one big buffer
+		uint32_t out_value1;
+		uint32_t out_value2;
+		uint32_t out_nested_value1;
+		uint32_t out_nested_value2;
+		uint32_t out_nested_value3;
+		stream::bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 2));
+		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 3));
+		BS_TEST_ASSERT(reader.serialize_bits(out_nested_value1, 11));
+		BS_TEST_ASSERT(reader.serialize_bits(out_nested_value2, 13));
+		BS_TEST_ASSERT(reader.serialize_bits(out_nested_value3, 11));
+
+		BS_TEST_ASSERT(out_value1 == value);
+		BS_TEST_ASSERT(out_value2 == value);
+		BS_TEST_ASSERT(out_nested_value1 == nested_value);
+		BS_TEST_ASSERT(out_nested_value2 == nested_value);
+		BS_TEST_ASSERT(out_nested_value3 == nested_value);
+	}
+
+	BS_ADD_TEST(test_serialize_nested_read)
+	{
+		// Test nested writers
+		uint32_t value = 3;
+		uint32_t nested_value = 511;
+
+		// Write some initial value with a bit offset
+		uint8_t buffer[8]{ 0 };
+		stream::bit_writer writer(buffer, 8);
+
+		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
+		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
+
+		{
+			// Write nested values
+			uint8_t nested_buffer[8]{ 0 };
+			stream::bit_writer nested_writer(nested_buffer, 8);
+
+			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
+			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));
+			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
+			uint32_t num_nested_bytes = nested_writer.flush();
 
 			BS_TEST_ASSERT(num_nested_bytes == 5);
 
@@ -194,11 +246,11 @@ namespace bitstream::test::serialization
 			uint8_t nested_bytes[8]{ 0 };
 			BS_TEST_ASSERT(nested_reader.serialize_bytes(nested_bytes, nested_writer.get_num_bits_written()));
 
-			// Import the nested value into the main writer
+			// Serialize the nested values into the main writer
 			BS_TEST_ASSERT(writer.serialize_bytes(nested_bytes, nested_writer.get_num_bits_written()));
 		}
 
-		uint16_t num_bytes = writer.flush();
+		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT(num_bytes == 5);
 

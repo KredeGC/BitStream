@@ -131,7 +131,20 @@ namespace bitstream::stream
 
 		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits)
 		{
-			// TODO: Copy all this logic into bit_reader
+			uint32_t num_bytes = (num_bits - 1) / 8 + 1;
+			for (uint32_t i = 0; i < num_bytes; i++)
+			{
+				uint32_t value = (uint32_t) * (bytes + i);
+				if (!serialize_bits(value, (std::min)(num_bits - i * 8, (uint32_t)8)))
+					return false;
+			}
+
+			return true;
+		}
+
+		bool serialize_bytes_aligned(const uint8_t* bytes, uint32_t num_bits)
+		{
+			// TODO: Use num_bytes instead of num_bits
 
 			if (!align())
 				return false;
@@ -140,11 +153,11 @@ namespace bitstream::stream
 				return false;
 
 			// Serialize the first bits normally
-			uint32_t num_bytes = (num_bits - 1) / 8 + 1;
+			uint32_t num_bytes = (num_bits - 1U) / 8U + 1U;
 
 			uint32_t remaining_bits = num_bits;
 			uint32_t first_size = (32U - m_ScratchBits) / 8U;
-			uint32_t last_size = (num_bytes - first_size - 1) % 4U + 1;
+			uint32_t last_size = (num_bytes - first_size - 1U) % 4U + 1U;
 
 			if (!serialize_sequence(bytes, (std::min)(num_bytes, first_size), (std::min)(remaining_bits, 32U - m_ScratchBits))) // TODO: Is the 32 - scratchbits necessary?
 				return false;
@@ -172,6 +185,25 @@ namespace bitstream::stream
 			// Serialize the last bits
 			if (!serialize_sequence(bytes + num_bytes - last_size, last_size, remaining_bits))
 				return false;
+
+			return true;
+		}
+
+		bool serialize_into(bit_writer& writer)
+		{
+			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Buffer);
+			uint32_t num_bits = get_num_bits_written();
+			uint32_t remainder_bits = num_bits % 8;
+
+			if (!writer.serialize_bytes(buffer, num_bits - remainder_bits))
+				return false;
+
+			if (remainder_bits > 0)
+			{
+				uint32_t byte_value = buffer[num_bits / 8] >> (8 - remainder_bits);
+				if (!writer.serialize_bits(byte_value, remainder_bits))
+					return false;
+			}
 
 			return true;
 		}
