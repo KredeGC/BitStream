@@ -42,9 +42,89 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(out_value3 == in_value3);
 	}
 
+	BS_ADD_TEST(test_serialize_checksum)
+	{
+		// Test checksum
+		uint32_t protocol_version = 0xDEADBEEF;
+		uint32_t value = 3;
+
+		// Write some initial values and finish with a checksum
+		uint8_t buffer[16]{ 0 };
+		bit_writer writer(buffer, 16);
+
+		writer.prepend_checksum();
+		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
+		uint16_t num_bytes = writer.serialize_checksum(protocol_version);
+
+		// Read the checksum and validate
+		uint32_t out_value;
+		bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_checksum(protocol_version));
+		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
+
+		BS_TEST_ASSERT(out_value == value);
+	}
+
+	BS_ADD_TEST(test_serialize_padding)
+	{
+		// Test padding
+		uint32_t in_value1 = 3;
+		uint32_t in_value2 = 6;
+
+		// Write some initial value, pad it, and then write another value
+		uint8_t buffer[32];
+		bit_writer writer(buffer, 32);
+		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 3));
+		BS_TEST_ASSERT(writer.pad_to_size(31));
+		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 5));
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 32);
+
+		// Read the values and validate padding
+		uint32_t out_value1;
+		uint32_t out_value2;
+		bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 3));
+		BS_TEST_ASSERT(reader.pad_to_size(31));
+		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 5));
+
+		BS_TEST_ASSERT(out_value1 == in_value1);
+		BS_TEST_ASSERT(out_value2 == in_value2);
+	}
+
+	void test_serialize_align()
+	{
+		// Test align
+		uint32_t value = 3;
+
+		// Write a bit offset and the align to byte
+		uint8_t buffer[8]{ 0 };
+		bit_writer writer(buffer, 8);
+
+		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
+		BS_TEST_ASSERT(writer.align());
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 1);
+
+		// Read back the the bit offset and validate the alignment
+		uint32_t out_value;
+		bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
+		BS_TEST_ASSERT(reader.get_remaining_bits() > 0);
+		BS_TEST_ASSERT(reader.align());
+
+		BS_TEST_ASSERT(out_value == value);
+		BS_TEST_ASSERT(reader.get_remaining_bits() == 0);
+	}
+
 	BS_ADD_TEST(test_serialize_bytes_small)
 	{
-		// Test serializing bits
+		// Test serializing bytes
 		uint8_t in_value[2]{ 0xDE, 0x3F }; // The last element is 2^6-1, which just barely fits
 		uint8_t in_padding = 27;
 		uint32_t num_bits = 2 * 8 - 2;
@@ -75,7 +155,7 @@ namespace bitstream::test::stream
 
 	BS_ADD_TEST(test_serialize_bytes_medium)
 	{
-		// Test serializing bits
+		// Test serializing bytes
 		uint8_t in_value[5]{ 0xDE, 0xAD, 0xBE, 0xEE, 0x45 }; // The last element is less than 2^7-1
 		uint8_t in_padding = 27;
 		uint32_t num_bits = 5 * 8 - 1;
@@ -106,7 +186,7 @@ namespace bitstream::test::stream
 
 	BS_ADD_TEST(test_serialize_bytes_large)
 	{
-		// Test serializing bits
+		// Test serializing bytes
 		uint8_t in_value[10]{ 0xDE, 0xAD, 0xBE, 0xEE, 0xEE, 0xEF, 0xFE, 0xAA, 0xC0, 0x1F }; // The last element is 2^5-1, which just barely fits
 		uint8_t in_padding = 27;
 		uint32_t num_bits = 10 * 8 - 3;
@@ -133,30 +213,6 @@ namespace bitstream::test::stream
 
 		for (int i = 0; i < 10; i++)
 			BS_TEST_ASSERT(out_value[i] == in_value[i]);
-	}
-
-	BS_ADD_TEST(test_serialize_checksum)
-	{
-		// Test checksum
-		uint32_t protocol_version = 0xDEADBEEF;
-		uint32_t value = 3;
-
-		// Write some initial values and finish with a checksum
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
-
-		writer.prepend_checksum();
-		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
-		uint16_t num_bytes = writer.serialize_checksum(protocol_version);
-
-		// Read the checksum and validate
-		uint32_t out_value;
-		bit_reader reader(buffer, num_bytes);
-
-		BS_TEST_ASSERT(reader.serialize_checksum(protocol_version));
-		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
-
-		BS_TEST_ASSERT(out_value == value);
 	}
 
 	BS_ADD_TEST(test_serialize_nested_write)

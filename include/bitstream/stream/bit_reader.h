@@ -34,6 +34,9 @@ namespace bitstream
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
 
+		bit_reader(const bit_reader&) = delete;
+		bit_reader(bit_reader&&) = delete;
+
 		uint32_t get_num_bits_read() { return m_NumBitsRead; }
 
 		bool can_read_bits(uint32_t num_bits) { return m_NumBitsRead + num_bits <= m_TotalBits; }
@@ -72,7 +75,7 @@ namespace bitstream
 				return false;
 
 			// Align with word size
-			const int remainder = m_NumBitsRead % 32;
+			uint32_t remainder = m_NumBitsRead % 32;
 			if (remainder != 0)
 			{
 				uint32_t zero;
@@ -92,6 +95,16 @@ namespace bitstream
 					return false;
 			}
 
+			// Test the last word more carefully, as it may have data
+			if (size % 4 != 0)
+			{
+				uint32_t zero = 0;
+				bool status = serialize_bits(zero, (size % 4) * 8);
+
+				if (!status || zero != 0)
+					return false;
+			}
+
 			return true;
 		}
 
@@ -105,6 +118,7 @@ namespace bitstream
 
 				return status && zero == 0 && m_NumBitsRead % 8 == 0;
 			}
+
 			return true;
 		}
 

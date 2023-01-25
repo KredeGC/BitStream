@@ -40,6 +40,7 @@ namespace bitstream
 			: m(m), a(a), b(b), c(c) {}
 	};
 
+	template<typename T, size_t BitsPerElement = 12>
 	class smallest_three
 	{
 	private:
@@ -47,7 +48,6 @@ namespace bitstream
 		static constexpr float SMALLEST_THREE_PACK = 1.0f / SMALLEST_THREE_UNPACK;
 
 	public:
-		template<typename T, size_t BitsPerElement = 12>
 		inline static quantized_quaternion quantize(const T& quaternion)
 		{
 			constexpr float half_range = static_cast<float>(1 << (BitsPerElement - 1));
@@ -126,7 +126,6 @@ namespace bitstream
 			return { m, a, b, c };
 		}
 
-		template<typename T, size_t BitsPerElement = 12>
 		inline static T dequantize(const quantized_quaternion& data)
 		{
 			constexpr uint32_t half_range = (1 << (BitsPerElement - 1));

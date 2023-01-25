@@ -32,7 +32,13 @@ namespace bitstream
 			m_TotalBits(num_bytes * 8),
 			m_Scratch(0),
 			m_ScratchBits(0),
-			m_WordIndex(0) {}
+			m_WordIndex(0)
+		{
+			BS_ASSERT(num_bytes % 4 == 0);
+		}
+
+		bit_writer(const bit_writer&) = delete;
+		bit_writer(bit_writer&&) = delete;
 
 		uint32_t get_num_bits_written() { return m_NumBitsWritten; }
 
@@ -81,13 +87,21 @@ namespace bitstream
 
 		bool pad_to_size(uint32_t size)
 		{
+			BS_ASSERT(size * 8 <= m_TotalBits);
+
 			flush();
 
 			if (size * 8 < m_NumBitsWritten)
 				return false;
 
-			m_NumBitsWritten = size * 8;
-			m_WordIndex = (m_NumBitsWritten - 1) / 32 + 1; // Might be wrong?
+			// Set to the padding to 0
+			std::memset(m_Buffer + m_WordIndex, 0, size - m_WordIndex * 4);
+
+			m_NumBitsWritten = size * 8U;
+
+			m_Scratch = 0ULL;
+			m_ScratchBits = (size % 4U) * 8U;
+			m_WordIndex = size / 4U;
 
 			return true;
 		}

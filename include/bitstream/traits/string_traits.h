@@ -117,7 +117,7 @@ namespace bitstream
 
 			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(chars), length * sizeof(T) * 8))
 			{
-				value.assign(chars, length);
+				allocator.deallocate(chars, length);
 				return false;
 			}
 
