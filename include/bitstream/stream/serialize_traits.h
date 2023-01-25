@@ -249,7 +249,7 @@ namespace bitstream::stream
 			if (!writer.serialize_bits(length, num_bits))
 				return false;
 
-			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value), length);
+			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value), length * 8);
 		}
 
 		static bool deserialize(bit_reader& reader, char* value, uint32_t max_size)
@@ -275,7 +275,7 @@ namespace bitstream::stream
 			if (!reader.can_read_bits(length * 8))
 				return false;
 
-			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(value), length))
+			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(value), length * 8))
 				return false;
 
 			value[length] = '\0';
@@ -303,13 +303,13 @@ namespace bitstream::stream
 			if (!writer.serialize_bits(length, num_bits))
 				return false;
 
-			if (!writer.can_write_bits(length * 8 * sizeof(T)))
+			if (!writer.can_write_bits(length * sizeof(T) * 8))
 				return false;
 
 			if (length == 0)
 				return true;
 
-			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value.c_str()), length * sizeof(T));
+			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value.c_str()), length * sizeof(T) * 8);
 		}
 
 		static bool deserialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value, uint32_t max_size)
@@ -332,13 +332,13 @@ namespace bitstream::stream
 				return true;
 			}
 
-			if (!reader.can_read_bits(length * 8 * sizeof(T)))
+			if (!reader.can_read_bits(length * sizeof(T) * 8))
 				return false;
 
 			auto allocator = value.get_allocator();
 			T* chars = allocator.allocate(length);
 
-			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(chars), length * sizeof(T)))
+			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(chars), length * sizeof(T) * 8))
 			{
 				value.assign(chars, length);
 				return false;
