@@ -7,6 +7,7 @@
 
 namespace bitstream::test::serialization
 {
+#pragma region basic serialization
 	BS_ADD_TEST(test_serialize_bits)
 	{
 		// Test serializing bits
@@ -42,6 +43,38 @@ namespace bitstream::test::serialization
 		BS_TEST_ASSERT(out_value3 == in_value3);
 	}
 
+	BS_ADD_TEST(test_serialize_bytes)
+	{
+		// Test serializing bits
+		uint8_t in_value[4]{ 0xDE, 0xAD, 0xBE, 0xEF };
+		uint8_t in_padding = 27;
+
+		// Write some values with a few bits
+		uint8_t buffer[8]{ 0 };
+		stream::bit_writer writer(buffer, 8);
+
+		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
+		BS_TEST_ASSERT(writer.serialize_bytes(in_value, 4));
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 5);
+
+		// Read the values back and validate
+		uint8_t out_value[4];
+		uint32_t out_padding;
+		stream::bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
+		BS_TEST_ASSERT(reader.serialize_bytes(out_value, 4));
+
+		BS_TEST_ASSERT(out_padding == in_padding);
+
+		for (int i = 0; i < 4; i++)
+			BS_TEST_ASSERT(out_value[i] == in_value[i]);
+	}
+#pragma endregion
+
+#pragma region integral types
 	BS_ADD_TEST(test_serialize_uint8)
 	{
 		// Test unsigned int8
@@ -127,7 +160,9 @@ namespace bitstream::test::serialization
 
 		BS_TEST_ASSERT(out_value == value);
 	}
+#pragma endregion
 
+#pragma region const integral types
 	BS_ADD_TEST(test_serialize_uint64_const_large)
 	{
 		using trait_type = stream::const_int<uint64_t, 80ULL, 4398046511104ULL>;
@@ -173,7 +208,9 @@ namespace bitstream::test::serialization
 
 		BS_TEST_ASSERT(out_value == value);
 	}
+#pragma endregion
 
+#pragma region const char*
 	BS_ADD_TEST(test_serialize_chars_aligned)
 	{
 		// Test c-style strings
@@ -227,7 +264,9 @@ namespace bitstream::test::serialization
 		BS_TEST_ASSERT(out_padding == padding);
 		BS_TEST_ASSERT(strcmp(out_value, value) == 0);
 	}
+#pragma endregion
 
+#pragma region std::basic_string
 	BS_ADD_TEST(test_serialize_string_aligned)
 	{
 		// Test std strings
@@ -271,4 +310,5 @@ namespace bitstream::test::serialization
 
 		BS_TEST_ASSERT(out_value == value);
 	}
+#pragma endregion
 }

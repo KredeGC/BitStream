@@ -7,6 +7,7 @@
 #include "bit_writer.h"
 
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <type_traits>
 
@@ -22,7 +23,7 @@ namespace bitstream::stream
 	template<>
 	struct serialize_traits<quantization::bounded_range>
 	{
-		static bool serialize(bit_writer& writer, quantization::bounded_range& range, const float& value)
+		static bool serialize(bit_writer& writer, const quantization::bounded_range& range, const float& value)
 		{
 			if (!writer.can_write_bits(range.get_bits_required()))
 				return false;
@@ -32,7 +33,7 @@ namespace bitstream::stream
 			return writer.serialize_bits(int_value, range.get_bits_required());
 		}
 
-		static bool deserialize(bit_reader& reader, quantization::bounded_range& range, float& value)
+		static bool deserialize(bit_reader& reader, const quantization::bounded_range& range, float& value)
 		{
 			if (!reader.can_read_bits(range.get_bits_required()))
 				return false;
@@ -52,7 +53,7 @@ namespace bitstream::stream
 	template<typename T>
 	struct serialize_traits<T, typename std::enable_if_t<std::is_integral<T>::value>>
 	{
-		static bool serialize(bit_writer& writer, const T& value, T min, T max)
+		static bool serialize(bit_writer& writer, const T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)())
 		{
 			BS_ASSERT(min < max);
 
@@ -89,7 +90,7 @@ namespace bitstream::stream
 			return true;
 		}
 
-		static bool deserialize(bit_reader& reader, T& value, T min, T max)
+		static bool deserialize(bit_reader& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)())
 		{
 			BS_ASSERT(min < max);
 
@@ -296,11 +297,14 @@ namespace bitstream::stream
 
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 
-			BS_ASSERT_RETURN(writer.can_write_bits(num_bits));
+			if (!writer.can_write_bits(num_bits))
+				return false;
 
-			BS_ASSERT_RETURN(writer.serialize_bits(length, num_bits));
+			if (!writer.serialize_bits(length, num_bits))
+				return false;
 
-			BS_ASSERT_RETURN(writer.can_write_bits(length * 8 * sizeof(T)));
+			if (!writer.can_write_bits(length * 8 * sizeof(T)))
+				return false;
 
 			if (length == 0)
 				return true;
@@ -312,10 +316,12 @@ namespace bitstream::stream
 		{
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 
-			BS_ASSERT_RETURN(reader.can_read_bits(num_bits));
+			if (!reader.can_read_bits(num_bits))
+				return false;
 
 			uint32_t length;
-			BS_ASSERT_RETURN(reader.serialize_bits(length, num_bits));
+			if (!reader.serialize_bits(length, num_bits))
+				return false;
 
 			if (length >= max_size)
 				return false;
@@ -326,12 +332,17 @@ namespace bitstream::stream
 				return true;
 			}
 
-			BS_ASSERT_RETURN(reader.can_read_bits(length * 8 * sizeof(T)));
+			if (!reader.can_read_bits(length * 8 * sizeof(T)))
+				return false;
 
 			auto allocator = value.get_allocator();
 			T* chars = allocator.allocate(length);
 
-			BS_ASSERT_RETURN(reader.serialize_bytes(reinterpret_cast<uint8_t*>(chars), length * sizeof(T)));
+			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(chars), length * sizeof(T)))
+			{
+				value.assign(chars, length);
+				return false;
+			}
 
 			value.assign(chars, length);
 
