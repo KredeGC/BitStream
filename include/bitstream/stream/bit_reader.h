@@ -134,46 +134,57 @@ namespace bitstream::stream
 			return true;
 		}
 
-		bool serialize_bytes(uint8_t* bytes, uint32_t num_bytes)
+		bool serialize_bytes(uint8_t* bytes, uint32_t num_bits)
 		{
 			if (!align())
 				return false;
 
-			if (!can_read_bits(num_bytes * 8))
-				return false;
-
-			// Serialize the first bits normally
-			int offset = 0;
-			while (m_ScratchBits > 0)
+			uint32_t num_bytes = (num_bits - 1) / 8 + 1;
+			for (uint32_t i = 0; i < num_bytes; i++)
 			{
-				uint32_t byte_value;
-				if (!serialize_bits(byte_value, 8))
+				uint32_t value;
+				if (!serialize_bits(value, (std::min)(num_bits - i * 8U, 8U)))
 					return false;
-
-				bytes[offset++] = static_cast<uint8_t>(byte_value);
-			}
-
-			// Do a straight memcpy with the middle values
-			int size = num_bytes - offset;
-			int last_size = size % 4;
-			int middle_size = size - last_size;
-
-			std::memcpy(bytes + offset, m_Buffer + m_WordIndex, middle_size); // TODO: Fix warning
-
-			m_NumBitsRead += (size - last_size) * 8;
-			m_WordIndex += (size - last_size) / 4;
-
-			// Serialize the last bits normally
-			for (int i = 0; i < last_size; i++)
-			{
-				uint32_t byte_value;
-				if (!serialize_bits(byte_value, 8))
-					return false;
-
-				bytes[num_bytes - last_size + i] = static_cast<uint8_t>(byte_value);
+				bytes[i] = static_cast<uint8_t>(value);
 			}
 
 			return true;
+
+			//if (!can_read_bits(num_bytes * 8))
+			//	return false;
+
+			//// Serialize the first bits normally
+			//int offset = 0;
+			//while (m_ScratchBits > 0)
+			//{
+			//	uint32_t byte_value;
+			//	if (!serialize_bits(byte_value, 8))
+			//		return false;
+
+			//	bytes[offset++] = static_cast<uint8_t>(byte_value);
+			//}
+
+			//// Do a straight memcpy with the middle values
+			//int size = num_bytes - offset;
+			//int last_size = size % 4;
+			//int middle_size = size - last_size;
+
+			//std::memcpy(bytes + offset, m_Buffer + m_WordIndex, middle_size); // TODO: Fix warning
+
+			//m_NumBitsRead += (size - last_size) * 8;
+			//m_WordIndex += (size - last_size) / 4;
+
+			//// Serialize the last bits normally
+			//for (int i = 0; i < last_size; i++)
+			//{
+			//	uint32_t byte_value;
+			//	if (!serialize_bits(byte_value, 8))
+			//		return false;
+
+			//	bytes[num_bytes - last_size + i] = static_cast<uint8_t>(byte_value);
+			//}
+
+			//return true;
 		}
 
 		template<typename Trait, typename... Args>

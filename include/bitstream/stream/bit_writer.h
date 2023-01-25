@@ -129,42 +129,49 @@ namespace bitstream::stream
 			return true;
 		}
 
-		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bytes)
+		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits)
 		{
+			// TODO: Copy all this logic into bit_reader
+
 			if (!align())
 				return false;
 
-			if (!can_write_bits(num_bytes * 8))
+			if (!can_write_bits(num_bits))
 				return false;
 
 			// Serialize the first bits normally
-			int offset = 0;
-			while (m_ScratchBits > 0)
-			{
-				uint32_t byte_value = static_cast<uint32_t>(bytes[offset]);
-				if (!serialize_bits(byte_value, 8))
-					return false;
+			uint32_t num_bytes = (num_bits - 1) / 8 + 1;
 
-				offset++;
+			uint32_t remaining_bits = num_bits;
+			uint32_t first_size = (32U - m_ScratchBits) / 8U;
+			uint32_t last_size = (num_bytes - first_size - 1) % 4U + 1;
+
+			if (!serialize_sequence(bytes, (std::min)(num_bytes, first_size), (std::min)(remaining_bits, 32U - m_ScratchBits))) // TODO: Is the 32 - scratchbits necessary?
+				return false;
+
+			// Early exit if we ran out of bits
+			if (m_ScratchBits > 0)
+				return true;
+
+			remaining_bits -= first_size * 8U;
+
+			// If we have a lot of bits in the middle, just memcpy
+			if (remaining_bits >= 32U)
+			{
+				// Must be a multiple of 4
+				uint32_t middle_size = (remaining_bits - 1) / 8U + 1 - last_size;
+
+				std::memcpy(m_Buffer + m_WordIndex, bytes + first_size, middle_size); // TODO: Shouldn't use size, but something smaller
+
+				remaining_bits -= middle_size * 8U;
+
+				m_NumBitsWritten += middle_size * 8U;
+				m_WordIndex += middle_size / 4;
 			}
 
-			// Do a straight memcpy with the middle values
-			int size = num_bytes - offset;
-			int last_size = size % 4;
-			int middle_size = size - last_size;
-
-			std::memcpy(m_Buffer + m_WordIndex, bytes + offset, middle_size); // TODO: Fix warning
-
-			m_NumBitsWritten += (size - last_size) * 8;
-			m_WordIndex += (size - last_size) / 4;
-
-			// Serialize the last bits normally
-			for (int i = 0; i < last_size; i++)
-			{
-				uint32_t byte_value = static_cast<uint32_t>(bytes[num_bytes - last_size + i]);
-				if (!serialize_bits(byte_value, 8))
-					return false;
-			}
+			// Serialize the last bits
+			if (!serialize_sequence(bytes + num_bytes - last_size, last_size, remaining_bits))
+				return false;
 
 			return true;
 		}
@@ -173,6 +180,19 @@ namespace bitstream::stream
 		bool serialize(Args&&... args)
 		{
 			return serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...);
+		}
+
+	private:
+		bool serialize_sequence(const uint8_t* bytes, int num_bytes_in_word, int num_bits)
+		{
+			for (int i = 0; i < num_bytes_in_word; i++)
+			{
+				uint32_t byte_value = static_cast<uint32_t>(bytes[i]);
+				if (!serialize_bits(byte_value, (std::min)(num_bits - i * 8, 8)))
+					return false;
+			}
+
+			return true;
 		}
 
 	private:
