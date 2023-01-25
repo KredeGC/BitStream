@@ -25,7 +25,7 @@
  *  SOFTWARE.
  */
 
-namespace bitstream::quantization
+namespace bitstream
 {
 	struct quantized_quaternion
 	{

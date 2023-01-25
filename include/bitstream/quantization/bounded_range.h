@@ -24,7 +24,7 @@
  *  SOFTWARE.
  */
 
-namespace bitstream::quantization
+namespace bitstream
 {
 	class bounded_range
 	{

@@ -12,9 +12,9 @@
 namespace bitstream
 {
 	template<>
-	struct serialize_traits<quantization::bounded_range>
+	struct serialize_traits<bounded_range>
 	{
-		static bool serialize(bit_writer& writer, const quantization::bounded_range& range, const float& value)
+		static bool serialize(bit_writer& writer, const bounded_range& range, const float& value)
 		{
 			if (!writer.can_write_bits(range.get_bits_required()))
 				return false;
@@ -24,7 +24,7 @@ namespace bitstream
 			return writer.serialize_bits(int_value, range.get_bits_required());
 		}
 
-		static bool deserialize(bit_reader& reader, const quantization::bounded_range& range, float& value)
+		static bool deserialize(bit_reader& reader, const bounded_range& range, float& value)
 		{
 			if (!reader.can_read_bits(range.get_bits_required()))
 				return false;
