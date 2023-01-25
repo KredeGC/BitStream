@@ -1,16 +1,16 @@
 #pragma once
-#include "../quantization/bounded_range.h"
-#include "../quantization/smallest_three.h"
 #include "../utility/assert.h"
 #include "../utility/crc.h"
 #include "../utility/endian.h"
+
+#include "serialize_traits.h"
 
 #include <cstdint>
 #include <cstring>
 #include <string>
 #include <type_traits>
 
-namespace bitstream::stream
+namespace bitstream
 {
 	class bit_reader
 	{

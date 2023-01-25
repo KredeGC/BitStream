@@ -5,7 +5,7 @@
 #include <bitstream/stream/bit_writer.h>
 #include <bitstream/utility/bits.h>
 
-namespace bitstream::test::serialization
+namespace bitstream::serialization
 {
 	BS_ADD_TEST(test_serialize_bits)
 	{
@@ -18,7 +18,7 @@ namespace bitstream::test::serialization
 
 		// Write some values with a few bits
 		uint8_t buffer[8]{ 0 };
-		stream::bit_writer writer(buffer, 8);
+		bit_writer writer(buffer, 8);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, bits_required));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, bits_required));
@@ -31,7 +31,7 @@ namespace bitstream::test::serialization
 		uint32_t out_value1;
 		uint32_t out_value2;
 		uint32_t out_value3;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, bits_required));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, bits_required));
@@ -52,7 +52,7 @@ namespace bitstream::test::serialization
 
 		// Write some values with a few bits
 		uint8_t buffer[8]{ 0 };
-		stream::bit_writer writer(buffer, 8);
+		bit_writer writer(buffer, 8);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, num_bits));
@@ -63,7 +63,7 @@ namespace bitstream::test::serialization
 		// Read the values back and validate
 		uint8_t out_value[2];
 		uint32_t out_padding;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, num_bits));
@@ -85,7 +85,7 @@ namespace bitstream::test::serialization
 
 		// Write some values with a few bits
 		uint8_t buffer[8]{ 0 };
-		stream::bit_writer writer(buffer, 8);
+		bit_writer writer(buffer, 8);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, num_bits));
@@ -96,7 +96,7 @@ namespace bitstream::test::serialization
 		// Read the values back and validate
 		uint8_t out_value[5];
 		uint32_t out_padding;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, num_bits));
@@ -117,7 +117,7 @@ namespace bitstream::test::serialization
 
 		// Write some values with a few bits
 		uint8_t buffer[16]{ 0 };
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, num_bits));
@@ -128,7 +128,7 @@ namespace bitstream::test::serialization
 		// Read the values back and validate
 		uint8_t out_value[10];
 		uint32_t out_padding;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, num_bits));
@@ -147,7 +147,7 @@ namespace bitstream::test::serialization
 
 		// Write some initial values and finish with a checksum
 		uint8_t buffer[16]{ 0 };
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		writer.prepend_checksum();
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
@@ -155,7 +155,7 @@ namespace bitstream::test::serialization
 
 		// Read the checksum and validate
 		uint32_t out_value;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_checksum(protocol_version));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
@@ -172,7 +172,7 @@ namespace bitstream::test::serialization
 
 		// Write some initial value with a bit offset
 		uint8_t buffer[8]{ 0 };
-		stream::bit_writer writer(buffer, 8);
+		bit_writer writer(buffer, 8);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
@@ -180,7 +180,7 @@ namespace bitstream::test::serialization
 		{
 			// Write nested values
 			uint8_t nested_buffer[8]{ 0 };
-			stream::bit_writer nested_writer(nested_buffer, 8);
+			bit_writer nested_writer(nested_buffer, 8);
 
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));
@@ -201,7 +201,7 @@ namespace bitstream::test::serialization
 		uint32_t out_nested_value1;
 		uint32_t out_nested_value2;
 		uint32_t out_nested_value3;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 2));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 3));
@@ -224,7 +224,7 @@ namespace bitstream::test::serialization
 
 		// Write some initial value with a bit offset
 		uint8_t buffer[8]{ 0 };
-		stream::bit_writer writer(buffer, 8);
+		bit_writer writer(buffer, 8);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
@@ -232,7 +232,7 @@ namespace bitstream::test::serialization
 		{
 			// Write nested values
 			uint8_t nested_buffer[8]{ 0 };
-			stream::bit_writer nested_writer(nested_buffer, 8);
+			bit_writer nested_writer(nested_buffer, 8);
 
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));
@@ -242,7 +242,7 @@ namespace bitstream::test::serialization
 			BS_TEST_ASSERT(num_nested_bytes == 5);
 
 			// Read the values as a byte array
-			stream::bit_reader nested_reader(nested_buffer, num_nested_bytes);
+			bit_reader nested_reader(nested_buffer, num_nested_bytes);
 			uint8_t nested_bytes[8]{ 0 };
 			BS_TEST_ASSERT(nested_reader.serialize_bytes(nested_bytes, nested_writer.get_num_bits_written()));
 
@@ -260,7 +260,7 @@ namespace bitstream::test::serialization
 		uint32_t out_nested_value1;
 		uint32_t out_nested_value2;
 		uint32_t out_nested_value3;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 2));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 3));

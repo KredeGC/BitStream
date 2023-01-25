@@ -3,12 +3,14 @@
 #include "../utility/crc.h"
 #include "../utility/endian.h"
 
+#include "serialize_traits.h"
+
 #include <cstdint>
 #include <cstring>
 #include <memory>
 #include <type_traits>
 
-namespace bitstream::stream
+namespace bitstream
 {
 	class bit_writer
 	{

@@ -2,6 +2,12 @@
 #include "../test.h"
 
 #include <bitstream/stream/serialize_traits.h>
+#include <bitstream/stream/bit_reader.h>
+#include <bitstream/stream/bit_writer.h>
+
+#include <bitstream/traits/integral_traits.h>
+#include <bitstream/traits/quantization_traits.h>
+#include <bitstream/traits/string_traits.h>
 
 namespace bitstream::test::traits
 {
@@ -12,7 +18,7 @@ namespace bitstream::test::traits
 		uint8_t value = 98;
 
 		uint8_t buffer[16]{ 0 };
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		BS_TEST_ASSERT(writer.serialize<uint8_t>(value, 20U, 127U));
 		uint32_t num_bytes = writer.flush();
@@ -21,7 +27,7 @@ namespace bitstream::test::traits
 
 
 		uint8_t out_value = 0;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<uint8_t>(out_value, 20U, 127U));
 
@@ -30,13 +36,13 @@ namespace bitstream::test::traits
 
 	BS_ADD_TEST(test_serialize_uint16)
 	{
-		using trait_type = stream::const_int<uint16_t, 20U, 400U>;
+		using trait_type = const_int<uint16_t, 20U, 400U>;
 
 		// Test unsigned int16
 		uint16_t value = 131;
 
 		uint8_t buffer[16];
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		BS_TEST_ASSERT(writer.serialize<trait_type>(value));
 		uint32_t num_bytes = writer.flush();
@@ -45,7 +51,7 @@ namespace bitstream::test::traits
 
 
 		uint16_t out_value = 0;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<trait_type>(out_value));
 
@@ -58,7 +64,7 @@ namespace bitstream::test::traits
 		uint32_t value = 131;
 
 		uint8_t buffer[16];
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		BS_TEST_ASSERT(writer.serialize<uint32_t>(value, 20U, 400U));
 		uint32_t num_bytes = writer.flush();
@@ -67,7 +73,7 @@ namespace bitstream::test::traits
 
 
 		uint32_t out_value = 0;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<uint32_t>(out_value, 20U, 400U));
 
@@ -80,7 +86,7 @@ namespace bitstream::test::traits
 		uint64_t value = 1099511627776ULL;
 
 		uint8_t buffer[16];
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		BS_TEST_ASSERT(writer.serialize<uint64_t>(value, 80ULL, 4398046511104ULL));
 		uint32_t num_bytes = writer.flush();
@@ -89,7 +95,7 @@ namespace bitstream::test::traits
 
 
 		uint64_t out_value = 0;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<uint64_t>(out_value, 80ULL, 4398046511104ULL));
 
@@ -100,13 +106,13 @@ namespace bitstream::test::traits
 #pragma region const integral types
 	BS_ADD_TEST(test_serialize_uint64_const_large)
 	{
-		using trait_type = stream::const_int<uint64_t, 80ULL, 4398046511104ULL>;
+		using trait_type = const_int<uint64_t, 80ULL, 4398046511104ULL>;
 
 		// Test unsigned int64
 		uint64_t value = 1099511627776ULL;
 
 		uint8_t buffer[16];
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		BS_TEST_ASSERT(writer.serialize<trait_type>(value));
 		uint32_t num_bytes = writer.flush();
@@ -115,7 +121,7 @@ namespace bitstream::test::traits
 
 
 		uint64_t out_value = 0;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<trait_type>(out_value));
 
@@ -124,13 +130,13 @@ namespace bitstream::test::traits
 
 	BS_ADD_TEST(test_serialize_uint64_const_small)
 	{
-		using trait_type = stream::const_int<uint64_t, 80ULL, 2147483648ULL>;
+		using trait_type = const_int<uint64_t, 80ULL, 2147483648ULL>;
 
 		// Test unsigned int64
 		uint64_t value = 1073741824ULL;
 
 		uint8_t buffer[16];
-		stream::bit_writer writer(buffer, 16);
+		bit_writer writer(buffer, 16);
 
 		BS_TEST_ASSERT(writer.serialize<trait_type>(value));
 		uint32_t num_bytes = writer.flush();
@@ -139,7 +145,7 @@ namespace bitstream::test::traits
 
 
 		uint64_t out_value = 0;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<trait_type>(out_value));
 
@@ -156,7 +162,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but make sure the word count isn't whole
 		uint8_t buffer[32];
-		stream::bit_writer writer(buffer, 32);
+		bit_writer writer(buffer, 32);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 8));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -167,7 +173,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding = 0;
 		char out_value[32];
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 8));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -184,7 +190,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but with an uneven bit offset
 		uint8_t buffer[32];
-		stream::bit_writer writer(buffer, 32);
+		bit_writer writer(buffer, 32);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 6));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -195,7 +201,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding = 0;
 		char out_value[32];
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 6));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -213,7 +219,7 @@ namespace bitstream::test::traits
 
 		// Write a string, but make sure the word count isn't whole
 		uint8_t buffer[32];
-		stream::bit_writer writer(buffer, 32);
+		bit_writer writer(buffer, 32);
 
 		BS_TEST_ASSERT(writer.serialize<std::string>(value, 32U));
 		uint32_t num_bytes = writer.flush();
@@ -222,7 +228,7 @@ namespace bitstream::test::traits
 
 		// Read the array back and validate
 		std::string out_value;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<std::string>(out_value, 32U));
 
@@ -236,7 +242,7 @@ namespace bitstream::test::traits
 
 		// Write a widechar string, but make sure the word count isn't whole
 		uint8_t buffer[32];
-		stream::bit_writer writer(buffer, 32);
+		bit_writer writer(buffer, 32);
 
 		BS_TEST_ASSERT(writer.serialize<std::wstring>(value, 32U));
 		uint32_t num_bytes = writer.flush();
@@ -245,7 +251,7 @@ namespace bitstream::test::traits
 
 		// Read the array back and validate
 		std::wstring out_value;
-		stream::bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<std::wstring>(out_value, 32U));
 

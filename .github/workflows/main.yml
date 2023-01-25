@@ -1,0 +1,61 @@
+name: Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.gitignore'
+
+jobs:
+  Build:
+    strategy:
+      matrix:
+        config: [debug, release]
+        dialect: [C++17, C++20]
+        machine:
+        - host: linux
+          os: ubuntu-latest
+          action: gmake2
+          toolset: gcc
+        - host: linux
+          os: ubuntu-latest
+          action: gmake2
+          toolset: clang
+        - host: windows
+          os: windows-latest
+          action: vs2019
+          toolset: msc
+    runs-on: ${{ matrix.machine.os }}
+    permissions:
+      security-events: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup premake
+      uses: abel0b/setup-premake@v2.2
+      with:
+        version: "5.0.0-beta1"
+    - name: Install GCC
+      if: matrix.machine.os == 'ubuntu-latest' && matrix.machine.toolset == 'gcc'
+      run: sudo apt update && sudo apt install -y gcc g++
+    - name: Install Clang & LLVM
+      if: matrix.machine.os == 'ubuntu-latest' && matrix.machine.toolset == 'clang'
+      run: sudo apt update && sudo apt install -y clang llvm lld
+    - name: Install msbuild to PATH
+      if: matrix.machine.os == 'windows-latest' && matrix.machine.toolset == 'msc'
+      uses: microsoft/setup-msbuild@v1.1
+    - name: Run premake
+      run: premake5 ${{ matrix.machine.action }} --toolset=${{ matrix.machine.toolset }}
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: cpp
+    - name: Build
+      run: premake5 build --config=${{ matrix.config }} --dialect=${{ matrix.dialect }}
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+    - name: Run test
+      run: premake5 test --config=${{ matrix.config }}
