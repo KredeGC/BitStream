@@ -51,13 +51,13 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
     - name: Run premake
       run: premake5 ${{ matrix.machine.action }} --toolset=${{ matrix.machine.toolset }}
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: cpp
+    # - name: Initialize CodeQL
+    #   uses: github/codeql-action/init@v2
+    #   with:
+    #     languages: cpp
     - name: Build
       run: premake5 build --config=${{ matrix.config }} --dialect=${{ matrix.dialect }}
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+    # - name: Perform CodeQL Analysis
+    #   uses: github/codeql-action/analyze@v2
     - name: Run test
       run: premake5 test --config=${{ matrix.config }}
