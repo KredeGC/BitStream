@@ -18,7 +18,7 @@ namespace bitstream
 	template<typename T>
 	struct serialize_traits<T, typename std::enable_if_t<std::is_integral<T>::value>>
 	{
-		static bool serialize(bit_writer& writer, const T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)())
+		static bool serialize(bit_writer& writer, const T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
 
@@ -55,7 +55,7 @@ namespace bitstream
 			return true;
 		}
 
-		static bool serialize(bit_reader& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)())
+		static bool serialize(bit_reader& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
 
@@ -106,7 +106,7 @@ namespace bitstream
 	template<typename T, T Min, T Max>
 	struct serialize_traits<const_int<T, Min, Max>, typename std::enable_if_t<std::is_integral<T>::value>>
 	{
-		static bool serialize(bit_writer& writer, const T& value)
+		static bool serialize(bit_writer& writer, const T& value) noexcept
 		{
 			static_assert(Min < Max);
 
@@ -143,7 +143,7 @@ namespace bitstream
 			return true;
 		}
 
-		static bool serialize(bit_reader& reader, T& value)
+		static bool serialize(bit_reader& reader, T& value) noexcept
 		{
 			static_assert(Min < Max);
 

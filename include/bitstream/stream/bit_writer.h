@@ -23,7 +23,7 @@ namespace bitstream
 		static constexpr bool writing = true;
 		static constexpr bool reading = false;
 
-		bit_writer() :
+		bit_writer() noexcept :
 			m_Buffer(nullptr),
 			m_NumBitsWritten(0),
 			m_TotalBits(0),
@@ -31,7 +31,7 @@ namespace bitstream
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
 
-		bit_writer(void* bytes, uint32_t num_bytes) :
+		bit_writer(void* bytes, uint32_t num_bytes) noexcept :
 			m_Buffer(static_cast<uint32_t*>(bytes)),
 			m_NumBitsWritten(0),
 			m_TotalBits(num_bytes * 8),
@@ -44,7 +44,7 @@ namespace bitstream
 
 		bit_writer(const bit_writer&) = delete;
         
-		bit_writer(bit_writer&& other) :
+		bit_writer(bit_writer&& other) noexcept :
             m_Buffer(other.m_Buffer),
             m_NumBitsWritten(other.m_NumBitsWritten),
             m_TotalBits(other.m_TotalBits),
@@ -60,15 +60,15 @@ namespace bitstream
             other.m_WordIndex = 0;
         }
 
-		uint32_t get_num_bits_serialized() const { return m_NumBitsWritten; }
+		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsWritten; }
 
-		bool can_serialize_bits(uint32_t num_bits) const { return m_NumBitsWritten + num_bits <= m_TotalBits; }
+		bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsWritten + num_bits <= m_TotalBits; }
 
-		uint32_t get_remaining_bits() const { return m_TotalBits - m_NumBitsWritten; }
+		uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsWritten; }
 
-        uint32_t get_total_bits() const { return m_TotalBits; }
+        uint32_t get_total_bits() const noexcept { return m_TotalBits; }
         
-		uint32_t flush()
+		uint32_t flush() noexcept
 		{
 			if (m_ScratchBits > 0U)
 			{
@@ -84,7 +84,7 @@ namespace bitstream
 			return (m_NumBitsWritten - 1U) / 8U + 1U;
 		}
 
-		bool prepend_checksum()
+		bool prepend_checksum() noexcept
 		{
             if (!can_serialize_bits(32U))
                 return false;
@@ -96,7 +96,7 @@ namespace bitstream
             return true;
 		}
 
-		uint32_t serialize_checksum(uint32_t protocol_version)
+		uint32_t serialize_checksum(uint32_t protocol_version) noexcept
 		{
 			uint32_t num_bytes = flush();
 
@@ -112,7 +112,7 @@ namespace bitstream
 			return num_bytes;
 		}
 
-		bool pad_to_size(uint32_t size)
+		bool pad_to_size(uint32_t size) noexcept
 		{
 			BS_ASSERT(size * 8U <= m_TotalBits);
 
@@ -133,7 +133,7 @@ namespace bitstream
 			return true;
 		}
 
-		bool align()
+		bool align() noexcept
 		{
 			uint32_t remainder = m_ScratchBits % 8;
 			if (remainder != 0)
@@ -146,7 +146,7 @@ namespace bitstream
 			return true;
 		}
 
-		bool serialize_bits(const uint32_t& value, uint32_t num_bits)
+		bool serialize_bits(const uint32_t& value, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
@@ -172,7 +172,7 @@ namespace bitstream
 			return true;
 		}
 
-		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits)
+		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U);
             
@@ -220,7 +220,7 @@ namespace bitstream
 			return true;
 		}
 
-		bool serialize_into(bit_writer& writer)
+		bool serialize_into(bit_writer& writer) noexcept
 		{
 			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Buffer);
 			uint32_t num_bits = get_num_bits_serialized();
@@ -240,7 +240,7 @@ namespace bitstream
 		}
 
 		template<typename Trait, typename... Args>
-		bool serialize(Args&&... args)
+		bool serialize(Args&&... args) noexcept(noexcept(serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...)))
 		{
 			return serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...);
 		}

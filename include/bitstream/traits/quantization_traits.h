@@ -16,7 +16,7 @@ namespace bitstream
 	struct serialize_traits<float>
 	{
         template<typename Stream>
-		static bool serialize(Stream& stream, float& value)
+		static bool serialize(Stream& stream, float& value) noexcept
 		{
 			union float_int
 			{
@@ -43,7 +43,7 @@ namespace bitstream
 	struct serialize_traits<half_precision>
 	{
         template<typename Stream>
-        static bool serialize(Stream& stream, float& value)
+        static bool serialize(Stream& stream, float& value) noexcept
 		{
 			uint32_t int_value;
             if constexpr (Stream::writing)
@@ -63,7 +63,7 @@ namespace bitstream
 	struct serialize_traits<bounded_range>
 	{
         template<typename Stream>
-		static bool serialize(Stream& stream, const bounded_range& range, float& value)
+		static bool serialize(Stream& stream, const bounded_range& range, float& value) noexcept
 		{
 			uint32_t int_value;
             if constexpr (Stream::writing)
@@ -82,7 +82,7 @@ namespace bitstream
 	template<typename Q, size_t BitsPerElement>
 	struct serialize_traits<smallest_three<Q, BitsPerElement>>
 	{
-		static bool serialize(bit_writer& writer, const Q& value)
+		static bool serialize(bit_writer& writer, const Q& value) noexcept
 		{
 			auto quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
 
@@ -98,7 +98,7 @@ namespace bitstream
 			return writer.serialize_bits(quantized_quat.c, BitsPerElement);
 		}
 
-		static bool serialize(bit_reader& reader, Q& value)
+		static bool serialize(bit_reader& reader, Q& value) noexcept
 		{
 			quantized_quaternion quantized_quat;
 

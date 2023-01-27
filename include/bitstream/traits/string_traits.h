@@ -14,7 +14,7 @@ namespace bitstream
 	template<>
 	struct serialize_traits<const char*>
 	{
-		static bool serialize(bit_writer& writer, const char* value, uint32_t max_size)
+		static bool serialize(bit_writer& writer, const char* value, uint32_t max_size) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(strlen(value));
 			if (length >= max_size)
@@ -31,7 +31,7 @@ namespace bitstream
 			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value), length * 8);
 		}
 
-		static bool serialize(bit_reader& reader, char* value, uint32_t max_size)
+		static bool serialize(bit_reader& reader, char* value, uint32_t max_size) noexcept
 		{
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 
@@ -60,7 +60,7 @@ namespace bitstream
 	template<typename T, typename Traits, typename Alloc>
 	struct serialize_traits<std::basic_string<T, Traits, Alloc>>
 	{
-		static bool serialize(bit_writer& writer, const std::basic_string<T, Traits, Alloc>& value, uint32_t max_size)
+		static bool serialize(bit_writer& writer, const std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(value.size());
 			if (length >= max_size)
@@ -77,7 +77,7 @@ namespace bitstream
 			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value.c_str()), length * sizeof(T) * 8);
 		}
 
-		static bool serialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value, uint32_t max_size)
+		static bool serialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept
 		{
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 

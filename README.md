@@ -20,7 +20,7 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
 # Compatibility
 This library was made with C++17 in mind and is not be compatible with earlier versions.
 Many of the features use `if constexpr`, which is only available from 17 and up.
-If you really want it to work with earlier versions, you should just be able to replace the newer features with C++14 counterparts.
+If you really want it to work with earlier versions, you should just be able to replace the newer features with C++1x counterparts.
 
 # Installation
 As this is a header-only library, you can simply copy the header files directly into your project.
