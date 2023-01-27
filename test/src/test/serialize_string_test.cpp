@@ -1,5 +1,5 @@
-#include "../assert.h"
-#include "../test.h"
+#include "test_assert.h"
+#include "test.h"
 
 #include <bitstream/stream/bit_reader.h>
 #include <bitstream/stream/bit_writer.h>

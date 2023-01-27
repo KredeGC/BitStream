@@ -137,7 +137,7 @@ namespace bitstream
 				uint32_t* ptr = m_Buffer + m_WordIndex;
 				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32U);
 				*ptr = utility::endian_swap_32(ptr_value);
-				m_Scratch <<= 32U;
+				m_Scratch <<= 32ULL;
 				m_ScratchBits -= 32U;
 				m_WordIndex++;
 			}

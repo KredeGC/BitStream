@@ -1,5 +1,5 @@
-#include "../assert.h"
-#include "../test.h"
+#include "test_assert.h"
+#include "test.h"
 
 #include <bitstream/stream/bit_reader.h>
 #include <bitstream/stream/bit_writer.h>
@@ -7,6 +7,37 @@
 
 namespace bitstream::test::stream
 {
+    BS_ADD_TEST(test_serialize_fail)
+    {
+        // Test serializing failure
+		uint32_t in_value1 = 511;
+		uint32_t in_value2 = 99;
+        
+		// Write some values with too many bits
+		uint8_t buffer[4]{ 0 };
+		bit_writer writer(buffer, 4);
+        
+		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 11));
+		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 11));
+        BS_TEST_ASSERT(!writer.can_write_bits(11)); // Assert that there's no more space
+		uint32_t num_bytes = writer.flush();
+        
+		BS_TEST_ASSERT(num_bytes == 3);
+
+		// Read the values back and validate
+		uint32_t out_value1;
+		uint32_t out_value2;
+		bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 11));
+		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 11));
+		BS_TEST_ASSERT(!reader.can_read_bits(11));
+        BS_TEST_ASSERT(reader.get_remaining_bits() < 8);
+
+		BS_TEST_ASSERT(out_value1 == in_value1);
+		BS_TEST_ASSERT(out_value2 == in_value2);
+    }
+    
 	BS_ADD_TEST(test_serialize_bits)
 	{
 		// Test serializing bits

@@ -56,13 +56,13 @@ project "Test"
     objdir ("bin-obj/%{outputdir}")
 
     files {
-        "src/**.cpp",
-        "src/**.h",
+        "test/src/**.cpp",
+        "test/include/**.h",
         "include/**.h"
     }
 
     includedirs {
-        "src",
+        "test/include",
         "include"
     }
 

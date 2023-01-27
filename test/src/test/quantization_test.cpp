@@ -1,5 +1,5 @@
-#include "../assert.h"
-#include "../test.h"
+#include "test_assert.h"
+#include "test.h"
 
 #include <bitstream/quantization/bounded_range.h>
 #include <bitstream/quantization/half_precision.h>
