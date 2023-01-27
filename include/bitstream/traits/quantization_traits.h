@@ -29,8 +29,7 @@ namespace bitstream
             if constexpr (Stream::writing)
                 tmp.f = value;
 
-			if (!stream.serialize_bits(tmp.i, 32))
-				return false;
+			BS_ASSERT(stream.serialize_bits(tmp.i, 32));
             
             if constexpr (Stream::reading)
 			    value = tmp.f;
@@ -49,8 +48,7 @@ namespace bitstream
             if constexpr (Stream::writing)
                 int_value = half_precision::quantize(value);
             
-			if (!stream.serialize_bits(int_value, 16))
-				return false;
+			BS_ASSERT(stream.serialize_bits(int_value, 16));
             
             if constexpr (Stream::reading)
 			    value = half_precision::dequantize(int_value);
@@ -69,8 +67,7 @@ namespace bitstream
             if constexpr (Stream::writing)
                 int_value = range.quantize(value);
             
-			if (!stream.serialize_bits(int_value, range.get_bits_required()))
-				return false;
+			BS_ASSERT(stream.serialize_bits(int_value, range.get_bits_required()));
 
             if constexpr (Stream::reading)
 			    value = range.dequantize(int_value);
@@ -86,14 +83,11 @@ namespace bitstream
 		{
 			auto quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
 
-			if (!writer.serialize_bits(quantized_quat.m, 2))
-				return false;
+			BS_ASSERT(writer.serialize_bits(quantized_quat.m, 2));
 
-			if (!writer.serialize_bits(quantized_quat.a, BitsPerElement))
-				return false;
+			BS_ASSERT(writer.serialize_bits(quantized_quat.a, BitsPerElement));
 
-			if (!writer.serialize_bits(quantized_quat.b, BitsPerElement))
-				return false;
+			BS_ASSERT(writer.serialize_bits(quantized_quat.b, BitsPerElement));
 
 			return writer.serialize_bits(quantized_quat.c, BitsPerElement);
 		}
@@ -102,17 +96,13 @@ namespace bitstream
 		{
 			quantized_quaternion quantized_quat;
 
-			if (!reader.serialize_bits(quantized_quat.m, 2))
-				return false;
+			BS_ASSERT(reader.serialize_bits(quantized_quat.m, 2));
 
-			if (!reader.serialize_bits(quantized_quat.a, BitsPerElement))
-				return false;
+			BS_ASSERT(reader.serialize_bits(quantized_quat.a, BitsPerElement));
 
-			if (!reader.serialize_bits(quantized_quat.b, BitsPerElement))
-				return false;
+			BS_ASSERT(reader.serialize_bits(quantized_quat.b, BitsPerElement));
 
-			if (!reader.serialize_bits(quantized_quat.c, BitsPerElement))
-				return false;
+			BS_ASSERT(reader.serialize_bits(quantized_quat.c, BitsPerElement));
 
 			value = smallest_three<Q, BitsPerElement>::dequantize(quantized_quat);
 

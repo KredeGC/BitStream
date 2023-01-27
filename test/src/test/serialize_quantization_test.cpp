@@ -19,7 +19,7 @@ namespace bitstream::test::quantization
 		BS_TEST_ASSERT(writer.serialize<half_precision>(value_in));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes == 2);
+		BS_TEST_ASSERT_OPERATION(num_bytes, ==, 2);
 
 
 		float value_out;
@@ -29,6 +29,6 @@ namespace bitstream::test::quantization
         
         constexpr float epsilon = 1e-3f;
 
-		BS_TEST_ASSERT(std::abs(value_in - value_out) <= epsilon);
+		BS_TEST_ASSERT_OPERATION(std::abs(value_in - value_out), <=, epsilon);
 	}
 }

@@ -16,14 +16,13 @@ namespace bitstream
 
 #pragma region integral types
 	template<typename T>
-	struct serialize_traits<T, typename std::enable_if_t<std::is_integral<T>::value>>
+	struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T>>>
 	{
 		static bool serialize(bit_writer& writer, const T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
-
-			if (value < min || value > max)
-				return false;
+            
+            BS_ASSERT(value >= min && value < max);
 
 			int num_bits = static_cast<int>(utility::bits_in_range(min, max));
 
@@ -38,18 +37,14 @@ namespace bitstream
 					int shift = i * 32;
 					int bit_count = (std::min)(num_bits - shift, 32);
 					uint32_t unsigned_value = static_cast<uint32_t>((value - min) >> shift);
-					bool status = writer.serialize_bits(unsigned_value, bit_count);
-					if (!status)
-						return false;
+					BS_ASSERT(writer.serialize_bits(unsigned_value, bit_count));
 				}
 			}
 			else
 			{
 				// If the given range is smaller than or equal to a word (32 bits)
 				uint32_t unsigned_value = static_cast<uint32_t>(value - min);
-				bool status = writer.serialize_bits(unsigned_value, num_bits);
-				if (!status)
-					return false;
+				BS_ASSERT(writer.serialize_bits(unsigned_value, num_bits));
 			}
 
 			return true;
@@ -74,9 +69,7 @@ namespace bitstream
 					uint32_t unsigned_value;
 					int shift = i * 32;
 					int bit_count = (std::min)(num_bits - shift, 32);
-					bool status = reader.serialize_bits(unsigned_value, bit_count);
-					if (!status)
-						return false;
+					BS_ASSERT(reader.serialize_bits(unsigned_value, bit_count));
 
 					value |= static_cast<T>(unsigned_value) << shift;
 				}
@@ -87,15 +80,12 @@ namespace bitstream
 			{
 				// If the given range is smaller than or equal to a word (32 bits)
 				uint32_t unsigned_value;
-				bool status = reader.serialize_bits(unsigned_value, num_bits);
-				if (!status)
-					return false;
+				BS_ASSERT(reader.serialize_bits(unsigned_value, num_bits));
 
 				value = static_cast<T>(unsigned_value) + min;
 			}
-
-			if (value < min || value > max)
-				return false;
+            
+            BS_ASSERT(value >= min && value < max);
 
 			return true;
 		}
@@ -104,14 +94,13 @@ namespace bitstream
 
 #pragma region const integral types
 	template<typename T, T Min, T Max>
-	struct serialize_traits<const_int<T, Min, Max>, typename std::enable_if_t<std::is_integral<T>::value>>
+	struct serialize_traits<const_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T>>>
 	{
 		static bool serialize(bit_writer& writer, const T& value) noexcept
 		{
 			static_assert(Min < Max);
-
-			if (value < Min || value > Max)
-				return false;
+            
+            BS_ASSERT(value >= Min && value < Max);
 
 			constexpr int num_bits = static_cast<int>(utility::bits_in_range(Min, Max));
 
@@ -126,18 +115,14 @@ namespace bitstream
 					int shift = i * 32;
 					int bit_count = (std::min)(num_bits - shift, 32);
 					uint32_t unsigned_value = static_cast<uint32_t>((value - Min) >> shift);
-					bool status = writer.serialize_bits(unsigned_value, bit_count);
-					if (!status)
-						return false;
+					BS_ASSERT(writer.serialize_bits(unsigned_value, bit_count));
 				}
 			}
 			else
 			{
 				// If the given range is smaller than or equal to a word (32 bits)
 				uint32_t unsigned_value = static_cast<uint32_t>(value - Min);
-				bool status = writer.serialize_bits(unsigned_value, num_bits);
-				if (!status)
-					return false;
+				BS_ASSERT(writer.serialize_bits(unsigned_value, num_bits));
 			}
 
 			return true;
@@ -162,9 +147,7 @@ namespace bitstream
 					uint32_t unsigned_value;
 					int shift = i * 32;
 					int bit_count = (std::min)(num_bits - shift, 32);
-					bool status = reader.serialize_bits(unsigned_value, bit_count);
-					if (!status)
-						return false;
+					BS_ASSERT(reader.serialize_bits(unsigned_value, bit_count));
 
 					value |= static_cast<T>(unsigned_value) << shift;
 				}
@@ -175,15 +158,12 @@ namespace bitstream
 			{
 				// If the given range is smaller than or equal to a word (32 bits)
 				uint32_t unsigned_value;
-				bool status = reader.serialize_bits(unsigned_value, num_bits);
-				if (!status)
-					return false;
+				BS_ASSERT(reader.serialize_bits(unsigned_value, num_bits));
 
 				value = static_cast<T>(unsigned_value) + Min;
 			}
-
-			if (value < Min || value > Max)
-				return false;
+            
+            BS_ASSERT(value >= Min && value < Max);
 
 			return true;
 		}

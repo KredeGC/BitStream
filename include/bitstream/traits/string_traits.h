@@ -25,8 +25,7 @@ namespace bitstream
             
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
             
-			if (!writer.serialize_bits(length, num_bits))
-				return false;
+			BS_ASSERT(writer.serialize_bits(length, num_bits));
 
 			return writer.serialize_bytes(reinterpret_cast<const uint8_t*>(value), length * 8);
 		}
@@ -36,8 +35,7 @@ namespace bitstream
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 
 			uint32_t length;
-			if (!reader.serialize_bits(length, num_bits))
-				return false;
+			BS_ASSERT(reader.serialize_bits(length, num_bits));
 
 			if (length >= max_size)
 				return false;
@@ -48,8 +46,7 @@ namespace bitstream
 				return true;
 			}
 
-			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(value), length * 8))
-				return false;
+			BS_ASSERT(reader.serialize_bytes(reinterpret_cast<uint8_t*>(value), length * 8));
 
 			value[length] = '\0';
 
@@ -68,8 +65,7 @@ namespace bitstream
 
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 
-			if (!writer.serialize_bits(length, num_bits))
-				return false;
+			BS_ASSERT(writer.serialize_bits(length, num_bits));
 
 			if (length == 0)
 				return true;
@@ -82,8 +78,7 @@ namespace bitstream
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 
 			uint32_t length;
-			if (!reader.serialize_bits(length, num_bits))
-				return false;
+			BS_ASSERT(reader.serialize_bits(length, num_bits));
 
 			if (length >= max_size)
 				return false;
@@ -96,8 +91,7 @@ namespace bitstream
 
             value.resize(length);
 
-			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(value.data()), length * sizeof(T) * 8))
-				return false;
+			BS_ASSERT(reader.serialize_bytes(reinterpret_cast<uint8_t*>(value.data()), length * sizeof(T) * 8));
 
 			return true;
 		}

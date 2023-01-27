@@ -89,8 +89,7 @@ namespace bitstream
 
 		bool prepend_checksum() noexcept
 		{
-            if (!can_serialize_bits(32U))
-                return false;
+            BS_ASSERT(can_serialize_bits(32U));
             
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
@@ -121,8 +120,7 @@ namespace bitstream
 
 			flush();
 
-			if (size * 8U < m_NumBitsWritten)
-				return false;
+			BS_ASSERT(size * 8U >= m_NumBitsWritten);
 
 			// Set to the padding to 0
 			std::memset(m_Buffer + m_WordIndex, 0, size - m_WordIndex * 4U);
@@ -144,7 +142,7 @@ namespace bitstream
 				uint32_t zero = 0;
 				bool status = serialize_bits(zero, 8 - remainder);
 
-				return status && m_NumBitsWritten % 8 == 0;
+				BS_ASSERT(status && m_NumBitsWritten % 8 == 0);
 			}
 			return true;
 		}
@@ -201,8 +199,7 @@ namespace bitstream
                     // Casting a byte-array to an int is wrong on little-endian systems
                     // We have to swap the bytes around
                     uint32_t value = utility::endian_swap_32(word_buffer[i]);
-                    if (!serialize_bits(value, 32U))
-                        return false;
+                    BS_ASSERT(serialize_bits(value, 32U));
                 }
             }
             
@@ -216,8 +213,7 @@ namespace bitstream
 			for (uint32_t i = 0; i < num_bytes; i++)
 			{
 				uint32_t value = static_cast<uint32_t>(bytes[num_words * 4U + i]);
-				if (!serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)))
-					return false;
+				BS_ASSERT(serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)));
 			}
 
 			return true;
@@ -229,14 +225,12 @@ namespace bitstream
 			uint32_t num_bits = get_num_bits_serialized();
 			uint32_t remainder_bits = num_bits % 8U;
 
-			if (!writer.serialize_bytes(buffer, num_bits - remainder_bits))
-				return false;
+			BS_ASSERT(writer.serialize_bytes(buffer, num_bits - remainder_bits));
 
 			if (remainder_bits > 0)
 			{
 				uint32_t byte_value = buffer[num_bits / 8U] >> (8U - remainder_bits);
-				if (!writer.serialize_bits(byte_value, remainder_bits))
-					return false;
+				BS_ASSERT(writer.serialize_bits(byte_value, remainder_bits));
 			}
 
 			return true;

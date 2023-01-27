@@ -20,7 +20,7 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT(writer.serialize<uint8_t>(value, 20U, 127U));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes <= sizeof(uint8_t));
+		BS_TEST_ASSERT_OPERATION(num_bytes, <=, sizeof(uint8_t));
 
 
 		uint8_t out_value = 0;
@@ -28,7 +28,7 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<uint8_t>(out_value, 20U, 127U));
 
-		BS_TEST_ASSERT(out_value == value);
+		BS_TEST_ASSERT_OPERATION(out_value, ==, value);
 	}
 
 	BS_ADD_TEST(test_serialize_uint16)
@@ -44,7 +44,7 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT(writer.serialize<trait_type>(value));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes <= sizeof(uint16_t));
+		BS_TEST_ASSERT_OPERATION(num_bytes, <=, sizeof(uint16_t));
 
 
 		uint16_t out_value = 0;
@@ -52,7 +52,7 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<trait_type>(out_value));
 
-		BS_TEST_ASSERT(out_value == value);
+		BS_TEST_ASSERT_OPERATION(out_value, ==, value);
 	}
 
 	BS_ADD_TEST(test_serialize_uint32)
@@ -66,7 +66,7 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT(writer.serialize<uint32_t>(value, 20U, 400U));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes <= sizeof(uint32_t));
+		BS_TEST_ASSERT_OPERATION(num_bytes, <=, sizeof(uint32_t));
 
 
 		uint32_t out_value = 0;
@@ -74,7 +74,7 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<uint32_t>(out_value, 20U, 400U));
 
-		BS_TEST_ASSERT(out_value == value);
+		BS_TEST_ASSERT_OPERATION(out_value, ==, value);
 	}
 
 	BS_ADD_TEST(test_serialize_uint64)
@@ -88,7 +88,7 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT(writer.serialize<uint64_t>(value, 80ULL, 4398046511104ULL));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes <= sizeof(uint64_t));
+		BS_TEST_ASSERT_OPERATION(num_bytes, <=, sizeof(uint64_t));
 
 
 		uint64_t out_value = 0;
@@ -96,7 +96,7 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<uint64_t>(out_value, 80ULL, 4398046511104ULL));
 
-		BS_TEST_ASSERT(out_value == value);
+		BS_TEST_ASSERT_OPERATION(out_value, ==, value);
 	}
 #pragma endregion
 
@@ -114,7 +114,7 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT(writer.serialize<trait_type>(value));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes <= sizeof(uint64_t));
+		BS_TEST_ASSERT_OPERATION(num_bytes, <=, sizeof(uint64_t));
 
 
 		uint64_t out_value = 0;
@@ -122,7 +122,7 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<trait_type>(out_value));
 
-		BS_TEST_ASSERT(out_value == value);
+		BS_TEST_ASSERT_OPERATION(out_value, ==, value);
 	}
 
 	BS_ADD_TEST(test_serialize_uint64_const_small)
@@ -138,7 +138,7 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT(writer.serialize<trait_type>(value));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes <= sizeof(uint64_t));
+		BS_TEST_ASSERT_OPERATION(num_bytes, <=, sizeof(uint64_t));
 
 
 		uint64_t out_value = 0;
@@ -146,7 +146,7 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<trait_type>(out_value));
 
-		BS_TEST_ASSERT(out_value == value);
+		BS_TEST_ASSERT_OPERATION(out_value, ==, value);
 	}
 #pragma endregion
 }

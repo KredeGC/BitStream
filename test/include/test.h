@@ -17,13 +17,15 @@ namespace bitstream::test
 	{
 	private:
 		inline constexpr static size_t MAX_TESTS = 1024;
+        
+        typedef void (*test_ptr_t)();
 
-		inline static void (*s_TestFunctions[MAX_TESTS])();
+		inline static test_ptr_t s_TestFunctions[MAX_TESTS];
 		inline static std::string s_TestNames[MAX_TESTS];
 		inline static size_t s_TestCounter;
 
 	public:
-		static void add_test(const std::string& name, void (*func_ptr)());
+		static void add_test(const std::string& name, test_ptr_t func_ptr);
 
 		static void run_all_tests();
 	};

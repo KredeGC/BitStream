@@ -105,8 +105,9 @@ namespace bitstream
 
 		bool pad_to_size(uint32_t size) noexcept
 		{
-			if (size * 8 > m_TotalBits || size * 8 < m_NumBitsRead)
-				return false;
+			BS_ASSERT(size * 8U <= m_TotalBits);
+            
+			BS_ASSERT(size * 8U >= m_NumBitsRead);
 
 			// Align with word size
 			uint32_t remainder = m_NumBitsRead % 32;
@@ -115,8 +116,7 @@ namespace bitstream
 				uint32_t zero;
 				bool status = serialize_bits(zero, 32 - remainder);
 
-				if (!status || zero != 0)
-					return false;
+				BS_ASSERT(status && zero == 0);
 			}
 
 			// Test for zeros in padding
@@ -125,8 +125,7 @@ namespace bitstream
 				uint32_t zero = 0;
 				bool status = serialize_bits(zero, 32);
 
-				if (!status || zero != 0)
-					return false;
+				BS_ASSERT(status && zero == 0);
 			}
 
 			// Test the last word more carefully, as it may have data
@@ -135,8 +134,7 @@ namespace bitstream
 				uint32_t zero = 0;
 				bool status = serialize_bits(zero, (size % 4) * 8);
 
-				if (!status || zero != 0)
-					return false;
+				BS_ASSERT(status && zero == 0);
 			}
 
 			return true;
@@ -150,7 +148,7 @@ namespace bitstream
 				uint32_t zero;
 				bool status = serialize_bits(zero, 8 - remainder);
 
-				return status && zero == 0 && m_NumBitsRead % 8 == 0;
+                BS_ASSERT(status && zero == 0 && m_NumBitsRead % 8 == 0);
 			}
 
 			return true;
@@ -206,8 +204,7 @@ namespace bitstream
                 for (uint32_t i = 0U; i < num_words; i++)
                 {
                     uint32_t value;
-                    if (!serialize_bits(value, 32U))
-                        return false;
+                    BS_ASSERT(serialize_bits(value, 32U));
                     
                     // Casting a byte-array to an int is wrong on little-endian systems
                     // We have to swap the bytes around
@@ -225,8 +222,7 @@ namespace bitstream
 			for (uint32_t i = 0; i < num_bytes; i++)
 			{
                 uint32_t value;
-				if (!serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)))
-					return false;
+				BS_ASSERT(serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)));
                 
 				bytes[num_words * 4 + i] = static_cast<uint8_t>(value);
 			}

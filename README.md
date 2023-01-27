@@ -71,7 +71,7 @@ There are some methods that only the `bit_writer` has, since the `bit_reader` wo
 | --- | --- |
 | `uint32_t flush()` | Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer. |
 | `bool prepend_checksum()` | Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits. |
-| `bool serialize_int(bit_writer& writer)` | Writes the contents of the buffer into the given `writer`. Essentially copies the entire buffer without modifying it. |
+| `bool serialize_into(bit_writer& writer)` | Writes the contents of the buffer into the given `writer`. Essentially copies the entire buffer without modifying it. |
 
 ## Traits
 TODO
@@ -205,7 +205,7 @@ It also works with `enable_if`:
 ```cpp
 // This trait will be used by any integral type (signed and unsigned ints)
 template<typename T>
-struct serialize_traits<T, typename std::enable_if_t<std::is_integral<T>::value>>
+struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T>>>
 { ... };
 ```
 

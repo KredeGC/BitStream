@@ -32,7 +32,7 @@ namespace bitstream::test::quantization
 
 		constexpr float epsilon = 1e-3f;
 
-		BS_TEST_ASSERT(std::abs(value_in - value_out) <= epsilon);
+		BS_TEST_ASSERT_OPERATION(std::abs(value_in - value_out), <=, epsilon);
 	}
 
 	BS_ADD_TEST(test_bounded_range)
@@ -45,8 +45,8 @@ namespace bitstream::test::quantization
 
 		float value_out = range.dequantize(quantized_value);
 
-		BS_TEST_ASSERT(std::abs(value_in - value_out) <= range.get_precision());
-		BS_TEST_ASSERT(range.get_bits_required() < 32);
+		BS_TEST_ASSERT_OPERATION(std::abs(value_in - value_out), <=, range.get_precision());
+		BS_TEST_ASSERT_OPERATION(range.get_bits_required(), <, 32);
 	}
 
 	BS_ADD_TEST(test_smallest_three)
@@ -63,6 +63,6 @@ namespace bitstream::test::quantization
 
 		constexpr float epsilon = 1e-5f;
 
-		BS_TEST_ASSERT(dot >= (1.0f - epsilon));
+		BS_TEST_ASSERT_OPERATION(dot, >=, (1.0f - epsilon));
 	}
 }

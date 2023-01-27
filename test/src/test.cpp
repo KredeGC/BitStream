@@ -6,7 +6,7 @@
 
 namespace bitstream::test
 {
-	void unit::add_test(const std::string& name, void (*func_ptr)())
+	void unit::add_test(const std::string& name, unit::test_ptr_t func_ptr)
 	{
 		s_TestNames[s_TestCounter] = name;
 		s_TestFunctions[s_TestCounter] = func_ptr;
