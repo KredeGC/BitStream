@@ -12,8 +12,13 @@
 
 namespace bitstream
 {
+    class bit_reader;
+    
 	class bit_writer
 	{
+    private:
+        friend class bit_reader;
+        
 	public:
 		static constexpr bool writing = true;
 		static constexpr bool reading = false;
@@ -55,36 +60,38 @@ namespace bitstream
             other.m_WordIndex = 0;
         }
 
-		uint32_t get_num_bits_written() { return m_NumBitsWritten; }
+		uint32_t get_num_bits_serialized() const { return m_NumBitsWritten; }
 
-		bool can_write_bits(uint32_t num_bits) { return m_NumBitsWritten + num_bits <= m_TotalBits; }
+		bool can_serialize_bits(uint32_t num_bits) const { return m_NumBitsWritten + num_bits <= m_TotalBits; }
 
-		uint32_t get_remaining_bits() { return m_TotalBits - m_NumBitsWritten; }
+		uint32_t get_remaining_bits() const { return m_TotalBits - m_NumBitsWritten; }
 
+        uint32_t get_total_bits() const { return m_TotalBits; }
+        
 		uint32_t flush()
 		{
-			if (m_ScratchBits > 0)
+			if (m_ScratchBits > 0U)
 			{
 				uint32_t* ptr = m_Buffer + m_WordIndex;
-				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32);
+				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32U);
 				*ptr = utility::endian_swap_32(ptr_value);
 
-				m_Scratch = 0;
-				m_ScratchBits = 0;
+				m_Scratch = 0U;
+				m_ScratchBits = 0U;
 				m_WordIndex++;
 			}
 
-			return (m_NumBitsWritten - 1) / 8 + 1;
+			return (m_NumBitsWritten - 1U) / 8U + 1U;
 		}
 
 		bool prepend_checksum()
 		{
-            if (!can_write_bits(32))
+            if (!can_serialize_bits(32U))
                 return false;
             
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
-			m_NumBitsWritten += 32;
+			m_NumBitsWritten += 32U;
             
             return true;
 		}
@@ -107,15 +114,15 @@ namespace bitstream
 
 		bool pad_to_size(uint32_t size)
 		{
-			BS_ASSERT(size * 8 <= m_TotalBits);
+			BS_ASSERT(size * 8U <= m_TotalBits);
 
 			flush();
 
-			if (size * 8 < m_NumBitsWritten)
+			if (size * 8U < m_NumBitsWritten)
 				return false;
 
 			// Set to the padding to 0
-			std::memset(m_Buffer + m_WordIndex, 0, size - m_WordIndex * 4);
+			std::memset(m_Buffer + m_WordIndex, 0, size - m_WordIndex * 4U);
 
 			m_NumBitsWritten = size * 8U;
 
@@ -143,7 +150,7 @@ namespace bitstream
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
-			BS_ASSERT(can_write_bits(num_bits));
+			BS_ASSERT(can_serialize_bits(num_bits));
 
 			uint32_t offset = 64U - num_bits - m_ScratchBits;
 			uint64_t ls_value = static_cast<uint64_t>(value) << offset;
@@ -169,7 +176,7 @@ namespace bitstream
 		{
 			BS_ASSERT(num_bits > 0U);
             
-			BS_ASSERT(can_write_bits(num_bits));
+			BS_ASSERT(can_serialize_bits(num_bits));
             
             // Write the byte array as words
             const uint32_t* word_buffer = reinterpret_cast<const uint32_t*>(bytes);
@@ -216,7 +223,7 @@ namespace bitstream
 		bool serialize_into(bit_writer& writer)
 		{
 			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Buffer);
-			uint32_t num_bits = get_num_bits_written();
+			uint32_t num_bits = get_num_bits_serialized();
 			uint32_t remainder_bits = num_bits % 8U;
 
 			if (!writer.serialize_bytes(buffer, num_bits - remainder_bits))

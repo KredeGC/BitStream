@@ -3,6 +3,7 @@
 #include "../utility/crc.h"
 #include "../utility/endian.h"
 
+#include "bit_writer.h"
 #include "serialize_traits.h"
 
 #include <cstdint>
@@ -33,6 +34,22 @@ namespace bitstream
 			m_Scratch(0),
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
+        
+		explicit bit_reader(bit_writer&& other) :
+            m_Buffer(other.m_Buffer),
+            m_NumBitsRead(0),
+            m_TotalBits(other.m_NumBitsWritten),
+            m_Scratch(0),
+            m_ScratchBits(0),
+            m_WordIndex(0)
+        {
+            other.m_Buffer = nullptr;
+            other.m_NumBitsWritten = 0;
+            other.m_TotalBits = 0;
+            other.m_Scratch = 0;
+            other.m_ScratchBits = 0;
+            other.m_WordIndex = 0;
+        }
 
 		bit_reader(const bit_reader&) = delete;
         
@@ -52,11 +69,13 @@ namespace bitstream
             other.m_WordIndex = 0;
         }
 
-		uint32_t get_num_bits_read() { return m_NumBitsRead; }
+		uint32_t get_num_bits_serialized() { return m_NumBitsRead; }
 
-		bool can_read_bits(uint32_t num_bits) { return m_NumBitsRead + num_bits <= m_TotalBits; }
+		bool can_serialize_bits(uint32_t num_bits) { return m_NumBitsRead + num_bits <= m_TotalBits; }
 
 		uint32_t get_remaining_bits() { return m_TotalBits - m_NumBitsRead; }
+        
+        uint32_t get_total_bits() const { return m_TotalBits; }
 
 		bool serialize_checksum(uint32_t protocol_version)
 		{
@@ -141,7 +160,7 @@ namespace bitstream
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
-			BS_ASSERT(can_read_bits(num_bits));
+			BS_ASSERT(can_serialize_bits(num_bits));
 
 			if (m_ScratchBits < num_bits)
 			{
@@ -167,7 +186,7 @@ namespace bitstream
 		{
 			BS_ASSERT(num_bits > 0U);
             
-			BS_ASSERT(can_read_bits(num_bits));
+			BS_ASSERT(can_serialize_bits(num_bits));
             
             // Read the byte array as words
             uint32_t* word_buffer = reinterpret_cast<uint32_t*>(bytes);

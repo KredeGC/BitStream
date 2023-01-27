@@ -63,9 +63,6 @@ namespace bitstream
 
 			BS_ASSERT(num_bits <= sizeof(T) * 8);
 
-			if (!reader.can_read_bits(num_bits))
-				return false;
-
 			if constexpr (sizeof(T) > 4)
 			{
 				value = 0;
@@ -153,9 +150,6 @@ namespace bitstream
 			constexpr int num_bits = static_cast<int>(utility::bits_in_range(Min, Max));
 
 			static_assert(num_bits <= sizeof(T) * 8);
-
-			if (!reader.can_read_bits(num_bits))
-				return false;
 
 			if constexpr (sizeof(T) > 4 && num_bits > 32)
 			{
