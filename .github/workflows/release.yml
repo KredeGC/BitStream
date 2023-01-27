@@ -23,23 +23,23 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Copy LICENSE
-      run: cp LICENSE include/ktl/LICENSE
+      run: cp LICENSE include/bitstream/LICENSE
     - name: Create VERSION.txt
-      run: echo "${{ inputs.tagName }}" > include/ktl/VERSION.txt
+      run: echo "${{ inputs.tagName }}" > include/bitstream/VERSION.txt
     - name: Install zip
       run: |
         sudo apt update
         sudo apt install -y zip
     - name: Zip headers
-      run: zip -r KTL.zip include/ktl
+      run: zip -r BitStream.zip include/bitstream
     - name: Tar headers
-      run: tar czvf KTL.tar.gz include/ktl
+      run: tar czvf BitStream.tar.gz include/bitstream
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          KTL.zip
-          KTL.tar.gz
+          BitStream.zip
+          BitStream.tar.gz
         tag_name: ${{ inputs.tagName }}
         body: ${{ inputs.changelog }}
         draft: ${{ inputs.draft }}

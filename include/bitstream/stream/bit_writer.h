@@ -121,24 +121,24 @@ namespace bitstream
 
 		bool serialize_bits(const uint32_t& value, uint32_t num_bits)
 		{
-			BS_ASSERT(num_bits > 0 && num_bits <= 32);
+			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
 			BS_ASSERT(can_write_bits(num_bits));
 
-			uint32_t offset = 64 - num_bits - m_ScratchBits;
+			uint32_t offset = 64U - num_bits - m_ScratchBits;
 			uint64_t ls_value = static_cast<uint64_t>(value) << offset;
 
 			m_Scratch |= ls_value;
 			m_ScratchBits += num_bits;
 			m_NumBitsWritten += num_bits;
 
-			if (m_ScratchBits >= 32)
+			if (m_ScratchBits >= 32U)
 			{
 				uint32_t* ptr = m_Buffer + m_WordIndex;
-				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32);
+				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32U);
 				*ptr = utility::endian_swap_32(ptr_value);
-				m_Scratch <<= 32;
-				m_ScratchBits -= 32;
+				m_Scratch <<= 32U;
+				m_ScratchBits -= 32U;
 				m_WordIndex++;
 			}
 
@@ -151,7 +151,7 @@ namespace bitstream
             const uint32_t* word_buffer = reinterpret_cast<const uint32_t*>(bytes);
 			uint32_t num_words = num_bits / 32U;
             
-            if (m_ScratchBits % 32 == 0 && num_words > 0)
+            if (m_ScratchBits % 32U == 0U && num_words > 0U)
             {
                 // If the written buffer is word-aligned, just memcpy it
                 std::memcpy(m_Buffer + m_WordIndex, word_buffer, num_words * 4U);
@@ -181,7 +181,7 @@ namespace bitstream
             uint32_t num_bytes = (remaining_bits - 1U) / 8U + 1U;
 			for (uint32_t i = 0; i < num_bytes; i++)
 			{
-				uint32_t value = static_cast<uint32_t>(bytes[num_words * 4 + i]);
+				uint32_t value = static_cast<uint32_t>(bytes[num_words * 4U + i]);
 				if (!serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)))
 					return false;
 			}
@@ -193,14 +193,14 @@ namespace bitstream
 		{
 			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Buffer);
 			uint32_t num_bits = get_num_bits_written();
-			uint32_t remainder_bits = num_bits % 8;
+			uint32_t remainder_bits = num_bits % 8U;
 
 			if (!writer.serialize_bytes(buffer, num_bits - remainder_bits))
 				return false;
 
 			if (remainder_bits > 0)
 			{
-				uint32_t byte_value = buffer[num_bits / 8] >> (8 - remainder_bits);
+				uint32_t byte_value = buffer[num_bits / 8U] >> (8U - remainder_bits);
 				if (!writer.serialize_bits(byte_value, remainder_bits))
 					return false;
 			}
@@ -212,19 +212,6 @@ namespace bitstream
 		bool serialize(Args&&... args)
 		{
 			return serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...);
-		}
-
-	private:
-		bool serialize_sequence(const uint8_t* bytes, int num_bytes_in_word, int num_bits)
-		{
-			for (int i = 0; i < num_bytes_in_word; i++)
-			{
-				uint32_t byte_value = static_cast<uint32_t>(bytes[i]);
-				if (!serialize_bits(byte_value, (std::min)(num_bits - i * 8, 8)))
-					return false;
-			}
-
-			return true;
 		}
 
 	private:

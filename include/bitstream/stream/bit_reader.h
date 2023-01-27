@@ -124,7 +124,7 @@ namespace bitstream
 
 		bool serialize_bits(uint32_t& value, uint32_t num_bits)
 		{
-			BS_ASSERT(num_bits > 0 && num_bits <= 32);
+			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
 			BS_ASSERT(can_read_bits(num_bits));
 
@@ -132,13 +132,13 @@ namespace bitstream
 			{
 				const uint32_t* ptr = m_Buffer + m_WordIndex;
 
-				uint64_t ptr_value = static_cast<uint64_t>(utility::endian_swap_32(*ptr)) << (32 - m_ScratchBits);
+				uint64_t ptr_value = static_cast<uint64_t>(utility::endian_swap_32(*ptr)) << (32U - m_ScratchBits);
 				m_Scratch |= ptr_value;
-				m_ScratchBits += 32;
+				m_ScratchBits += 32U;
 				m_WordIndex++;
 			}
 
-			uint32_t offset = 64 - num_bits;
+			uint32_t offset = 64U - num_bits;
 			value = static_cast<uint32_t>(m_Scratch >> offset);
 
 			m_Scratch <<= num_bits;
@@ -154,7 +154,7 @@ namespace bitstream
             uint32_t* word_buffer = reinterpret_cast<uint32_t*>(bytes);
 			uint32_t num_words = num_bits / 32U;
             
-            if (m_ScratchBits % 32 == 0 && num_words > 0)
+            if (m_ScratchBits % 32U == 0U && num_words > 0U)
             {
                 // If the read buffer is word-aligned, just memcpy it
                 std::memcpy(word_buffer, m_Buffer + m_WordIndex, num_words * 4U);
@@ -191,20 +191,6 @@ namespace bitstream
 					return false;
                 
 				bytes[num_words * 4 + i] = static_cast<uint8_t>(value);
-			}
-
-			return true;
-		}
-
-		bool serialize_bytes_aligned(uint8_t* bytes, uint32_t num_bits)
-		{
-			uint32_t num_bytes = (num_bits - 1) / 8 + 1;
-			for (uint32_t i = 0; i < num_bytes; i++)
-			{
-				uint32_t value;
-				if (!serialize_bits(value, (std::min)(num_bits - i * 8U, 8U)))
-					return false;
-				bytes[i] = static_cast<uint8_t>(value);
 			}
 
 			return true;
