@@ -165,9 +165,6 @@ namespace bitstream
 			if (!align())
 				return false;
 
-			if (!can_write_bits(num_bits))
-				return false;
-
 			// Serialize the first bits normally
 			uint32_t num_bytes = (num_bits - 1U) / 8U + 1U;
 

@@ -96,13 +96,13 @@ namespace bitstream::test::traits
 		std::wstring value = L"Hello, world!";
 
 		// Write a widechar string, but make sure the word count isn't whole
-		uint8_t buffer[32];
-		bit_writer writer(buffer, 32);
+		uint8_t buffer[64];
+		bit_writer writer(buffer, 64); // wchar_t is apparently platform dependent and can be 16 or 32 bits
 
 		BS_TEST_ASSERT(writer.serialize<std::wstring>(value, 32U));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes == 27);
+		BS_TEST_ASSERT(num_bytes == 1 + 13 * sizeof(wchar_t));
 
 		// Read the array back and validate
 		std::wstring out_value;

@@ -55,7 +55,7 @@ namespace bitstream
 			return true;
 		}
 
-		static bool deserialize(bit_reader& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)())
+		static bool serialize(bit_reader& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)())
 		{
 			BS_ASSERT(min < max);
 
@@ -146,7 +146,7 @@ namespace bitstream
 			return true;
 		}
 
-		static bool deserialize(bit_reader& reader, T& value)
+		static bool serialize(bit_reader& reader, T& value)
 		{
 			static_assert(Min < Max);
 

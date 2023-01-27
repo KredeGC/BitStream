@@ -12,8 +12,6 @@
 
 namespace bitstream
 {
-	struct half_float;
-
 	template<>
 	struct serialize_traits<float>
 	{
@@ -34,7 +32,7 @@ namespace bitstream
 			return writer.serialize_bits(tmp.i, 32);
 		}
 
-		static bool deserialize(bit_reader& reader, float& value)
+		static bool serialize(bit_reader& reader, float& value)
 		{
 			if (!reader.can_read_bits(32))
 				return false;
@@ -57,28 +55,38 @@ namespace bitstream
 	};
 
 	template<>
-	struct serialize_traits<half_float>
+	struct serialize_traits<half_precision>
 	{
-		static bool serialize(bit_writer& writer, const float& value)
+		// static bool serialize(bit_writer& writer, const float& value)
+		// {
+		// 	uint32_t int_value = half_precision::quantize(value);
+
+		// 	return writer.serialize_bits(int_value, 16);
+		// }
+
+		// static bool serialize(bit_reader& reader, float& value)
+		// {
+		// 	uint32_t int_value;
+		// 	if (!reader.serialize_bits(int_value, 16))
+		// 		return false;
+
+		// 	value = half_precision::dequantize(int_value);
+
+		// 	return true;
+		// }
+        
+        template<typename Stream>
+        static bool serialize(Stream& stream, float& value)
 		{
-			if (!writer.can_write_bits(16))
-				return false;
-
-			uint32_t int_value = half_precision::quantize(value);
-
-			return writer.serialize_bits(int_value, 16);
-		}
-
-		static bool deserialize(bit_reader& reader, float& value)
-		{
-			if (!reader.can_read_bits(16))
-				return false;
-
 			uint32_t int_value;
-			if (!reader.serialize_bits(int_value, 16))
+            if constexpr (stream.writing)
+                int_value = half_precision::quantize(value);
+            
+			if (!stream.serialize_bits(int_value, 16))
 				return false;
-
-			value = half_precision::dequantize(int_value);
+            
+            if constexpr (stream.reading)
+			    value = half_precision::dequantize(int_value);
 
 			return true;
 		}
@@ -97,7 +105,7 @@ namespace bitstream
 			return writer.serialize_bits(int_value, range.get_bits_required());
 		}
 
-		static bool deserialize(bit_reader& reader, const bounded_range& range, float& value)
+		static bool serialize(bit_reader& reader, const bounded_range& range, float& value)
 		{
 			if (!reader.can_read_bits(range.get_bits_required()))
 				return false;
@@ -134,7 +142,7 @@ namespace bitstream
 			return writer.serialize_bits(quantized_quat.c, BitsPerElement);
 		}
 
-		static bool deserialize(bit_reader& reader, Q& value)
+		static bool serialize(bit_reader& reader, Q& value)
 		{
 			if (!reader.can_read_bits(2 + 3 * BitsPerElement))
 				return false;

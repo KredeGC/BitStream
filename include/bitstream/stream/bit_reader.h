@@ -179,7 +179,7 @@ namespace bitstream
 		template<typename Trait, typename... Args>
 		bool serialize(Args&&... args)
 		{
-			return serialize_traits<Trait>::deserialize(*this, std::forward<Args>(args)...);
+			return serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...);
 		}
 
 	private:
