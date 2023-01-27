@@ -38,7 +38,22 @@ namespace bitstream
 		}
 
 		bit_writer(const bit_writer&) = delete;
-		bit_writer(bit_writer&&) = delete;
+        
+		bit_writer(bit_writer&& other) :
+            m_Buffer(other.m_Buffer),
+            m_NumBitsWritten(other.m_NumBitsWritten),
+            m_TotalBits(other.m_TotalBits),
+            m_Scratch(other.m_Scratch),
+            m_ScratchBits(other.m_ScratchBits),
+            m_WordIndex(other.m_WordIndex)
+        {
+            other.m_Buffer = nullptr;
+            other.m_NumBitsWritten = 0;
+            other.m_TotalBits = 0;
+            other.m_Scratch = 0;
+            other.m_ScratchBits = 0;
+            other.m_WordIndex = 0;
+        }
 
 		uint32_t get_num_bits_written() { return m_NumBitsWritten; }
 
@@ -62,11 +77,16 @@ namespace bitstream
 			return (m_NumBitsWritten - 1) / 8 + 1;
 		}
 
-		void prepend_checksum()
+		bool prepend_checksum()
 		{
+            if (!can_write_bits(32))
+                return false;
+            
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
 			m_NumBitsWritten += 32;
+            
+            return true;
 		}
 
 		uint32_t serialize_checksum(uint32_t protocol_version)
@@ -147,6 +167,10 @@ namespace bitstream
 
 		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits)
 		{
+			BS_ASSERT(num_bits > 0U);
+            
+			BS_ASSERT(can_write_bits(num_bits));
+            
             // Write the byte array as words
             const uint32_t* word_buffer = reinterpret_cast<const uint32_t*>(bytes);
 			uint32_t num_words = num_bits / 32U;

@@ -5,7 +5,7 @@
 ![Linux supported](https://img.shields.io/badge/Linux-Ubuntu-green?style=flat-square)
 ![MacOS untested](https://img.shields.io/badge/MacOS-Untested-red?style=flat-square)
 
-An extensible C++ library for serializing types into tightly packed bitstreams.
+An extensible C++ library for serializing and quantizing types into tightly packed bitstreams.
 
 [![Release](https://img.shields.io/github/v/release/KredeGC/BitStream?display_name=tag&style=flat-square)](https://github.com/KredeGC/BitStream/releases/latest)
 [![Size](https://img.shields.io/github/languages/code-size/KredeGC/BitStream?style=flat-square)](https://github.com/KredeGC/BitStream/releases/latest)
@@ -37,6 +37,32 @@ The files are stored in the categories:
 
 # Interface
 
+
+## bit_writer and bit_reader interface
+The `bit_writer` and `bit_reader` hold very little state themselves and rely on an external buffer instead. This means that nothing is allocated, and therefore no cleanup code is required. It also means that copying is not possible, since the streams don't have shared state. Move is still possible, and invalidates the object that was moved from.
+
+As a general rule, most operations will return a boolean, indicating whether the operation was a success or not. To keep the library fast, operations never throw, unless debug-mode is enabled. An operation will usually only be unsuccessful if there's not enough space left in the buffer or if the parameters are out of range.
+
+When calling any operation it is important to check the return value, as it's not wise to continue writing or reading after a failure.
+
+| Method | Description |
+| --- | --- |
+| `bool align()` | Pads the buffer with up to 8 zeros, so that the next read/write is byte-aligned.<br/>The `bit_reader` will return false if the padded bits are not zeros. |
+| `bool pad_to_size(uint32_t num_bytes)` | Pads the buffer up to the given number of bytes.<br/>Returns false if the current size of the buffer is bigger than `num_bytes`<br/>The `bit_reader` will return false if the padded bits are not zeros. |
+| `bool serialize<Trait>(Args&&...)` | Writes/reads into the buffer, using the given `Trait`. The various traits to use can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.<br/>It is also possible to use your own custom traits. |
+| `bool serialize_bits(uint32_t& value, uint32_t num_bits)` | Writes/reads the first `num_bits` bits of `value` into the buffer.<br/>Returns false if `num_bits` is less than 1 or greater than 32.<br/>Returns false if reading/writing the given number of bits would overflow the buffer. |
+| `bool serialize_bytes(uint8_t* bytes, uint32_t num_bits)` | Writes/reads the first `num_bits` bits of the given byte array, 32 bits at a time.<br/>Returns false if `num_bits` is less than 1.<br/>Returns false if reading/writing the given number of bits would overflow the buffer. |
+| `bool serialize_checksum(uint32_t protocol)` | When reading, this method compares the first 32 bits of the buffer with a checksum of the buffer + `protocol`.<br/>When writing, this method writes the first 32 bits as a checksum of the buffer + `protocol`.<br/>Returns false if there's no space for the 32 bits, or if the protocol doesn't match the checksum. |
+| `` | |
+
+## bit_writer specific interface
+There are some methods that only the `bit_writer` has, since the `bit_reader` would have no use for them.
+
+| Method | Description |
+| --- | --- |
+| `uint32_t flush()` | Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer. |
+| `bool prepend_checksum()` | Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits. |
+| `bool serialize_int(bit_writer& writer)` | Writes the contents of the buffer into the given `writer`. Essentially copies the entire buffer without modifying it. |
 
 # Serialization Examples
 The examples below follow the same structure: First writing to a buffer and then reading from it.
@@ -115,11 +141,11 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
 {
     // Will be called when writing the object to a stream
     static bool serialize(bit_writer& stream, ...)
-    { }
+    { ... }
     
     // Will be called when reading the object from a stream
     static bool serialize(bit_reader& stream, ...)
-    { }
+    { ... }
 };
 ```
 
@@ -136,8 +162,20 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
     // Will be called when writing or reading the object to a stream
     template<typename Stream>
     static bool serialize(Stream& stream, ...)
-    { }
+    { ... }
 };
 ```
 
+The specialization can also be templated to work with a number of types.
+It also works with `enable_if`:
+```cpp
+// This trait will be used by any integral type (signed and unsigned ints)
+template<typename T>
+struct serialize_traits<T, typename std::enable_if_t<std::is_integral<T>::value>>
+{ ... };
+```
+
 More concrete examples of traits can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.
+
+# Credits
+* The quantization classes are from [INSERT]

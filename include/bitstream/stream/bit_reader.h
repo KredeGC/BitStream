@@ -35,7 +35,22 @@ namespace bitstream
 			m_WordIndex(0) {}
 
 		bit_reader(const bit_reader&) = delete;
-		bit_reader(bit_reader&&) = delete;
+        
+		bit_reader(bit_reader&& other) :
+            m_Buffer(other.m_Buffer),
+            m_NumBitsRead(other.m_NumBitsRead),
+            m_TotalBits(other.m_TotalBits),
+            m_Scratch(other.m_Scratch),
+            m_ScratchBits(other.m_ScratchBits),
+            m_WordIndex(other.m_WordIndex)
+        {
+            other.m_Buffer = nullptr;
+            other.m_NumBitsRead = 0;
+            other.m_TotalBits = 0;
+            other.m_Scratch = 0;
+            other.m_ScratchBits = 0;
+            other.m_WordIndex = 0;
+        }
 
 		uint32_t get_num_bits_read() { return m_NumBitsRead; }
 
@@ -150,6 +165,10 @@ namespace bitstream
 
 		bool serialize_bytes(uint8_t* bytes, uint32_t num_bits)
 		{
+			BS_ASSERT(num_bits > 0U);
+            
+			BS_ASSERT(can_read_bits(num_bits));
+            
             // Read the byte array as words
             uint32_t* word_buffer = reinterpret_cast<uint32_t*>(bytes);
 			uint32_t num_words = num_bits / 32U;
