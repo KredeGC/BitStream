@@ -30,10 +30,12 @@ jobs:
           toolset: msc
     runs-on: ${{ matrix.machine.os }}
     permissions:
+      actions: read
+      contents: read
       security-events: write
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3.3
     - name: Setup premake
       uses: abel0b/setup-premake@v2.2
       with:
