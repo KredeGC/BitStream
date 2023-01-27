@@ -1,7 +1,5 @@
 #include "test.h"
 
-#include <bitstream/bitstream.h>
-
 int main(int argc, const char** argv)
 {
     bitstream::test::unit::run_all_tests();

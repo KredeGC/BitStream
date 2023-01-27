@@ -77,6 +77,8 @@ project "Test"
         systemversion "latest"
     
     filter "configurations:Debug"
+        defines { "BS_DEBUG_BREAK" }
+        
         runtime "Debug"
         symbols "on"
         

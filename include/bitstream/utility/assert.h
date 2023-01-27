@@ -1,6 +1,6 @@
 #pragma once
 
-#if 1 //#ifdef BS_DEBUG_ASSERT
+#ifdef BS_DEBUG_BREAK
 #if defined(_WIN32) // Windows
 #define BS_BREAKPOINT() __debugbreak()
 #elif defined(__linux__) // Linux
@@ -10,9 +10,9 @@
 #define BS_BREAKPOINT() throw
 #endif
 
-#define BS_ASSERT(x) if (!(x)) BS_BREAKPOINT()
+#define BS_ASSERT(x) if (!(x)) { BS_BREAKPOINT(); return false; }
 #else
-#define BS_ASSERT(x) if (!(x)) return false
+#define BS_ASSERT(x) if (!(x)) { return false; }
 
-#define BS_BREAKPOINT()
+#define BS_BREAKPOINT() throw
 #endif

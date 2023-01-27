@@ -1,15 +1,8 @@
 #include "test.h"
 
-#include <iostream>
+#include <bitstream/bitstream.h>
 
-#if defined(_WIN32) // Windows
-#define BS_BREAKPOINT() __debugbreak()
-#elif defined(__linux__) // Linux
-#include <csignal>
-#define BS_BREAKPOINT() std::raise(SIGTRAP)
-#else // Non-supported
-#define BS_BREAKPOINT() throw
-#endif
+#include <iostream>
 
 namespace bitstream::test
 {

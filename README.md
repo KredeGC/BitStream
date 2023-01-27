@@ -27,14 +27,19 @@ As this is a header-only library, you can simply copy the header files directly 
 The header files can either be downloaded from the [releases page](https://github.com/KredeGC/BitStream/releases) or from the [`include/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream) directory on the master branch.
 The source and header files inside the `test/` directory are only tests and should not be included into your project, unless you want to test them internally.
 
+TODO: Talk about #define BS_DEBUG_BREAK
+
 # Usage
 The library has a global header file ([`bitstream/bitstream.h`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h)) which includes every other header file in the library.
 
 If you only need certain features, you can simply include the ones you need.
 The files are stored in the categories:
 * `quantization/` - Files relating to quantizing types into fewer bits
-* `stream/` - Files relating to reading and writing bits into a stream
+* `stream/` - Files relating to streams that read and write bits
 * `traits/` - Files relating to various serialization traits, like serializble strings, integrals etc.
+
+For more examples of usage, see the [Serialization Examples](#serialization-examples) below.
+You can also look at the unit tests to get a better idea about what you can expect from the library.
 
 # Interface
 
@@ -67,6 +72,9 @@ There are some methods that only the `bit_writer` has, since the `bit_reader` wo
 | `uint32_t flush()` | Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer. |
 | `bool prepend_checksum()` | Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits. |
 | `bool serialize_int(bit_writer& writer)` | Writes the contents of the buffer into the given `writer`. Essentially copies the entire buffer without modifying it. |
+
+## Traits
+TODO
 
 # Serialization Examples
 The examples below follow the same structure: First writing to a buffer and then reading from it.

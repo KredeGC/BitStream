@@ -39,7 +39,10 @@ namespace bitstream
 			m_ScratchBits(0),
 			m_WordIndex(0)
 		{
-			BS_ASSERT(num_bytes % 4 == 0);
+#ifdef BS_DEBUG_BREAK
+			if (num_bytes % 4 != 0)
+                BS_BREAKPOINT();
+#endif
 		}
 
 		bit_writer(const bit_writer&) = delete;
