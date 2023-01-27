@@ -57,35 +57,17 @@ namespace bitstream
 	template<>
 	struct serialize_traits<half_precision>
 	{
-		// static bool serialize(bit_writer& writer, const float& value)
-		// {
-		// 	uint32_t int_value = half_precision::quantize(value);
-
-		// 	return writer.serialize_bits(int_value, 16);
-		// }
-
-		// static bool serialize(bit_reader& reader, float& value)
-		// {
-		// 	uint32_t int_value;
-		// 	if (!reader.serialize_bits(int_value, 16))
-		// 		return false;
-
-		// 	value = half_precision::dequantize(int_value);
-
-		// 	return true;
-		// }
-        
         template<typename Stream>
         static bool serialize(Stream& stream, float& value)
 		{
 			uint32_t int_value;
-            if constexpr (stream.writing)
+            if constexpr (Stream::writing)
                 int_value = half_precision::quantize(value);
             
 			if (!stream.serialize_bits(int_value, 16))
 				return false;
             
-            if constexpr (stream.reading)
+            if constexpr (Stream::reading)
 			    value = half_precision::dequantize(int_value);
 
 			return true;
