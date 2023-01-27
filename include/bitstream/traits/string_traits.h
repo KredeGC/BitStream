@@ -94,18 +94,10 @@ namespace bitstream
 				return true;
 			}
 
-			auto allocator = value.get_allocator();
-			T* chars = allocator.allocate(length);
+            value.resize(length);
 
-			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(chars), length * sizeof(T) * 8))
-			{
-				allocator.deallocate(chars, length);
+			if (!reader.serialize_bytes(reinterpret_cast<uint8_t*>(value.data()), length * sizeof(T) * 8))
 				return false;
-			}
-
-			value.assign(chars, length);
-
-			allocator.deallocate(chars, length);
 
 			return true;
 		}

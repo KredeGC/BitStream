@@ -1,11 +1,12 @@
 <div align="center">
 <h1>BitStream</h1>
 
-![Windows supported](https://img.shields.io/badge/Windows-win--10-green?style=flat-square)
+![Windows supported](https://img.shields.io/badge/Windows-Win--10-green?style=flat-square)
 ![Linux supported](https://img.shields.io/badge/Linux-Ubuntu-green?style=flat-square)
 ![MacOS untested](https://img.shields.io/badge/MacOS-Untested-red?style=flat-square)
 
-An extensible C++ library for serializing and quantizing types into tightly packed bitstreams.
+An extensible C++ library for serializing and quantizing types into tightly packed bitstreams.<br/>
+Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_writing_packets/) about packet serialization.
 
 [![Release](https://img.shields.io/github/v/release/KredeGC/BitStream?display_name=tag&style=flat-square)](https://github.com/KredeGC/BitStream/releases/latest)
 [![Size](https://img.shields.io/github/languages/code-size/KredeGC/BitStream?style=flat-square)](https://github.com/KredeGC/BitStream/releases/latest)
@@ -105,7 +106,7 @@ writer.serialize<int32_t>(value, -90, 40);
 uint32_t num_bytes = writer.flush();
 
 // Create a reader, referencing the buffer and bytes written
-bit_reader reader(buffer, num_bytes);
+bit_reader reader(std::move(writer));
 
 // Read the value back
 int32_t out_value; // We don't have to initialize it yet
@@ -116,21 +117,43 @@ Writing a c-style string into the buffer:
 ```cpp
 // Create a writer, referencing the buffer and its size
 uint8_t buffer[32];
-bit_writer writer(buffer, 4);
+bit_writer writer(buffer, 32);
 
 // Write the value
 const char* value = "Hello world!";
-writer.serialize<int32_t>(value, 32U); // The second argument is the maximum size we expect the string to be
+writer.serialize<const char*>(value, 32U); // The second argument is the maximum size we expect the string to be
 
 // Flush the writer's remaining state into the buffer
 uint32_t num_bytes = writer.flush();
 
 // Create a reader, referencing the buffer and bytes written
-bit_reader reader(buffer, num_bytes);
+bit_reader reader(std::move(writer));
 
 // Read the value back
-char out_value[32U]; // Set the size to the max size
-reader.serialize<int32_t>(out_value, 32U); // out_value should now contain "Hello world!\0"
+char out_value[32]; // Set the size to the max size
+reader.serialize<const char*>(out_value, 32U); // out_value should now contain "Hello world!\0"
+```
+
+Writing a float into the buffer with a bounded range and precision:
+```cpp
+// Create a writer, referencing the buffer and its size
+uint8_t buffer[4];
+bit_writer writer(buffer, 4);
+
+// Write the value
+bounded_range range(1.0f, 4.0f, 1.0f / 128.0f);
+float value = 1.2345678f;
+writer.serialize<bounded_range>(range, value); // The second argument is the maximum size we expect the string to be
+
+// Flush the writer's remaining state into the buffer
+uint32_t num_bytes = writer.flush();
+
+// Create a reader, referencing the buffer and bytes written
+bit_reader reader(std::move(writer));
+
+// Read the value back
+float out_value;
+reader.serialize<bounded_range>(range, out_value); // out_value should now be a value close to 1.2345678f
 ```
 
 # Extensibility
@@ -181,4 +204,4 @@ struct serialize_traits<T, typename std::enable_if_t<std::is_integral<T>::value>
 More concrete examples of traits can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.
 
 # Credits
-* The quantization classes are from [INSERT]
+* Quantization of floats and quaternions from [NetStack](https://github.com/nxrighthere/NetStack), originally in C#, remade in C++.
