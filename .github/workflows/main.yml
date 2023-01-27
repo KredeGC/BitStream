@@ -13,8 +13,8 @@ jobs:
   Build:
     strategy:
       matrix:
-        config: [debug, release]
         dialect: [C++17, C++20]
+        config: [debug, release]
         machine:
         - host: linux
           os: ubuntu-latest

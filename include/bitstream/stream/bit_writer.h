@@ -147,57 +147,44 @@ namespace bitstream
 
 		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits)
 		{
-			uint32_t num_bytes = (num_bits - 1) / 8 + 1;
+            // Write the byte array as words
+            const uint32_t* word_buffer = reinterpret_cast<const uint32_t*>(bytes);
+			uint32_t num_words = num_bits / 32U;
+            
+            if (m_ScratchBits % 32 == 0 && num_words > 0)
+            {
+                // If the written buffer is word-aligned, just memcpy it
+                std::memcpy(m_Buffer + m_WordIndex, word_buffer, num_words * 4U);
+                
+                m_NumBitsWritten += num_words * 32U;
+                m_WordIndex += num_words;
+            }
+            else
+            {
+                // If the buffer is not word-aligned, serialize a word at a time
+                for (uint32_t i = 0U; i < num_words; i++)
+                {
+                    // Casting a byte-array to an int is wrong on little-endian systems
+                    // We have to swap the bytes around
+                    uint32_t value = utility::endian_swap_32(word_buffer[i]);
+                    if (!serialize_bits(value, 32U))
+                        return false;
+                }
+            }
+            
+            // Early exit if the word-count matches
+            if (num_bits % 32 == 0)
+                return true;
+            
+            uint32_t remaining_bits = num_bits - num_words * 32U;
+            
+            uint32_t num_bytes = (remaining_bits - 1U) / 8U + 1U;
 			for (uint32_t i = 0; i < num_bytes; i++)
 			{
-				uint32_t value = (uint32_t) * (bytes + i);
-				if (!serialize_bits(value, (std::min)(num_bits - i * 8, (uint32_t)8)))
+				uint32_t value = static_cast<uint32_t>(bytes[num_words * 4 + i]);
+				if (!serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)))
 					return false;
 			}
-
-			return true;
-		}
-
-		bool serialize_bytes_aligned(const uint8_t* bytes, uint32_t num_bits)
-		{
-			// TODO: Use num_bytes instead of num_bits
-
-			if (!align())
-				return false;
-
-			// Serialize the first bits normally
-			uint32_t num_bytes = (num_bits - 1U) / 8U + 1U;
-
-			uint32_t remaining_bits = num_bits;
-			uint32_t first_size = (32U - m_ScratchBits) / 8U;
-			uint32_t last_size = (num_bytes - first_size - 1U) % 4U + 1U;
-
-			if (!serialize_sequence(bytes, (std::min)(num_bytes, first_size), (std::min)(remaining_bits, 32U - m_ScratchBits))) // TODO: Is the 32 - scratchbits necessary?
-				return false;
-
-			// Early exit if we ran out of bits
-			if (m_ScratchBits > 0)
-				return true;
-
-			remaining_bits -= first_size * 8U;
-
-			// If we have a lot of bits in the middle, just memcpy
-			if (remaining_bits >= 32U)
-			{
-				// Must be a multiple of 4
-				uint32_t middle_size = (remaining_bits - 1) / 8U + 1 - last_size;
-
-				std::memcpy(m_Buffer + m_WordIndex, bytes + first_size, middle_size); // TODO: Shouldn't use size, but something smaller
-
-				remaining_bits -= middle_size * 8U;
-
-				m_NumBitsWritten += middle_size * 8U;
-				m_WordIndex += middle_size / 4;
-			}
-
-			// Serialize the last bits
-			if (!serialize_sequence(bytes + num_bytes - last_size, last_size, remaining_bits))
-				return false;
 
 			return true;
 		}

@@ -150,13 +150,47 @@ namespace bitstream
 
 		bool serialize_bytes(uint8_t* bytes, uint32_t num_bits)
 		{
-			uint32_t num_bytes = (num_bits - 1) / 8 + 1;
+            // Read the byte array as words
+            uint32_t* word_buffer = reinterpret_cast<uint32_t*>(bytes);
+			uint32_t num_words = num_bits / 32U;
+            
+            if (m_ScratchBits % 32 == 0 && num_words > 0)
+            {
+                // If the read buffer is word-aligned, just memcpy it
+                std::memcpy(word_buffer, m_Buffer + m_WordIndex, num_words * 4U);
+                
+                m_NumBitsRead += num_words * 32U;
+                m_WordIndex += num_words;
+            }
+            else
+            {
+                // If the buffer is not word-aligned, serialize a word at a time
+                for (uint32_t i = 0U; i < num_words; i++)
+                {
+                    uint32_t value;
+                    if (!serialize_bits(value, 32U))
+                        return false;
+                    
+                    // Casting a byte-array to an int is wrong on little-endian systems
+                    // We have to swap the bytes around
+                    word_buffer[i] = utility::endian_swap_32(value);
+                }
+            }
+            
+            // Early exit if the word-count matches
+            if (num_bits % 32 == 0)
+                return true;
+            
+            uint32_t remaining_bits = num_bits - num_words * 32U;
+            
+            uint32_t num_bytes = (remaining_bits - 1U) / 8U + 1U;
 			for (uint32_t i = 0; i < num_bytes; i++)
 			{
-				uint32_t value;
-				if (!serialize_bits(value, (std::min)(num_bits - i * 8U, 8U)))
+                uint32_t value;
+				if (!serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)))
 					return false;
-				bytes[i] = static_cast<uint8_t>(value);
+                
+				bytes[num_words * 4 + i] = static_cast<uint8_t>(value);
 			}
 
 			return true;

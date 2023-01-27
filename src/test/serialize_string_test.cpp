@@ -19,18 +19,18 @@ namespace bitstream::test::traits
 		uint8_t buffer[32];
 		bit_writer writer(buffer, 32);
 
-		BS_TEST_ASSERT(writer.serialize_bits(padding, 8));
+		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes == 15);
+		BS_TEST_ASSERT(num_bytes == 17);
 
 		// Read the array back and validate
-		uint32_t out_padding = 0;
+		uint32_t out_padding;
 		char out_value[32];
 		bit_reader reader(buffer, num_bytes);
 
-		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 8));
+		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
 
 		BS_TEST_ASSERT(out_padding == padding);
@@ -54,7 +54,7 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT(num_bytes == 15);
 
 		// Read the array back and validate
-		uint32_t out_padding = 0;
+		uint32_t out_padding;
 		char out_value[32];
 		bit_reader reader(buffer, num_bytes);
 
@@ -70,23 +70,28 @@ namespace bitstream::test::traits
 	BS_ADD_TEST(test_serialize_string_aligned)
 	{
 		// Test std strings
+		uint32_t padding = 233;
 		std::string value = "Hello, world!";
 
 		// Write a string, but make sure the word count isn't whole
 		uint8_t buffer[32];
 		bit_writer writer(buffer, 32);
 
+		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<std::string>(value, 32U));
 		uint32_t num_bytes = writer.flush();
 
-		BS_TEST_ASSERT(num_bytes == 14);
+		BS_TEST_ASSERT(num_bytes == 17);
 
 		// Read the array back and validate
+		uint32_t out_padding;
 		std::string out_value;
 		bit_reader reader(buffer, num_bytes);
 
+		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<std::string>(out_value, 32U));
 
+		BS_TEST_ASSERT(out_padding == padding);
 		BS_TEST_ASSERT(out_value == value);
 	}
 
