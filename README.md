@@ -18,72 +18,104 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
 </div>
 
 # Compatibility
-This library was made with C++17 in mind and is not be compatible with earlier versions.
+This library was made with C++17 in mind and is not compatible with earlier versions.
 Many of the features use `if constexpr`, which is only available from 17 and up.
 If you really want it to work with earlier versions, you should just be able to replace the newer features with C++1x counterparts.
 
 # Installation
 As this is a header-only library, you can simply copy the header files directly into your project.
 The header files can either be downloaded from the [releases page](https://github.com/KredeGC/BitStream/releases) or from the [`include/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream) directory on the master branch.
-The source and header files inside the `test/` directory are only tests and should not be included into your project, unless you want to test them internally.
-
-TODO: Talk about #define BS_DEBUG_BREAK
+The source and header files inside the `test/` directory are only tests and should not be included into your project, unless you also wish to test them yourself.
 
 # Usage
 The library has a global header file ([`bitstream/bitstream.h`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h)) which includes every other header file in the library.
 
 If you only need certain features, you can simply include the ones you need.
-The files are stored in the categories:
+The files are stored in categories:
 * `quantization/` - Files relating to quantizing types into fewer bits
 * `stream/` - Files relating to streams that read and write bits
 * `traits/` - Files relating to various serialization traits, like serializble strings, integrals etc.
+
+It is also possible to dynamically put a break point or trap when a bitstream would have otherwise returned false. This can be great for debugging custom serialization code, but should generally be left our of production code. Simply `#define BS_DEBUG_BREAK` before including any of the library header files if you want to break when an operation fails.
 
 For more examples of usage, see the [Serialization Examples](#serialization-examples) below.
 You can also look at the unit tests to get a better idea about what you can expect from the library.
 
 # Interface
+Refer to [INTERFACE.md](INTERFACE.md) for more detailed information about what can be accessed in the library.
 
+# Serializables - serialize_traits
+Below is a noncomprehensive list of serializable traits.
+A big feature of the library is extensibility, which is why you can add your own types as you please, or choose not to include specific types if you don't need them.
 
-## bit_writer and bit_reader interface
-The `bit_writer` and `bit_reader` hold very little state themselves and rely on an external buffer instead. This means that nothing is allocated, and therefore no cleanup code is required. It also means that copying is not possible, since the streams don't have shared state. Move is still possible, and invalidates the object that was moved from. You can even move a bit_writer to a bit_reader.
+## Integers - T
+A trait that covers all signed and unsigned integers.<br/>
+Takes the integer by reference and a lower and upper bound.<br/>
+The upper and lower bounds will default to T's upper and lower bound, if left unspecified.
 
-As a general rule, most operations will return a boolean, indicating whether the operation was a success or not. To keep the library fast, operations never throw, unless debug-mode is enabled. An operation will usually only be unsuccessful if there's not enough space left in the buffer or if the parameters are out of range.
+The call signature can be seen below:
+```cpp
+bool serialize<T>(T& value, T min = numeric_limits<T>::min(), T max = numeric_limits<T>::max());
+```
+As well as a short example of its usage:
+```cpp
+int16_t value = 1027;
+bool status = stream.serialize<int16_t>(value, -512, 2098);
+```
 
-When calling any operation it is important to check the return value, as it's not wise to continue writing or reading after a failure.
+## Integers with known bounds - const_int\<T, T Min, T Max\>
+A trait that covers all signed and unsigned integers within a `const_int` wrapper.<br/>
+Takes the integer by reference and a lower and upper bound as template parameters.<br/>
+This is preferable if you know the bounds at compile time.
 
-| Method | Description |
-| --- | --- |
-| `bool align()` | Pads the buffer with up to 8 zeros, so that the next read/write is byte-aligned.<br/>The `bit_reader` will return false if the padded bits are not zeros. |
-| `bool can_serialize_bits(uint32_t num_bits) const` | Returns true if the number of bits can fit in the buffer. |
-| `uint32_t get_num_bits_serialized() const` | Returns the number of bits which have been read/written. |
-| `uint32_t get_remaining_bits() const` | Returns the number of bits which have not been serialized.<br/>The same as `get_total_bits() - get_num_bits_serialized()`. |
-| `uint32_t get_total_bits() const` | Returns the size of the buffer, in bits. |
-| `bool pad_to_size(uint32_t num_bytes)` | Pads the buffer up to the given number of bytes.<br/>Returns false if the current size of the buffer is bigger than `num_bytes`<br/>The `bit_reader` will return false if the padded bits are not zeros. |
-| `bool serialize<Trait>(Args&&...)` | Writes/reads into the buffer, using the given `Trait`. The various traits to use can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.<br/>It is also possible to use your own custom traits. |
-| `bool serialize_bits(uint32_t& value, uint32_t num_bits)` | Writes/reads the first `num_bits` bits of `value` into the buffer.<br/>Returns false if `num_bits` is less than 1 or greater than 32.<br/>Returns false if reading/writing the given number of bits would overflow the buffer. |
-| `bool serialize_bytes(uint8_t* bytes, uint32_t num_bits)` | Writes/reads the first `num_bits` bits of the given byte array, 32 bits at a time.<br/>Returns false if `num_bits` is less than 1.<br/>Returns false if reading/writing the given number of bits would overflow the buffer. |
-| `bool serialize_checksum(uint32_t protocol)` | When reading, this method compares the first 32 bits of the buffer with a checksum of the buffer + `protocol`.<br/>When writing, this method writes the first 32 bits as a checksum of the buffer + `protocol`.<br/>Returns false if there's no space for the 32 bits, or if the protocol doesn't match the checksum. |
+The call signature can be seen below:
+```cpp
+bool serialize<const_int<T, Min, Max>>(T& value);
+```
+As well as a short example of its usage:
+```cpp
+int16_t value = 1027;
+bool status = stream.serialize<const_int<int16_t, -512, 2098>>(value);
+```
 
-## bit_writer specific interface
-There are some methods that only the `bit_writer` has, since the `bit_reader` would have no use for them.
+## C-style strings - const char*
+A trait that only covers c-style strings.<br/>
+Takes the pointer and a maximum expected string length.
 
-| Method | Description |
-| --- | --- |
-| `uint32_t flush()` | Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer. |
-| `bool prepend_checksum()` | Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits. |
-| `bool serialize_into(bit_writer& writer)` | Writes the contents of the buffer into the given `writer`. Essentially copies the entire buffer without modifying it. |
+The call signature can be seen below:
+```cpp
+bool serialize<const char*>(const char* value, uint32_t max_size);
+```
+As well as a short example of its usage:
+```cpp
+const char* value = "Hello world!";
+bool status = stream.serialize<const char*>(value, 32);
+```
 
-## Traits
-TODO
+## Modern strings - std::basic_string\<T\>
+A trait that covers any combination of basic_string, including strings with different allocators.<br/>
+Takes a reference to the string and a maximum expected string length.
+
+The, somewhat bloated, call signature can be seen below:
+```cpp
+bool serialize<std::basic_string<T, Traits, Alloc>>(std::basic_string<T, Traits, Alloc>& value, uint32_t max_size);
+// For std::string this would look like:
+bool serialize<std::string>(std::string& value, uint32_t max_size);
+```
+As well as a short example of its usage:
+```cpp
+std::string value = "Hello world!";
+bool status = stream.serialize<std::string>(value, 32);
+```
 
 # Serialization Examples
-The examples below follow the same structure: First writing to a buffer and then reading from it.
+The examples below follow the same structure: First writing to a buffer and then reading from it. Each example is littered with comments about the procedure, as well as what outcome is expected.
 
 Writing the first 5 bits of an int to the buffer, then reading it back:
 ```cpp
 // Create a writer, referencing the buffer and its size
-uint8_t buffer[1];
-bit_writer writer(buffer, 1);
+uint8_t buffer[4]; // Buffer must be a multiple of 4 bytes / 32 bits
+bit_writer writer(buffer, 4);
 
 // Write the value
 uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more bits
@@ -113,7 +145,7 @@ writer.serialize<int32_t>(value, -90, 40);
 // Flush the writer's remaining state into the buffer
 uint32_t num_bytes = writer.flush();
 
-// Create a reader, referencing the buffer and bytes written
+// Create a reader by moving and invalidating the writer
 bit_reader reader(std::move(writer));
 
 // Read the value back
@@ -134,7 +166,7 @@ writer.serialize<const char*>(value, 32U); // The second argument is the maximum
 // Flush the writer's remaining state into the buffer
 uint32_t num_bytes = writer.flush();
 
-// Create a reader, referencing the buffer and bytes written
+// Create a reader by moving and invalidating the writer
 bit_reader reader(std::move(writer));
 
 // Read the value back
@@ -149,14 +181,14 @@ uint8_t buffer[4];
 bit_writer writer(buffer, 4);
 
 // Write the value
-bounded_range range(1.0f, 4.0f, 1.0f / 128.0f);
+bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); // Min, Max, Precision
 float value = 1.2345678f;
-writer.serialize<bounded_range>(range, value); // The second argument is the maximum size we expect the string to be
+writer.serialize<bounded_range>(range, value);
 
 // Flush the writer's remaining state into the buffer
 uint32_t num_bytes = writer.flush();
 
-// Create a reader, referencing the buffer and bytes written
+// Create a reader by moving and invalidating the writer
 bit_reader reader(std::move(writer));
 
 // Read the value back
@@ -183,7 +215,8 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
 };
 ```
 
-To use this trait to serialize an object you need to explicitly specify it:
+Note that `TRAIT_TYPE` does not necessarily have to be part of the function definitions. It is purely used to specify which trait to use when serializing, since it cannot be deduced from the arguments.<br/>
+To use the trait above to serialize an object you need to explicitly specify it:
 ```cpp
 bool status = writer.serialize<TRAIT_TYPE>(...);
 ```
@@ -203,13 +236,16 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
 The specialization can also be templated to work with a number of types.
 It also works with `enable_if`:
 ```cpp
-// This trait will be used by any integral type (signed and unsigned ints)
+// This trait will be used by any integral pointer type (char*, uint16_t* etc.)
 template<typename T>
-struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T>>>
+struct serialize_traits<T*, typename std::enable_if_t<std::is_integral_v<T>>>
 { ... };
 ```
 
 More concrete examples of traits can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.
 
-# Credits
-* Quantization of floats and quaternions from [NetStack](https://github.com/nxrighthere/NetStack), originally in C#, remade in C++.
+# 3rd party
+The library has no dependencies, but does build upon some code from the [NetStack](https://github.com/nxrighthere/NetStack) library by Stanislav Denisov, which is free to use, as per their [license](https://github.com/nxrighthere/NetStack/blob/master/LICENSE). The code in question is about quantizing floats and quaternions, which has simply been translated from C# into C++ for the purposes of this library.
+
+# License
+The library is licensed under the [BSD-3-Clause license](https://github.com/KredeGC/BitStream/blob/master/LICENSE) and is subject to the terms and conditions in that license as well as the [NetStack license](https://github.com/nxrighthere/NetStack/blob/master/LICENSE).

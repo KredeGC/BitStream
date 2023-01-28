@@ -12,7 +12,7 @@
 namespace bitstream
 {
 	template<typename T, T, T>
-	struct const_int;
+	struct const_int; // TODO: Rename to bound_int
 
 #pragma region integral types
 	template<typename T>

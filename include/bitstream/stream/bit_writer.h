@@ -219,7 +219,7 @@ namespace bitstream
 			return true;
 		}
 
-		bool serialize_into(bit_writer& writer) noexcept
+		bool serialize_into(bit_writer& writer) const noexcept
 		{
 			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Buffer);
 			uint32_t num_bits = get_num_bits_serialized();
