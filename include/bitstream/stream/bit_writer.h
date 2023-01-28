@@ -147,7 +147,7 @@ namespace bitstream
 			return true;
 		}
 
-		bool serialize_bits(const uint32_t& value, uint32_t num_bits) noexcept
+		bool serialize_bits(uint32_t value, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 

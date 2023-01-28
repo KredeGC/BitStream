@@ -22,7 +22,7 @@ namespace bitstream::utility
 		return table;
 	}();
 
-	inline uint32_t crc_uint32(const uint8_t* bytes, uint32_t size)
+	inline constexpr uint32_t crc_uint32(const uint8_t* bytes, uint32_t size)
 	{
 		uint32_t result = 0xFFFFFFFF;
 

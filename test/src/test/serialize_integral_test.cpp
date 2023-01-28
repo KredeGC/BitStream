@@ -33,15 +33,13 @@ namespace bitstream::test::traits
 
 	BS_ADD_TEST(test_serialize_uint16)
 	{
-		using trait_type = const_int<uint16_t, 20U, 400U>;
-
 		// Test unsigned int16
 		uint16_t value = 131;
 
 		uint8_t buffer[16];
 		bit_writer writer(buffer, 16);
 
-		BS_TEST_ASSERT(writer.serialize<trait_type>(value));
+		BS_TEST_ASSERT(writer.serialize<uint16_t>(value, 20U, 400U));
 		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT_OPERATION(num_bytes, <=, sizeof(uint16_t));
@@ -50,7 +48,7 @@ namespace bitstream::test::traits
 		uint16_t out_value = 0;
 		bit_reader reader(buffer, num_bytes);
 
-		BS_TEST_ASSERT(reader.serialize<trait_type>(out_value));
+		BS_TEST_ASSERT(reader.serialize<uint16_t>(out_value, 20U, 400U));
 
 		BS_TEST_ASSERT_OPERATION(out_value, ==, value);
 	}
@@ -103,7 +101,7 @@ namespace bitstream::test::traits
 #pragma region const integral types
 	BS_ADD_TEST(test_serialize_uint64_const_large)
 	{
-		using trait_type = const_int<uint64_t, 80ULL, 4398046511104ULL>;
+		using trait_type = bounded_int<uint64_t, 80ULL, 4398046511104ULL>;
 
 		// Test unsigned int64
 		uint64_t value = 1099511627776ULL;
@@ -127,7 +125,7 @@ namespace bitstream::test::traits
 
 	BS_ADD_TEST(test_serialize_uint64_const_small)
 	{
-		using trait_type = const_int<uint64_t, 80ULL, 2147483648ULL>;
+		using trait_type = bounded_int<uint64_t, 80ULL, 2147483648ULL>;
 
 		// Test unsigned int64
 		uint64_t value = 1073741824ULL;

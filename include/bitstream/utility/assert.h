@@ -11,8 +11,8 @@
 #endif
 
 #define BS_ASSERT(x) if (!(x)) { BS_BREAKPOINT(); return false; }
-#else
+#else // BS_DEBUG_BREAK
 #define BS_ASSERT(x) if (!(x)) { return false; }
 
 #define BS_BREAKPOINT() throw
-#endif
+#endif // BS_DEBUG_BREAK

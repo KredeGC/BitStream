@@ -12,7 +12,7 @@
 namespace bitstream
 {
 	template<typename T, T, T>
-	struct const_int; // TODO: Rename to bound_int
+	struct bounded_int;
 
 #pragma region integral types
 	template<typename T>
@@ -94,7 +94,7 @@ namespace bitstream
 
 #pragma region const integral types
 	template<typename T, T Min, T Max>
-	struct serialize_traits<const_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T>>>
+	struct serialize_traits<bounded_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T>>>
 	{
 		static bool serialize(bit_writer& writer, const T& value) noexcept
 		{

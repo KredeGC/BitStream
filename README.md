@@ -63,19 +63,19 @@ int16_t value = 1027;
 bool status = stream.serialize<int16_t>(value, -512, 2098);
 ```
 
-## Integers with known bounds - const_int\<T, T Min, T Max\>
-A trait that covers all signed and unsigned integers within a `const_int` wrapper.<br/>
+## Integers with known bounds - bounded_int\<T, T Min, T Max\>
+A trait that covers all signed and unsigned integers within a `bounded_int` wrapper.<br/>
 Takes the integer by reference and a lower and upper bound as template parameters.<br/>
 This is preferable if you know the bounds at compile time.
 
 The call signature can be seen below:
 ```cpp
-bool serialize<const_int<T, Min, Max>>(T& value);
+bool serialize<bounded_int<T, Min, Max>>(T& value);
 ```
 As well as a short example of its usage:
 ```cpp
 int16_t value = 1027;
-bool status = stream.serialize<const_int<int16_t, -512, 2098>>(value);
+bool status = stream.serialize<bounded_int<int16_t, -512, 2098>>(value);
 ```
 
 ## C-style strings - const char*
@@ -106,6 +106,20 @@ As well as a short example of its usage:
 ```cpp
 std::string value = "Hello world!";
 bool status = stream.serialize<std::string>(value, 32);
+```
+
+## Single-precision float - float
+A trait that covers an entire float, with no quantization.<br/>
+Takes a reference to the float.
+
+The call signature can be seen below:
+```cpp
+bool serialize<float>(float& value);
+```
+As well as a short example of its usage:
+```cpp
+float value = "Hello world!";
+bool status = stream.serialize<float>(value);
 ```
 
 # Serialization Examples
