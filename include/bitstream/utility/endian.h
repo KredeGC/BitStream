@@ -20,7 +20,7 @@ namespace bitstream::utility
 		return bint.c[0] != 0x01;
 	}();
 
-	inline constexpr uint32_t endian_swap_32(uint32_t value)
+	inline uint32_t endian_swap_32(uint32_t value)
 	{
 		if (LITTLE_ENDIANNESS)
 		{
@@ -41,7 +41,7 @@ namespace bitstream::utility
 		return value;
 	}
 
-	inline constexpr uint32_t endian_swap_16(uint32_t value)
+	inline uint32_t endian_swap_16(uint32_t value)
 	{
 		if (LITTLE_ENDIANNESS)
 		{
