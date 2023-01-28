@@ -63,7 +63,7 @@ namespace bitstream::utility
 #endif // defined(BS_LITTLE_ENDIAN)
     }
 
-	inline constexpr uint32_t endian_swap_32(uint32_t value)
+	inline uint32_t endian_swap_32(uint32_t value)
 	{
         if constexpr (little_endian())
         {
@@ -84,7 +84,7 @@ namespace bitstream::utility
 		return value;
 	}
 
-	inline constexpr uint32_t endian_swap_16(uint32_t value)
+	inline uint32_t endian_swap_16(uint32_t value)
 	{
         if constexpr (little_endian())
         {
