@@ -136,13 +136,13 @@ namespace bitstream
 
 		bool align() noexcept
 		{
-			uint32_t remainder = m_ScratchBits % 8;
-			if (remainder != 0)
+			uint32_t remainder = m_ScratchBits % 8U;
+			if (remainder != 0U)
 			{
-				uint32_t zero = 0;
-				bool status = serialize_bits(zero, 8 - remainder);
+				uint32_t zero = 0U;
+				bool status = serialize_bits(zero, 8U - remainder);
 
-				BS_ASSERT(status && m_NumBitsWritten % 8 == 0);
+				BS_ASSERT(status && m_NumBitsWritten % 8U == 0U);
 			}
 			return true;
 		}
@@ -204,13 +204,13 @@ namespace bitstream
             }
             
             // Early exit if the word-count matches
-            if (num_bits % 32 == 0)
+            if (num_bits % 32U == 0U)
                 return true;
             
             uint32_t remaining_bits = num_bits - num_words * 32U;
             
             uint32_t num_bytes = (remaining_bits - 1U) / 8U + 1U;
-			for (uint32_t i = 0; i < num_bytes; i++)
+			for (uint32_t i = 0U; i < num_bytes; i++)
 			{
 				uint32_t value = static_cast<uint32_t>(bytes[num_words * 4U + i]);
 				BS_ASSERT(serialize_bits(value, (std::min)(remaining_bits - i * 8U, 8U)));
@@ -227,7 +227,7 @@ namespace bitstream
 
 			BS_ASSERT(writer.serialize_bytes(buffer, num_bits - remainder_bits));
 
-			if (remainder_bits > 0)
+			if (remainder_bits > 0U)
 			{
 				uint32_t byte_value = buffer[num_bits / 8U] >> (8U - remainder_bits);
 				BS_ASSERT(writer.serialize_bits(byte_value, remainder_bits));

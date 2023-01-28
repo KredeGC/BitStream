@@ -48,7 +48,7 @@ Refer to [INTERFACE.md](INTERFACE.md) for more detailed information about what c
 Below is a noncomprehensive list of serializable traits.
 A big feature of the library is extensibility, which is why you can add your own types as you please, or choose not to include specific types if you don't need them.
 
-## Integers - T
+## Bounded integers - T
 A trait that covers all signed and unsigned integers.<br/>
 Takes the integer by reference and a lower and upper bound.<br/>
 The upper and lower bounds will default to T's upper and lower bound, if left unspecified.
@@ -63,7 +63,7 @@ int16_t value = 1027;
 bool status = stream.serialize<int16_t>(value, -512, 2098);
 ```
 
-## Integers with known bounds - bounded_int\<T, T Min, T Max\>
+## Compile-time bounded integers - bounded_int\<T, T Min, T Max\>
 A trait that covers all signed and unsigned integers within a `bounded_int` wrapper.<br/>
 Takes the integer by reference and a lower and upper bound as template parameters.<br/>
 This is preferable if you know the bounds at compile time.
@@ -118,8 +118,58 @@ bool serialize<float>(float& value);
 ```
 As well as a short example of its usage:
 ```cpp
-float value = "Hello world!";
+float value = 0.12345678f;
 bool status = stream.serialize<float>(value);
+```
+
+## Half-precision float - half_precision
+A trait that covers a float which has been quantized to 16 bits.<br/>
+Takes a reference to the float.
+
+The call signature can be seen below:
+```cpp
+bool serialize<half_precision>(float& value);
+```
+As well as a short example of its usage:
+```cpp
+float value = 0.12345678f;
+bool status = stream.serialize<half_precision>(value);
+```
+
+## Bounded float - bounded_range
+A trait that covers a quantized float.<br/>
+Takes a reference to the bounded_range and a reference to the float.
+
+The call signature can be seen below:
+```cpp
+bool serialize<bounded_range>(bounded_range& range, float& value);
+```
+As well as a short example of its usage:
+```cpp
+bounded_range range(1.0f, 4.0f, 1.0f / 128.0f);
+float value = 0.1234f;
+bool status = stream.serialize<bounded_range>(range, value);
+```
+
+## Quaternion - smallest_three\<Q, BitsPerElement\>
+A trait that covers any quaternion type.<br/>
+Takes a reference to the quaternion.
+
+The call signature can be seen below:
+```cpp
+bool serialize<smallest_three<Q, BitsPerElement>>(Q& value);
+```
+As well as a short example of its usage:
+```cpp
+struct quaternion
+{
+    float w;
+    float x;
+    float y;
+    float z;
+};
+quaternion value = { 1.0f, 0.0f, 0.0f, 0.0f };
+bool status = stream.serialize<smallest_three<quaternion, 12>>(value);
 ```
 
 # Serialization Examples

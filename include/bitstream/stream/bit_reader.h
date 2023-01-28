@@ -79,7 +79,7 @@ namespace bitstream
 
 		bool serialize_checksum(uint32_t protocol_version) noexcept
 		{
-			uint32_t num_bytes = (m_TotalBits - 1) / 8 + 1;
+			uint32_t num_bytes = (m_TotalBits - 1U) / 8U + 1U;
 
 			// Read the checksum
 			uint32_t checksum;
@@ -97,7 +97,7 @@ namespace bitstream
 
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
-			m_NumBitsRead += 32;
+			m_NumBitsRead += 32U;
 
 			// Compare the checksum
 			return generated_checksum == checksum;
@@ -142,13 +142,13 @@ namespace bitstream
 
 		bool align() noexcept
 		{
-			uint32_t remainder = m_NumBitsRead % 8;
-			if (remainder != 0)
+			uint32_t remainder = m_NumBitsRead % 8U;
+			if (remainder != 0U)
 			{
 				uint32_t zero;
-				bool status = serialize_bits(zero, 8 - remainder);
+				bool status = serialize_bits(zero, 8U - remainder);
 
-                BS_ASSERT(status && zero == 0 && m_NumBitsRead % 8 == 0);
+                BS_ASSERT(status && zero == 0U && m_NumBitsRead % 8U == 0U);
 			}
 
 			return true;
