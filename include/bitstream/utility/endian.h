@@ -2,6 +2,30 @@
 
 #include <cstdint>
 
+#if __cplusplus < 202002L
+#ifndef BS_LITTLE_ENDIAN
+#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
+    defined(__BIG_ENDIAN__) || \
+    defined(__ARMEB__) || \
+    defined(__THUMBEB__) || \
+    defined(__AARCH64EB__) || \
+    defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
+#define BS_LITTLE_ENDIAN false
+#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
+    defined(__LITTLE_ENDIAN__) || \
+    defined(__ARMEL__) || \
+    defined(__THUMBEL__) || \
+    defined(__AARCH64EL__) || \
+    defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+#define BS_LITTLE_ENDIAN true
+#else
+#error "I don't know what architecture this is!"
+#endif
+#endif // BS_LITTLE_ENDIAN
+#else // __cplusplus < 202002L
+#include <bit>
+#endif // __cplusplus < 202002L
+
 
 #ifdef _WIN32
 #include <intrin.h>
@@ -9,21 +33,23 @@
 
 namespace bitstream::utility
 {
-	const inline bool LITTLE_ENDIANNESS = []()
-	{
-		union
-		{
-			uint16_t i;
-			char c[2];
-		} bint = { 0x0102 };
+    inline constexpr bool little_endian()
+    {
+#ifdef BS_LITTLE_ENDIAN
+#if BS_LITTLE_ENDIAN
+        return true;
+#else // BS_LITTLE_ENDIAN
+        return false;
+#endif // BS_LITTLE_ENDIAN
+#else // defined(BS_LITTLE_ENDIAN)
+        return std::endian::native == std::endian::little;
+#endif // defined(BS_LITTLE_ENDIAN)
+    }
 
-		return bint.c[0] != 0x01;
-	}();
-
-	inline uint32_t endian_swap_32(uint32_t value)
+	inline constexpr uint32_t endian_swap_32(uint32_t value)
 	{
-		if (LITTLE_ENDIANNESS)
-		{
+        if constexpr (little_endian())
+        {
 #if defined(_WIN32)
             return _byteswap_ulong(value);
 #elif defined(__linux__)
@@ -36,15 +62,15 @@ namespace bitstream::utility
 
 			return first | second | third | fourth;
 #endif // _WIN32 || __linux__
-		}
+        }
 
 		return value;
 	}
 
-	inline uint32_t endian_swap_16(uint32_t value)
+	inline constexpr uint32_t endian_swap_16(uint32_t value)
 	{
-		if (LITTLE_ENDIANNESS)
-		{
+        if constexpr (little_endian())
+        {
 #if defined(_WIN32)
             return _byteswap_ushort(value);
 #elif defined(__linux__)
@@ -55,7 +81,7 @@ namespace bitstream::utility
 
 			return first | second;
 #endif // _WIN32 || __linux__
-		}
+        }
 
 		return value;
 	}
