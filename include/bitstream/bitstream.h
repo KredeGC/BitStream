@@ -11,6 +11,7 @@
 #include "stream/serialize_traits.h"
 
 // Traits
+#include "traits/array_traits.h"
 #include "traits/integral_traits.h"
 #include "traits/quantization_traits.h"
 #include "traits/string_traits.h"

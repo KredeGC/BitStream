@@ -2,7 +2,6 @@
 #include "../quantization/bounded_range.h"
 #include "../quantization/half_precision.h"
 #include "../quantization/smallest_three.h"
-#include "../utility/bits.h"
 
 #include "../stream/serialize_traits.h"
 #include "../stream/bit_reader.h"
