@@ -6,7 +6,7 @@
 
 #include <bitstream/traits/quantization_traits.h>
 
-namespace bitstream::test::quantization
+namespace bitstream::test::traits
 {
     BS_ADD_TEST(test_serialize_half_precision)
 	{
