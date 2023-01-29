@@ -11,6 +11,8 @@ namespace bitstream::test::traits
 {
 	BS_ADD_TEST(test_serialize_array_subset)
 	{
+		using trait = array_subset<uint32_t, bounded_int<uint32_t, 0U, 2048U>>;
+
 		// Test half precision float
 		uint32_t values_in[5]
 		{
@@ -21,12 +23,12 @@ namespace bitstream::test::traits
 			1337
 		};
 
-		uint8_t buffer[32]{ 0 };
-		bit_writer writer(buffer, 32);
+		uint8_t buffer[16]{ 0 };
+		bit_writer writer(buffer, 16);
 
 		auto compare = [](uint32_t value) { return value != 21 && value != 99; };
 
-		writer.serialize<array_subset<uint32_t, bounded_int<uint32_t, 0U, 2048U>>>(values_in, 5U, compare);
+		BS_TEST_ASSERT(writer.serialize<trait>(values_in, 5U, compare)); // Use bounded_int for writing
 		uint32_t num_bytes = writer.flush();
 
 		BS_TEST_ASSERT_OPERATION(num_bytes, == , 6);
@@ -35,7 +37,7 @@ namespace bitstream::test::traits
 		uint32_t values_out[5];
 		bit_reader reader(std::move(writer));
 
-		BS_TEST_ASSERT(reader.serialize<array_subset<uint32_t>>(values_out, 5U, compare, 0U, 2048U));
+		BS_TEST_ASSERT(reader.serialize<array_subset<uint32_t>>(values_out, 5U, compare, 0U, 2048U)); // Use min, max arguments for reading
 
 		for (int i = 0; i < 5; i++)
 		{

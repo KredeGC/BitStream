@@ -26,9 +26,10 @@ namespace bitstream
 
 				uint32_t num_bits = utility::bits_in_range(prev_index, max_size);
 
-				BS_ASSERT(writer.serialize_bits(i - prev_index, num_bits));
+				uint32_t index = i - prev_index;
+				BS_ASSERT(writer.serialize_bits(index, num_bits));
 
-				BS_ASSERT(writer.serialize<Trait>(values[i], args...));
+				BS_ASSERT(writer.serialize<Trait>(values[i], std::forward<Args>(args)...));
 
 				prev_index = i;
 			}
@@ -54,7 +55,7 @@ namespace bitstream
 				if (index + prev_index == max_size)
 					break;
 
-				BS_ASSERT(reader.serialize<Trait>(values[index + prev_index], args...));
+				BS_ASSERT(reader.serialize<Trait>(values[index + prev_index], std::forward<Args>(args)...));
 
 				prev_index += index;
 			}
