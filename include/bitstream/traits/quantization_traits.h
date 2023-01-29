@@ -11,9 +11,19 @@
 
 namespace bitstream
 {
+	/**
+	 * @brief A trait used to serialize a float as-is, without any bound checking or quantization
+	*/
 	template<>
 	struct serialize_traits<float>
 	{
+        /**
+		 * @brief Serializes a whole float into or out of the @p stream
+         * @tparam Stream The type of stream to use. Usually bit_writer or bit_reader
+		 * @param stream The stream to serialize to
+		 * @param value The string to serialize
+		 * @return Success
+        */
         template<typename Stream>
 		static bool serialize(Stream& stream, float& value) noexcept
 		{
@@ -37,6 +47,9 @@ namespace bitstream
 		}
 	};
 
+	/**
+	 * @brief A trait used to serialize a single-precision float as half-precision
+	*/
 	template<>
 	struct serialize_traits<half_precision>
 	{
@@ -56,6 +69,9 @@ namespace bitstream
 		}
 	};
 
+	/**
+	 * @brief A trait used to quantize and serialize a float to be within a given range and precision
+	*/
 	template<>
 	struct serialize_traits<bounded_range>
 	{
@@ -75,25 +91,19 @@ namespace bitstream
 		}
 	};
 
+	/**
+	 * @brief A trait used to quantize and serialize quaternions using the smallest-three algorithm
+	*/
 	template<typename Q, size_t BitsPerElement>
 	struct serialize_traits<smallest_three<Q, BitsPerElement>>
 	{
-		static bool serialize(bit_writer& writer, const Q& value) noexcept
-		{
-			auto quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
-
-			BS_ASSERT(writer.serialize_bits(quantized_quat.m, 2));
-
-			BS_ASSERT(writer.serialize_bits(quantized_quat.a, BitsPerElement));
-
-			BS_ASSERT(writer.serialize_bits(quantized_quat.b, BitsPerElement));
-
-			return writer.serialize_bits(quantized_quat.c, BitsPerElement);
-		}
-
-		static bool serialize(bit_reader& reader, Q& value) noexcept
+		template<typename Stream>
+		static bool serialize(Stream& reader, Q& value) noexcept
 		{
 			quantized_quaternion quantized_quat;
+
+			if constexpr (Stream::writing)
+				quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
 
 			BS_ASSERT(reader.serialize_bits(quantized_quat.m, 2));
 
@@ -103,7 +113,8 @@ namespace bitstream
 
 			BS_ASSERT(reader.serialize_bits(quantized_quat.c, BitsPerElement));
 
-			value = smallest_three<Q, BitsPerElement>::dequantize(quantized_quat);
+			if constexpr (Stream::reading)
+				value = smallest_three<Q, BitsPerElement>::dequantize(quantized_quat);
 
 			return true;
 		}

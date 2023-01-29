@@ -62,15 +62,7 @@ namespace bitstream
 
 			for (uint32_t i = 0; i < 4; i++)
             {
-				float element = 0.0f;
-
-				switch (i)
-				{
-				case 0: element = quaternion.x; break;
-				case 1: element = quaternion.y; break;
-				case 2: element = quaternion.z; break;
-				case 3: element = quaternion.w; break;
-				}
+				float element = quaternion[i];
 
 				float abs = std::abs(element);
 
@@ -89,24 +81,24 @@ namespace bitstream
 			switch (m)
 			{
 			case 0:
-				af = quaternion.y;
-				bf = quaternion.z;
-				cf = quaternion.w;
+				af = quaternion[1];
+				bf = quaternion[2];
+				cf = quaternion[3];
 				break;
 			case 1:
-				af = quaternion.x;
-				bf = quaternion.z;
-				cf = quaternion.w;
+				af = quaternion[0];
+				bf = quaternion[2];
+				cf = quaternion[3];
 				break;
 			case 2:
-				af = quaternion.x;
-				bf = quaternion.y;
-				cf = quaternion.w;
+				af = quaternion[0];
+				bf = quaternion[1];
+				cf = quaternion[3];
 				break;
 			default: // case 3
-				af = quaternion.x;
-				bf = quaternion.y;
-				cf = quaternion.z;
+				af = quaternion[0];
+				bf = quaternion[1];
+				cf = quaternion[2];
 				break;
 			}
 
@@ -140,13 +132,13 @@ namespace bitstream
 			switch (data.m)
 			{
 			case 0:
-				return T(c, d, a, b);
+				return T{ d, a, b, c };
 			case 1:
-				return T(c, a, d, b);
+				return T{ a, d, b, c };
 			case 2:
-				return T(c, a, b, d);
+				return T{ a, b, d, c };
 			default: // case 3
-				return T(d, a, b, c);
+				return T{ a, b, c, d };
 			}
 		}
 	};

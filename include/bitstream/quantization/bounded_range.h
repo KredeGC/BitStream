@@ -37,7 +37,7 @@ namespace bitstream
             m_Precision(precision)
         {
             m_BitsRequired = log2(static_cast<uint32_t>((m_Max - m_Min) * (1.0f / precision) + 0.5f)) + 1;
-            m_Mask = static_cast<uint32_t>((1L << m_BitsRequired) - 1);
+            m_Mask = (1 << m_BitsRequired) - 1;
         }
         
         inline float get_min() const { return m_Min; }

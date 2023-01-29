@@ -167,6 +167,11 @@ struct quaternion
     float x;
     float y;
     float z;
+    
+    float operator[](size_t index) const
+    {
+        return reinterpret_cast<const float*>(this)[index];
+    }
 };
 quaternion value = { 1.0f, 0.0f, 0.0f, 0.0f };
 bool status = stream.serialize<smallest_three<quaternion, 12>>(value);
