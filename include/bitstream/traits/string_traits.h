@@ -26,8 +26,8 @@ namespace bitstream
 		static bool serialize(bit_writer& writer, const char* value, uint32_t max_size) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(strlen(value));
-			if (length >= max_size)
-				return false;
+
+			BS_ASSERT(length < max_size);
             
             if (length == 0)
                 return true;
@@ -53,8 +53,7 @@ namespace bitstream
 			uint32_t length;
 			BS_ASSERT(reader.serialize_bits(length, num_bits));
 
-			if (length >= max_size)
-				return false;
+			BS_ASSERT(length < max_size);
 
 			if (length == 0)
 			{
@@ -89,8 +88,8 @@ namespace bitstream
 		static bool serialize(bit_writer& writer, const std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(value.size());
-			if (length >= max_size)
-				return false;
+
+			BS_ASSERT(length < max_size);
 
 			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
 
@@ -116,8 +115,7 @@ namespace bitstream
 			uint32_t length;
 			BS_ASSERT(reader.serialize_bits(length, num_bits));
 
-			if (length >= max_size)
-				return false;
+			BS_ASSERT(length < max_size);
 
 			if (length == 0)
 			{

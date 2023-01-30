@@ -15,6 +15,10 @@ namespace bitstream
 	struct bounded_int;
 
 #pragma region integral types
+	/**
+	 * @brief A trait used to serialize integer values with runtime bounds
+	 * @tparam T A type matching an integer value
+	*/
 	template<typename T>
 	struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T>>>
 	{
@@ -93,6 +97,12 @@ namespace bitstream
 #pragma endregion
 
 #pragma region const integral types
+	/**
+	 * @brief A trait used to serialize integer values with compiletime bounds
+	 * @tparam T A type matching an integer value
+	 * @tparam Min The lower bound
+	 * @tparam Max The upper bound
+	*/
 	template<typename T, T Min, T Max>
 	struct serialize_traits<bounded_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T>>>
 	{

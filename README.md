@@ -14,7 +14,6 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
 
 [![Issues](https://img.shields.io/github/issues/KredeGC/BitStream?style=flat-square)](https://github.com/KredeGC/BitStream/issues)
 [![Tests](https://img.shields.io/github/actions/workflow/status/KredeGC/BitStream/main.yml?branch=master&style=flat-square)](https://github.com/KredeGC/BitStream/actions/workflows/main.yml)
-
 </div>
 
 # Compatibility
@@ -23,20 +22,20 @@ Many of the features use `if constexpr`, which is only available from 17 and up.
 If you really want it to work with earlier versions, you should just be able to replace the newer features with C++1x counterparts.
 
 # Installation
-As this is a header-only library, you can simply copy the header files directly into your project.
+As this is a header-only library, you can simply copy the header files directly into your project and include them where relevant.
 The header files can either be downloaded from the [releases page](https://github.com/KredeGC/BitStream/releases) or from the [`include/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream) directory on the master branch.
-The source and header files inside the `test/` directory are only tests and should not be included into your project, unless you also wish to test them yourself.
+The source and header files inside the `test/` directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.
 
 # Usage
 The library has a global header file ([`bitstream/bitstream.h`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h)) which includes every other header file in the library.
 
-If you only need certain features, you can simply include the ones you need.
+If you only need certain features, you can simply include the files you need.
 The files are stored in categories:
 * [`quantization/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/) - Files relating to quantizing floats and quaternions into fewer bits
 * [`stream/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/stream/) - Files relating to streams that read and write bits
 * [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) - Files relating to various serialization traits, like serializble strings, integrals etc.
 
-It is also possible to dynamically put a break point or trap when a bitstream would have otherwise returned false. This can be great for debugging custom serialization code, but should generally be left our of production code. Simply `#define BS_DEBUG_BREAK` before including any of the library header files if you want to break when an operation fails.
+It is also possible to dynamically put a break point or trap when a bitstream would have otherwise returned false. This can be great for debugging custom serialization code, but should generally be left out of production code. Simply `#define BS_DEBUG_BREAK` before including any of the library header files if you want to break when an operation fails.
 
 For more examples of usage, see the [Serialization Examples](#serialization-examples) below.
 You can also look at the unit tests to get a better idea about what you can expect from the library.
