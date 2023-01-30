@@ -32,9 +32,9 @@ The library has a global header file ([`bitstream/bitstream.h`](https://github.c
 
 If you only need certain features, you can simply include the ones you need.
 The files are stored in categories:
-* `quantization/` - Files relating to quantizing types into fewer bits
-* `stream/` - Files relating to streams that read and write bits
-* `traits/` - Files relating to various serialization traits, like serializble strings, integrals etc.
+* [`quantization/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/) - Files relating to quantizing floats and quaternions into fewer bits
+* [`stream/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/stream/) - Files relating to streams that read and write bits
+* [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) - Files relating to various serialization traits, like serializble strings, integrals etc.
 
 It is also possible to dynamically put a break point or trap when a bitstream would have otherwise returned false. This can be great for debugging custom serialization code, but should generally be left our of production code. Simply `#define BS_DEBUG_BREAK` before including any of the library header files if you want to break when an operation fails.
 
@@ -51,7 +51,7 @@ A big feature of the library is extensibility, which is why you can add your own
 ## Bounded integers - T
 A trait that covers all signed and unsigned integers.<br/>
 Takes the integer by reference and a lower and upper bound.<br/>
-The upper and lower bounds will default to T's upper and lower bound, if left unspecified.
+The upper and lower bounds will default to T's upper and lower bound if left unspecified, effectively making the object unbounded.
 
 The call signature can be seen below:
 ```cpp
@@ -152,7 +152,7 @@ bool status = stream.serialize<bounded_range>(range, value);
 ```
 
 ## Quaternion - smallest_three\<Q, BitsPerElement\>
-A trait that covers any quaternion type.<br/>
+A trait that covers any quaternion type in any order, as long as it's consistent.<br/>
 Takes a reference to the quaternion.
 
 The call signature can be seen below:
