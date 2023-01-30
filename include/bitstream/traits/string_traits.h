@@ -1,4 +1,5 @@
 #pragma once
+#include "../utility/assert.h"
 #include "../utility/bits.h"
 
 #include "../stream/serialize_traits.h"
@@ -32,7 +33,7 @@ namespace bitstream
             if (length == 0)
                 return true;
             
-			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+			uint32_t num_bits = utility::bits_to_represent(max_size);
             
 			BS_ASSERT(writer.serialize_bits(length, num_bits));
 
@@ -48,7 +49,7 @@ namespace bitstream
 		*/
 		static bool serialize(bit_reader& reader, char* value, uint32_t max_size) noexcept
 		{
-			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+			uint32_t num_bits = utility::bits_to_represent(max_size);
 
 			uint32_t length;
 			BS_ASSERT(reader.serialize_bits(length, num_bits));
@@ -91,7 +92,7 @@ namespace bitstream
 
 			BS_ASSERT(length < max_size);
 
-			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+			uint32_t num_bits = utility::bits_to_represent(max_size);
 
 			BS_ASSERT(writer.serialize_bits(length, num_bits));
 
@@ -110,7 +111,7 @@ namespace bitstream
 		*/
 		static bool serialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept
 		{
-			int num_bits = static_cast<int>(utility::bits_to_represent(max_size));
+			uint32_t num_bits = utility::bits_to_represent(max_size);
 
 			uint32_t length;
 			BS_ASSERT(reader.serialize_bits(length, num_bits));

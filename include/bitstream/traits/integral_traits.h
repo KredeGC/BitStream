@@ -1,4 +1,5 @@
 #pragma once
+#include "../utility/assert.h"
 #include "../utility/bits.h"
 
 #include "../stream/serialize_traits.h"
