@@ -40,8 +40,8 @@ It is also possible to dynamically put a break point or trap when a bitstream wo
 For more examples of usage, see the [Serialization Examples](#serialization-examples) below.
 You can also look at the unit tests to get a better idea about what you can expect from the library.
 
-# Interface
-Refer to [INTERFACE.md](INTERFACE.md) for more detailed information about what can be accessed in the library.
+# Documentation
+Refer to [the documentation](https://kredegc.github.io/BitStream/namespaces.html) for more information about what different classes provide.
 
 # Serializables - serialize_traits
 Below is a noncomprehensive list of serializable traits.
