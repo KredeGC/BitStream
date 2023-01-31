@@ -89,6 +89,8 @@ namespace bitstream
 
 		bool prepend_checksum() noexcept
 		{
+			BS_ASSERT(m_ScratchBits == 0);
+
             BS_ASSERT(can_serialize_bits(32U));
             
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
@@ -98,6 +100,11 @@ namespace bitstream
             return true;
 		}
 
+		/**
+		 * @brief Writes a checksum of the @protocol_version and the rest of the buffer as the first 32 bits
+		 * @param protocol_version A unique version number
+		 * @return The number of bytes written to the buffer
+		*/
 		uint32_t serialize_checksum(uint32_t protocol_version) noexcept
 		{
 			uint32_t num_bytes = flush();
@@ -114,26 +121,35 @@ namespace bitstream
 			return num_bytes;
 		}
 
-		bool pad_to_size(uint32_t size) noexcept
+		/**
+		 * @brief Pads the buffer up to the given number of bytes with zeros
+		 * @param num_bytes The byte number to pad to
+		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes
+		*/
+		bool pad_to_size(uint32_t num_bytes) noexcept
 		{
-			BS_ASSERT(size * 8U <= m_TotalBits);
+			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
 
 			flush();
 
-			BS_ASSERT(size * 8U >= m_NumBitsWritten);
+			BS_ASSERT(num_bytes * 8U >= m_NumBitsWritten);
 
 			// Set to the padding to 0
-			std::memset(m_Buffer + m_WordIndex, 0, size - m_WordIndex * 4U);
+			std::memset(m_Buffer + m_WordIndex, 0, num_bytes - m_WordIndex * 4U);
 
-			m_NumBitsWritten = size * 8U;
+			m_NumBitsWritten = num_bytes * 8U;
 
 			m_Scratch = 0ULL;
-			m_ScratchBits = (size % 4U) * 8U;
-			m_WordIndex = size / 4U;
+			m_ScratchBits = (num_bytes % 4U) * 8U;
+			m_WordIndex = num_bytes / 4U;
 
 			return true;
 		}
 
+		/**
+		 * @brief Pads the buffer with up to 8 zeros, so that the next write is byte-aligned
+		 * @return Success
+		*/
 		bool align() noexcept
 		{
 			uint32_t remainder = m_ScratchBits % 8U;
@@ -147,6 +163,12 @@ namespace bitstream
 			return true;
 		}
 
+		/**
+		 * @brief Writes the first @p num_bits bits of @p value into the buffer
+		 * @param value The value to serialize
+		 * @param num_bits The number of bits of the @p value to serialize
+		 * @return Returns false if @p num_bits is less than 1 or greater than 32 or if writing the given number of bits would overflow the buffer
+		*/
 		bool serialize_bits(uint32_t value, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
@@ -173,6 +195,12 @@ namespace bitstream
 			return true;
 		}
 
+		/**
+		 * @brief Writes the first @p num_bits bits of the given byte array, 32 bits at a time
+		 * @param bytes The bytes to serialize
+		 * @param num_bits The number of bits of the @p bytes to serialize
+		 * @return Returns false if @p num_bits is less than 1 or if reading the given number of bits would overflow the buffer
+		*/
 		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U);
@@ -236,6 +264,13 @@ namespace bitstream
 			return true;
 		}
 
+		/**
+		 * @brief Writes to the buffer, using the given `Trait`.
+		 * @tparam Trait A template specialization of serialize_trait<>
+		 * @tparam ...Args The types of the arguments to pass to the serialize function
+		 * @param ...args The arguments to pass to the serialize function
+		 * @return Whether successful or not
+		*/
 		template<typename Trait, typename... Args>
 		bool serialize(Args&&... args) noexcept(noexcept(serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...)))
 		{
