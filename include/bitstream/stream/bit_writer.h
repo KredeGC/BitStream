@@ -71,6 +71,10 @@ namespace bitstream
 
         uint32_t get_total_bits() const noexcept { return m_TotalBits; }
         
+		/**
+		 * @brief Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer.
+		 * @return The number of bytes written to the buffer
+		*/
 		uint32_t flush() noexcept
 		{
 			if (m_ScratchBits > 0U)
@@ -87,9 +91,13 @@ namespace bitstream
 			return (m_NumBitsWritten - 1U) / 8U + 1U;
 		}
 
+		/**
+		 * @brief Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits.
+		 * @return Returns false if anything has already been written to the buffer or if there's no space to write the checksum
+		*/
 		bool prepend_checksum() noexcept
 		{
-			BS_ASSERT(m_ScratchBits == 0);
+			BS_ASSERT(m_NumBitsWritten == 0);
 
             BS_ASSERT(can_serialize_bits(32U));
             
