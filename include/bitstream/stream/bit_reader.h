@@ -13,6 +13,9 @@
 
 namespace bitstream
 {
+	/**
+	 * @brief A stream for reading objects from a tightly packed buffer
+	*/
 	class bit_reader
 	{
 	public:

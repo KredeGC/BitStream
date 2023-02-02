@@ -14,6 +14,9 @@ namespace bitstream
 {
     class bit_reader;
     
+	/**
+	 * @brief A stream for writing objects tightly into a buffer
+	*/
 	class bit_writer
 	{
     private:

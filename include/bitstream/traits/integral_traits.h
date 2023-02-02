@@ -12,6 +12,10 @@
 
 namespace bitstream
 {
+	/**
+	 * @brief Wrapper type for compile-time known integer bounds
+	 * @tparam T 
+	*/
 	template<typename T, T, T>
 	struct bounded_int;
 

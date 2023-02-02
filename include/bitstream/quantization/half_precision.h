@@ -26,6 +26,9 @@
 
 namespace bitstream
 {
+	/**
+	 * @brief Class for quantizing single-precision floats into half-precision
+	*/
 	class half_precision
 	{
 	private:

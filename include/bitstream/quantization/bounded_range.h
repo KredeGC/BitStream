@@ -26,6 +26,9 @@
 
 namespace bitstream
 {
+	/**
+	 * @brief Class for quantizing single-precision floats into a range and precision
+	*/
 	class bounded_range
 	{
 	public:
