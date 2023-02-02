@@ -27,6 +27,9 @@
 
 namespace bitstream
 {
+	/**
+	 * @brief A quantized representation of a quaternion
+	*/
 	struct quantized_quaternion
 	{
 		uint32_t m;
@@ -40,6 +43,10 @@ namespace bitstream
 			: m(m), a(a), b(b), c(c) {}
 	};
 
+	/**
+	 * @brief Class for quantizing a user-specified quaternion into fewer bits using the smallest-three algorithm
+	 * @tparam T The quaternion-type to quantize
+	*/
 	template<typename T, size_t BitsPerElement = 12>
 	class smallest_three
 	{
