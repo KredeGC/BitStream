@@ -63,12 +63,30 @@ namespace bitstream
             other.m_WordIndex = 0;
         }
 
+		/**
+		 * @brief Returns the number of bits which have been written to the buffer
+		 * @return The number of bits which have been written
+		*/
 		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsWritten; }
 
+		/**
+		 * @brief Returns whether the @p num_bits can fit in the buffer
+		 * @param num_bits The number of bits to test
+		 * @return Whether the number of bits can fit in the buffer
+		*/
 		bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsWritten + num_bits <= m_TotalBits; }
 
+		/**
+		 * @brief Returns the number of bits which have not been written yet
+		 * @note The same as get_total_bits() - get_num_bits_serialized()
+		 * @return The remaining space in the buffer
+		*/
 		uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsWritten; }
 
+        /**
+         * @brief Returns the size of the buffer, in bits
+         * @return The size of the buffer, in bits
+        */
         uint32_t get_total_bits() const noexcept { return m_TotalBits; }
         
 		/**
@@ -109,7 +127,7 @@ namespace bitstream
 		}
 
 		/**
-		 * @brief Writes a checksum of the @protocol_version and the rest of the buffer as the first 32 bits
+		 * @brief Writes a checksum of the @p protocol_version and the rest of the buffer as the first 32 bits
 		 * @param protocol_version A unique version number
 		 * @return The number of bytes written to the buffer
 		*/
@@ -207,7 +225,7 @@ namespace bitstream
 		 * @brief Writes the first @p num_bits bits of the given byte array, 32 bits at a time
 		 * @param bytes The bytes to serialize
 		 * @param num_bits The number of bits of the @p bytes to serialize
-		 * @return Returns false if @p num_bits is less than 1 or if reading the given number of bits would overflow the buffer
+		 * @return Returns false if @p num_bits is less than 1 or if writing the given number of bits would overflow the buffer
 		*/
 		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits) noexcept
 		{
@@ -255,6 +273,11 @@ namespace bitstream
 			return true;
 		}
 
+		/**
+		 * @brief Writes the contents of the buffer into the given @p writer. Essentially copies the entire buffer without modifying it.
+		 * @param writer The writer to copy into
+		 * @return Returns false if writing would overflow the buffer
+		*/
 		bool serialize_into(bit_writer& writer) const noexcept
 		{
 			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Buffer);

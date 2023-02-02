@@ -69,13 +69,31 @@ namespace bitstream
             other.m_WordIndex = 0;
         }
 
+		/**
+		 * @brief Returns the number of bits which have been read from the buffer
+		 * @return The number of bits which have been read
+		*/
 		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsRead; }
 
+		/**
+		 * @brief Returns whether the @p num_bits be read from the buffer
+		 * @param num_bits The number of bits to test
+		 * @return Whether the number of bits can be read from the buffer
+		*/
 		bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsRead + num_bits <= m_TotalBits; }
 
+		/**
+		 * @brief Returns the number of bits which have not been read yet
+		 * @note The same as get_total_bits() - get_num_bits_serialized()
+		 * @return The remaining space in the buffer
+		*/
 		uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsRead; }
-        
-        uint32_t get_total_bits() const noexcept { return m_TotalBits; }
+
+		/**
+		 * @brief Returns the size of the buffer, in bits
+		 * @return The size of the buffer, in bits
+		*/
+		uint32_t get_total_bits() const noexcept { return m_TotalBits; }
 
 		/**
 		 * @brief Reads the first 32 bits of the buffer and compares it to a checksum of the @p protocol_version and the rest of the buffer
