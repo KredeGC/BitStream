@@ -118,6 +118,9 @@ $(document).ready(function(){initNavTree('classbitstream_1_1bit__reader.html',''
 </div><!--header-->
 <div class="contents">
 
+<p>A stream for reading objects from a tightly packed buffer.  
+ <a href="classbitstream_1_1bit__reader.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="bit__reader_8h_source.html">bit_reader.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -133,12 +136,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5210ff272ae42c0e5b82062545a32eb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#a5210ff272ae42c0e5b82062545a32eb7">bit_reader</a> (<a class="el" href="classbitstream_1_1bit__reader.html">bit_reader</a> &amp;&amp;other) noexcept</td></tr>
 <tr class="separator:a5210ff272ae42c0e5b82062545a32eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2f10f5335718852475832f3b1011eff"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#ad2f10f5335718852475832f3b1011eff">get_num_bits_serialized</a> () const noexcept</td></tr>
+<tr class="memdesc:ad2f10f5335718852475832f3b1011eff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bits which have been read from the buffer.  <a href="classbitstream_1_1bit__reader.html#ad2f10f5335718852475832f3b1011eff">More...</a><br /></td></tr>
 <tr class="separator:ad2f10f5335718852475832f3b1011eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae922ce79e1be384cb826e1f2a8a0d7b0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#ae922ce79e1be384cb826e1f2a8a0d7b0">can_serialize_bits</a> (uint32_t num_bits) const noexcept</td></tr>
+<tr class="memdesc:ae922ce79e1be384cb826e1f2a8a0d7b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the <code>num_bits</code> be read from the buffer.  <a href="classbitstream_1_1bit__reader.html#ae922ce79e1be384cb826e1f2a8a0d7b0">More...</a><br /></td></tr>
 <tr class="separator:ae922ce79e1be384cb826e1f2a8a0d7b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9af359b85465a9572303a42cad85aed4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#a9af359b85465a9572303a42cad85aed4">get_remaining_bits</a> () const noexcept</td></tr>
+<tr class="memdesc:a9af359b85465a9572303a42cad85aed4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bits which have not been read yet.  <a href="classbitstream_1_1bit__reader.html#a9af359b85465a9572303a42cad85aed4">More...</a><br /></td></tr>
 <tr class="separator:a9af359b85465a9572303a42cad85aed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62cbc70995add6f93a452789033f9963"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#a62cbc70995add6f93a452789033f9963">get_total_bits</a> () const noexcept</td></tr>
+<tr class="memdesc:a62cbc70995add6f93a452789033f9963"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the size of the buffer, in bits.  <a href="classbitstream_1_1bit__reader.html#a62cbc70995add6f93a452789033f9963">More...</a><br /></td></tr>
 <tr class="separator:a62cbc70995add6f93a452789033f9963"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a027b966c11a5994443d16d6989d7491a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#a027b966c11a5994443d16d6989d7491a">serialize_checksum</a> (uint32_t protocol_version) noexcept</td></tr>
 <tr class="memdesc:a027b966c11a5994443d16d6989d7491a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the first 32 bits of the buffer and compares it to a checksum of the <code>protocol_version</code> and the rest of the buffer.  <a href="classbitstream_1_1bit__reader.html#a027b966c11a5994443d16d6989d7491a">More...</a><br /></td></tr>
@@ -167,7 +174,9 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:af29a7f8553b409a016b47a5cd98b9fd5"><td class="memItemLeft" align="right" valign="top">static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#af29a7f8553b409a016b47a5cd98b9fd5">reading</a> = true</td></tr>
 <tr class="separator:af29a7f8553b409a016b47a5cd98b9fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A stream for reading objects from a tightly packed buffer. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5eff873539c110ed22408fc692becba8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5eff873539c110ed22408fc692becba8">&#9670;&nbsp;</a></span>bit_reader() <span class="overload">[1/5]</span></h2>
 
@@ -332,7 +341,7 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Pads the buffer with up to 8 zeros, so that the next read is byte-aligned @notes Return false if the padded bits are not zeros. </p>
-<dl class="section return"><dt>Returns</dt><dd>Success </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns false if the padded bits are not zeros </dd></dl>
 
 </div>
 </div>
@@ -360,6 +369,15 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns whether the <code>num_bits</code> be read from the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_bits</td><td>The number of bits to test </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Whether the number of bits can be read from the buffer </dd></dl>
+
 </div>
 </div>
 <a id="ad2f10f5335718852475832f3b1011eff"></a>
@@ -384,6 +402,9 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Returns the number of bits which have been read from the buffer. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of bits which have been read </dd></dl>
 
 </div>
 </div>
@@ -410,6 +431,10 @@ Static Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns the number of bits which have not been read yet. </p>
+<dl class="section note"><dt>Note</dt><dd>The same as <a class="el" href="classbitstream_1_1bit__reader.html#a62cbc70995add6f93a452789033f9963" title="Returns the size of the buffer, in bits.">get_total_bits()</a> - <a class="el" href="classbitstream_1_1bit__reader.html#ad2f10f5335718852475832f3b1011eff" title="Returns the number of bits which have been read from the buffer.">get_num_bits_serialized()</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The remaining space in the buffer </dd></dl>
+
 </div>
 </div>
 <a id="a62cbc70995add6f93a452789033f9963"></a>
@@ -434,6 +459,9 @@ Static Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Returns the size of the buffer, in bits. </p>
+<dl class="section return"><dt>Returns</dt><dd>The size of the buffer, in bits </dd></dl>
 
 </div>
 </div>

@@ -119,6 +119,9 @@ $(document).ready(function(){initNavTree('classbitstream_1_1bit__writer.html',''
 </div><!--header-->
 <div class="contents">
 
+<p>A stream for writing objects tightly into a buffer.  
+ <a href="classbitstream_1_1bit__writer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="bit__writer_8h_source.html">bit_writer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -132,21 +135,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae88a7d879c7821868c5e465f859dc269"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#ae88a7d879c7821868c5e465f859dc269">bit_writer</a> (<a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&amp;other) noexcept</td></tr>
 <tr class="separator:ae88a7d879c7821868c5e465f859dc269"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28f498aaae7c2a7716cf119d3d0410dc"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a28f498aaae7c2a7716cf119d3d0410dc">get_num_bits_serialized</a> () const noexcept</td></tr>
+<tr class="memdesc:a28f498aaae7c2a7716cf119d3d0410dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bits which have been written to the buffer.  <a href="classbitstream_1_1bit__writer.html#a28f498aaae7c2a7716cf119d3d0410dc">More...</a><br /></td></tr>
 <tr class="separator:a28f498aaae7c2a7716cf119d3d0410dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cf7f4be0a7432f61b0a1ab1ab1cbb1e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a3cf7f4be0a7432f61b0a1ab1ab1cbb1e">can_serialize_bits</a> (uint32_t num_bits) const noexcept</td></tr>
+<tr class="memdesc:a3cf7f4be0a7432f61b0a1ab1ab1cbb1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the <code>num_bits</code> can fit in the buffer.  <a href="classbitstream_1_1bit__writer.html#a3cf7f4be0a7432f61b0a1ab1ab1cbb1e">More...</a><br /></td></tr>
 <tr class="separator:a3cf7f4be0a7432f61b0a1ab1ab1cbb1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a916b0df57863d6acd9030509637624b8"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a916b0df57863d6acd9030509637624b8">get_remaining_bits</a> () const noexcept</td></tr>
+<tr class="memdesc:a916b0df57863d6acd9030509637624b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bits which have not been written yet.  <a href="classbitstream_1_1bit__writer.html#a916b0df57863d6acd9030509637624b8">More...</a><br /></td></tr>
 <tr class="separator:a916b0df57863d6acd9030509637624b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abdbc2eeb75ca675241bd95ab32e3198d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#abdbc2eeb75ca675241bd95ab32e3198d">get_total_bits</a> () const noexcept</td></tr>
+<tr class="memdesc:abdbc2eeb75ca675241bd95ab32e3198d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the size of the buffer, in bits.  <a href="classbitstream_1_1bit__writer.html#abdbc2eeb75ca675241bd95ab32e3198d">More...</a><br /></td></tr>
 <tr class="separator:abdbc2eeb75ca675241bd95ab32e3198d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d513d61c9f6555498cc112ce741a135"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a0d513d61c9f6555498cc112ce741a135">flush</a> () noexcept</td></tr>
 <tr class="memdesc:a0d513d61c9f6555498cc112ce741a135"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer.  <a href="classbitstream_1_1bit__writer.html#a0d513d61c9f6555498cc112ce741a135">More...</a><br /></td></tr>
 <tr class="separator:a0d513d61c9f6555498cc112ce741a135"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab93b353e6bd420f60e1e81267404bac1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#ab93b353e6bd420f60e1e81267404bac1">prepend_checksum</a> () noexcept</td></tr>
-<tr class="memdesc:ab93b353e6bd420f60e1e81267404bac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instructs the writer that you intend to use <code><a class="el" href="classbitstream_1_1bit__writer.html#a4a9f290ae12ff3a87b922a72c10e251d" title="Writes a checksum of the @protocol_version and the rest of the buffer as the first 32 bits.">serialize_checksum()</a></code> later on, and to reserve the first 32 bits.  <a href="classbitstream_1_1bit__writer.html#ab93b353e6bd420f60e1e81267404bac1">More...</a><br /></td></tr>
+<tr class="memdesc:ab93b353e6bd420f60e1e81267404bac1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instructs the writer that you intend to use <code><a class="el" href="classbitstream_1_1bit__writer.html#a4a9f290ae12ff3a87b922a72c10e251d" title="Writes a checksum of the protocol_version and the rest of the buffer as the first 32 bits.">serialize_checksum()</a></code> later on, and to reserve the first 32 bits.  <a href="classbitstream_1_1bit__writer.html#ab93b353e6bd420f60e1e81267404bac1">More...</a><br /></td></tr>
 <tr class="separator:ab93b353e6bd420f60e1e81267404bac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a9f290ae12ff3a87b922a72c10e251d"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a4a9f290ae12ff3a87b922a72c10e251d">serialize_checksum</a> (uint32_t protocol_version) noexcept</td></tr>
-<tr class="memdesc:a4a9f290ae12ff3a87b922a72c10e251d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a checksum of the @protocol_version and the rest of the buffer as the first 32 bits.  <a href="classbitstream_1_1bit__writer.html#a4a9f290ae12ff3a87b922a72c10e251d">More...</a><br /></td></tr>
+<tr class="memdesc:a4a9f290ae12ff3a87b922a72c10e251d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a checksum of the <code>protocol_version</code> and the rest of the buffer as the first 32 bits.  <a href="classbitstream_1_1bit__writer.html#a4a9f290ae12ff3a87b922a72c10e251d">More...</a><br /></td></tr>
 <tr class="separator:a4a9f290ae12ff3a87b922a72c10e251d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b8ac9641c5f7172e59031b27bb864e3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a3b8ac9641c5f7172e59031b27bb864e3">pad_to_size</a> (uint32_t num_bytes) noexcept</td></tr>
 <tr class="memdesc:a3b8ac9641c5f7172e59031b27bb864e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pads the buffer up to the given number of bytes with zeros.  <a href="classbitstream_1_1bit__writer.html#a3b8ac9641c5f7172e59031b27bb864e3">More...</a><br /></td></tr>
@@ -161,6 +168,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac19729e87add7d356af8c3bdaa16367a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the first <code>num_bits</code> bits of the given byte array, 32 bits at a time.  <a href="classbitstream_1_1bit__writer.html#ac19729e87add7d356af8c3bdaa16367a">More...</a><br /></td></tr>
 <tr class="separator:ac19729e87add7d356af8c3bdaa16367a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb9feb4871a01471d8afde07ab8b3824"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#abb9feb4871a01471d8afde07ab8b3824">serialize_into</a> (<a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;writer) const noexcept</td></tr>
+<tr class="memdesc:abb9feb4871a01471d8afde07ab8b3824"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the contents of the buffer into the given <code>writer</code>. Essentially copies the entire buffer without modifying it.  <a href="classbitstream_1_1bit__writer.html#abb9feb4871a01471d8afde07ab8b3824">More...</a><br /></td></tr>
 <tr class="separator:abb9feb4871a01471d8afde07ab8b3824"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a336d204736110d27c7fc6d7f1831687a"><td class="memTemplParams" colspan="2">template&lt;typename Trait , typename... Args&gt; </td></tr>
 <tr class="memitem:a336d204736110d27c7fc6d7f1831687a"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a336d204736110d27c7fc6d7f1831687a">serialize</a> (Args &amp;&amp;... args) noexcept(noexcept(<a class="el" href="structbitstream_1_1serialize__traits.html">serialize_traits</a>&lt; Trait &gt;::serialize(*this, std::forward&lt; Args &gt;(args)...)))</td></tr>
@@ -179,7 +187,9 @@ Friends</h2></td></tr>
 <tr class="memitem:acdcfd289587ca24b6cde6bdd5ea182fe"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#acdcfd289587ca24b6cde6bdd5ea182fe">bit_reader</a></td></tr>
 <tr class="separator:acdcfd289587ca24b6cde6bdd5ea182fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A stream for writing objects tightly into a buffer. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a26b4d4e60928a451073536d68d45b078"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a26b4d4e60928a451073536d68d45b078">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[1/4]</span></h2>
 
@@ -346,6 +356,15 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns whether the <code>num_bits</code> can fit in the buffer. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_bits</td><td>The number of bits to test </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Whether the number of bits can fit in the buffer </dd></dl>
+
 </div>
 </div>
 <a id="a0d513d61c9f6555498cc112ce741a135"></a>
@@ -399,6 +418,9 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns the number of bits which have been written to the buffer. </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of bits which have been written </dd></dl>
+
 </div>
 </div>
 <a id="a916b0df57863d6acd9030509637624b8"></a>
@@ -424,6 +446,10 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Returns the number of bits which have not been written yet. </p>
+<dl class="section note"><dt>Note</dt><dd>The same as <a class="el" href="classbitstream_1_1bit__writer.html#abdbc2eeb75ca675241bd95ab32e3198d" title="Returns the size of the buffer, in bits.">get_total_bits()</a> - <a class="el" href="classbitstream_1_1bit__writer.html#a28f498aaae7c2a7716cf119d3d0410dc" title="Returns the number of bits which have been written to the buffer.">get_num_bits_serialized()</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The remaining space in the buffer </dd></dl>
+
 </div>
 </div>
 <a id="abdbc2eeb75ca675241bd95ab32e3198d"></a>
@@ -448,6 +474,9 @@ Friends</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Returns the size of the buffer, in bits. </p>
+<dl class="section return"><dt>Returns</dt><dd>The size of the buffer, in bits </dd></dl>
 
 </div>
 </div>
@@ -509,7 +538,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Instructs the writer that you intend to use <code><a class="el" href="classbitstream_1_1bit__writer.html#a4a9f290ae12ff3a87b922a72c10e251d" title="Writes a checksum of the @protocol_version and the rest of the buffer as the first 32 bits.">serialize_checksum()</a></code> later on, and to reserve the first 32 bits. </p>
+<p>Instructs the writer that you intend to use <code><a class="el" href="classbitstream_1_1bit__writer.html#a4a9f290ae12ff3a87b922a72c10e251d" title="Writes a checksum of the protocol_version and the rest of the buffer as the first 32 bits.">serialize_checksum()</a></code> later on, and to reserve the first 32 bits. </p>
 <dl class="section return"><dt>Returns</dt><dd>Returns false if anything has already been written to the buffer or if there's no space to write the checksum </dd></dl>
 
 </div>
@@ -646,7 +675,7 @@ template&lt;typename Trait , typename... Args&gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Returns false if <code>num_bits</code> is less than 1 or if reading the given number of bits would overflow the buffer </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns false if <code>num_bits</code> is less than 1 or if writing the given number of bits would overflow the buffer </dd></dl>
 
 </div>
 </div>
@@ -674,7 +703,7 @@ template&lt;typename Trait , typename... Args&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Writes a checksum of the @protocol_version and the rest of the buffer as the first 32 bits. </p>
+<p>Writes a checksum of the <code>protocol_version</code> and the rest of the buffer as the first 32 bits. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">protocol_version</td><td>A unique version number </td></tr>
@@ -708,6 +737,15 @@ template&lt;typename Trait , typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Writes the contents of the buffer into the given <code>writer</code>. Essentially copies the entire buffer without modifying it. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">writer</td><td>The writer to copy into </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Returns false if writing would overflow the buffer </dd></dl>
 
 </div>
 </div>
