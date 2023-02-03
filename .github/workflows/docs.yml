@@ -22,10 +22,12 @@ jobs:
       with:
         repository: jothepro/doxygen-awesome-css
         path: doxygen-awesome-css
-    - name: Install doxygen & zip
-      run: sudo apt-get update && sudo apt-get install doxygen graphviz zip -y
+    - name: Install doxygen
+      run: sudo apt-get update && sudo apt-get install doxygen graphviz -y
     - name: Generate Doxygen Documentation
       run: doxygen Doxyfile
+    - name: Copy LICENSE
+      run: cp doxygen-awesome-css/LICENSE docs/html/LICENSE
     - name: Create .nojekyll
       run: touch docs/html/.nojekyll
     - name: Deploy Documentation to branch
