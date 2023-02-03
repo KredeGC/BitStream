@@ -40,14 +40,11 @@ namespace bitstream
 			if constexpr (sizeof(T) > 4)
 			{
 				// If the given range is bigger than a word (32 bits)
-				int max_words = (num_bits - 1) / 32 + 1;
-				for (int i = 0; i < max_words; i++)
-				{
-					int shift = i * 32;
-					int bit_count = (std::min)(num_bits - shift, 32);
-					uint32_t unsigned_value = static_cast<uint32_t>((value - min) >> shift);
-					BS_ASSERT(writer.serialize_bits(unsigned_value, bit_count));
-				}
+				uint32_t unsigned_value = static_cast<uint32_t>(value - min);
+				BS_ASSERT(writer.serialize_bits(unsigned_value, 32));
+
+				unsigned_value = static_cast<uint32_t>((value - min) >> 32);
+				BS_ASSERT(writer.serialize_bits(unsigned_value, num_bits - 32));
 			}
 			else
 			{
@@ -69,19 +66,15 @@ namespace bitstream
 
 			if constexpr (sizeof(T) > 4)
 			{
-				value = 0;
-
 				// If the given range is bigger than a word (32 bits)
-				int max_words = (num_bits - 1) / 32 + 1;
-				for (int i = 0; i < max_words; i++)
-				{
-					uint32_t unsigned_value;
-					int shift = i * 32;
-					int bit_count = (std::min)(num_bits - shift, 32);
-					BS_ASSERT(reader.serialize_bits(unsigned_value, bit_count));
+				value = 0;
+				uint32_t unsigned_value;
 
-					value |= static_cast<T>(unsigned_value) << shift;
-				}
+				BS_ASSERT(reader.serialize_bits(unsigned_value, 32));
+				value |= static_cast<T>(unsigned_value);
+
+				BS_ASSERT(reader.serialize_bits(unsigned_value, num_bits - 32));
+				value |= static_cast<T>(unsigned_value) << 32;
 
 				value += min;
 			}
@@ -124,14 +117,11 @@ namespace bitstream
 			if constexpr (sizeof(T) > 4 && num_bits > 32)
 			{
 				// If the given range is bigger than a word (32 bits)
-				int max_words = (num_bits - 1) / 32 + 1;
-				for (int i = 0; i < max_words; i++)
-				{
-					int shift = i * 32;
-					int bit_count = (std::min)(num_bits - shift, 32);
-					uint32_t unsigned_value = static_cast<uint32_t>((value - Min) >> shift);
-					BS_ASSERT(writer.serialize_bits(unsigned_value, bit_count));
-				}
+				uint32_t unsigned_value = static_cast<uint32_t>(value - Min);
+				BS_ASSERT(writer.serialize_bits(unsigned_value, 32));
+
+				unsigned_value = static_cast<uint32_t>((value - Min) >> 32);
+				BS_ASSERT(writer.serialize_bits(unsigned_value, num_bits - 32));
 			}
 			else
 			{
@@ -153,19 +143,15 @@ namespace bitstream
 
 			if constexpr (sizeof(T) > 4 && num_bits > 32)
 			{
-				value = 0;
-
 				// If the given range is bigger than a word (32 bits)
-				int max_words = (num_bits - 1) / 32 + 1;
-				for (int i = 0; i < max_words; i++)
-				{
-					uint32_t unsigned_value;
-					int shift = i * 32;
-					int bit_count = (std::min)(num_bits - shift, 32);
-					BS_ASSERT(reader.serialize_bits(unsigned_value, bit_count));
+				value = 0;
+				uint32_t unsigned_value;
 
-					value |= static_cast<T>(unsigned_value) << shift;
-				}
+				BS_ASSERT(reader.serialize_bits(unsigned_value, 32));
+				value |= static_cast<T>(unsigned_value);
+
+				BS_ASSERT(reader.serialize_bits(unsigned_value, num_bits - 32));
+				value |= static_cast<T>(unsigned_value) << 32;
 
 				value += Min;
 			}

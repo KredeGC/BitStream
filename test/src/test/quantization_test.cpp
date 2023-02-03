@@ -1,5 +1,6 @@
 #include "test_assert.h"
 #include "test.h"
+#include "test_types.h"
 
 #include <bitstream/quantization/bounded_range.h>
 #include <bitstream/quantization/half_precision.h>
@@ -10,27 +11,6 @@
 
 namespace bitstream::test::quantization
 {
-	struct quaternion
-	{
-		// smallest_three supports any combination of w, x, y and z, as long as it's consistent
-		float w;
-		float x;
-		float y;
-		float z;
-
-		quaternion() = default;
-
-		// The constructor order must be the same as the operator[]
-		quaternion(float w, float x, float y, float z)
-			: w(w), x(x), y(y), z(z) {}
-
-		// smallest_three uses this operator
-		float operator[](size_t index) const
-		{
-			return reinterpret_cast<const float*>(this)[index];
-		}
-	};
-
 	BS_ADD_TEST(test_half_precision)
 	{
 		float value_in = 3.141592f;
