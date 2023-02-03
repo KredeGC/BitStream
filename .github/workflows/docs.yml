@@ -1,4 +1,4 @@
-name: Release
+name: Docs
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         type: boolean
 
 jobs:
-  Release:
+  Docs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
