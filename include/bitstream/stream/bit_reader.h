@@ -174,7 +174,7 @@ namespace bitstream
 		/**
 		 * @brief Pads the buffer with up to 8 zeros, so that the next read is byte-aligned
 		 * @notes Return false if the padded bits are not zeros
-		 * @return Success
+		 * @return Returns false if the padded bits are not zeros
 		*/
 		bool align() noexcept
 		{

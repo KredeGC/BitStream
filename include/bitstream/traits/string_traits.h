@@ -103,7 +103,7 @@ namespace bitstream
 		}
 
 		/**
-		 * @brief Reads a string from the @p writer into @p value
+		 * @brief Reads a string from the @p reader into @p value
 		 * @param reader The stream to read from
 		 * @param value The string to read into. It will be resized if the read string won't fit
 		 * @param max_size The maximum expected length of the string
