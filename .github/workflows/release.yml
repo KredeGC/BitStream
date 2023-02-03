@@ -26,17 +26,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Install doxygen & zip
-      run: sudo apt-get update && sudo apt-get install doxygen graphviz zip -y
-    - name: Generate Doxygen Documentation
-      run: doxygen Doxyfile
-    - name: Create .nojekyll
-      run: touch docs/html/.nojekyll
-    - name: Deploy Documentation to branch
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        branch: docs
-        folder: docs/html
     - name: Copy LICENSE
       run: cp LICENSE include/bitstream/LICENSE
     - name: Copy NETSTACKLICENSE
