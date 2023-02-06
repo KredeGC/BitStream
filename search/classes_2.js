@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['half_5fprecision_74',['half_precision',['../classbitstream_1_1half__precision.html',1,'bitstream']]]
+  ['half_5fprecision_76',['half_precision',['../classbitstream_1_1half__precision.html',1,'bitstream']]]
 ];
