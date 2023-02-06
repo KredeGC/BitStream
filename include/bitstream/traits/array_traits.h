@@ -1,6 +1,5 @@
 #pragma once
 #include "../utility/assert.h"
-#include "../utility/bits.h"
 
 #include "../stream/serialize_traits.h"
 #include "../stream/bit_reader.h"
@@ -26,12 +25,14 @@ namespace bitstream
             bool use_bits;
             if (Stream::writing)
                 use_bits = difference <= Max;
-            BS_ASSERT(stream.serialize<bool>(use_bits));
+            if (!stream.serialize<bool>(use_bits))
+                return false;
             if (use_bits)
             {
                 using bounded_trait = bounded_int<uint32_t, Min, Max>;
 
-                BS_ASSERT(stream.serialize<bounded_trait>(difference));
+                if (!stream.serialize<bounded_trait>(difference))
+                    return false;
                 if (Stream::reading)
                     current = previous + difference;
                 previous = current;
@@ -56,7 +57,8 @@ namespace bitstream
             bool plus_one;
             if (Stream::writing)
                 plus_one = difference == 1;
-            BS_ASSERT(stream.serialize<bool>(plus_one));
+            if (!stream.serialize<bool>(plus_one))
+                return false;
             if (plus_one)
             {
                 if (Stream::reading)
@@ -86,7 +88,8 @@ namespace bitstream
                 return true;
 
             // [126,MaxObjects+1] 
-            BS_ASSERT(stream.serialize<uint32_t>(difference, 126, max_size));
+            if (!stream.serialize<uint32_t>(difference, 126, max_size))
+                return false;
             if (Stream::reading)
                 current = previous + difference;
             previous = current;
