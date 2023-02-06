@@ -5,6 +5,7 @@
 #include <bitstream/stream/bit_writer.h>
 
 #include <bitstream/traits/array_traits.h>
+#include <bitstream/traits/bool_trait.h>
 #include <bitstream/traits/integral_traits.h>
 
 namespace bitstream::test::traits

@@ -25,14 +25,12 @@ namespace bitstream
             bool use_bits;
             if (Stream::writing)
                 use_bits = difference <= Max;
-            if (!stream.serialize<bool>(use_bits))
-                return false;
+            BS_ASSERT(stream.template serialize<bool>(use_bits));
             if (use_bits)
             {
                 using bounded_trait = bounded_int<uint32_t, Min, Max>;
 
-                if (!stream.serialize<bounded_trait>(difference))
-                    return false;
+                BS_ASSERT(stream.template serialize<bounded_trait>(difference));
                 if (Stream::reading)
                     current = previous + difference;
                 previous = current;
@@ -57,8 +55,7 @@ namespace bitstream
             bool plus_one;
             if (Stream::writing)
                 plus_one = difference == 1;
-            if (!stream.serialize<bool>(plus_one))
-                return false;
+            BS_ASSERT(stream.template serialize<bool>(plus_one));
             if (plus_one)
             {
                 if (Stream::reading)
@@ -88,8 +85,7 @@ namespace bitstream
                 return true;
 
             // [126,MaxObjects+1] 
-            if (!stream.serialize<uint32_t>(difference, 126, max_size))
-                return false;
+            BS_ASSERT(stream.template serialize<uint32_t>(difference, 126, max_size));
             if (Stream::reading)
                 current = previous + difference;
             previous = current;
