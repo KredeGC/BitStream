@@ -47,6 +47,22 @@ Refer to [the documentation](https://kredegc.github.io/BitStream/namespaces.html
 Below is a noncomprehensive list of serializable traits.
 A big feature of the library is extensibility, which is why you can add your own types as you please, or choose not to include specific types if you don't need them.
 
+## Booleans - bool
+A trait that covers a single bool.<br/>
+Takes the bool by reference and serializes it as a single bit.<br/>
+
+The call signature can be seen below:
+```cpp
+bool serialize<bool>(bool& value);
+```
+As well as a short example of its usage:
+```cpp
+bool in_value = true;
+bool out_value;
+bool status_write = writer.serialize<bool>(in_value);
+bool status_read = reader.serialize<bool>(out_value);
+```
+
 ## Bounded integers - T
 A trait that covers all signed and unsigned integers.<br/>
 Takes the integer by reference and a lower and upper bound.<br/>
@@ -58,14 +74,16 @@ bool serialize<T>(T& value, T min = numeric_limits<T>::min(), T max = numeric_li
 ```
 As well as a short example of its usage:
 ```cpp
-int16_t value = 1027;
-bool status = stream.serialize<int16_t>(value, -512, 2098);
+int16_t in_value = 1027;
+int16_t out_value;
+bool status_write = writer.serialize<int16_t>(in_value, -512, 2098);
+bool status_read = reader.serialize<int16_t>(out_value, -512, 2098);
 ```
 
 ## Compile-time bounded integers - bounded_int\<T, T Min, T Max\>
 A trait that covers all signed and unsigned integers within a `bounded_int` wrapper.<br/>
 Takes the integer by reference and a lower and upper bound as template parameters.<br/>
-This is preferable if you know the bounds at compile time.
+This is preferable if you know the bounds at compile time as it skips having to calculate the number of bits required.
 
 The call signature can be seen below:
 ```cpp
@@ -73,8 +91,10 @@ bool serialize<bounded_int<T, Min, Max>>(T& value);
 ```
 As well as a short example of its usage:
 ```cpp
-int16_t value = 1027;
-bool status = stream.serialize<bounded_int<int16_t, -512, 2098>>(value);
+int16_t in_value = 1027;
+int16_t out_value;
+bool status_write = writer.serialize<bounded_int<int16_t, -512, 2098>>(in_value);
+bool status_read = reader.serialize<bounded_int<int16_t, -512, 2098>>(out_value);
 ```
 
 ## C-style strings - const char*

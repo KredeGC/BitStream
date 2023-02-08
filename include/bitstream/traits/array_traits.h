@@ -23,7 +23,7 @@ namespace bitstream
         static bool serialize_difference(Stream& stream, int& previous, int& current, uint32_t& difference)
         {
             bool use_bits;
-            if (Stream::writing)
+            if constexpr (Stream::writing)
                 use_bits = difference <= Max;
             BS_ASSERT(stream.template serialize<bool>(use_bits));
             if (use_bits)
@@ -31,7 +31,7 @@ namespace bitstream
                 using bounded_trait = bounded_int<uint32_t, Min, Max>;
 
                 BS_ASSERT(stream.template serialize<bounded_trait>(difference));
-                if (Stream::reading)
+                if constexpr (Stream::reading)
                     current = previous + difference;
                 previous = current;
                 return true;
@@ -44,7 +44,7 @@ namespace bitstream
         static bool serialize_index(Stream& stream, int& previous, int& current, int max_size)
         {
             uint32_t difference;
-            if (Stream::writing)
+            if constexpr (Stream::writing)
             {
                 BS_ASSERT(previous < current);
                 difference = current - previous;
@@ -53,12 +53,12 @@ namespace bitstream
 
             // +1 (1 bit)
             bool plus_one;
-            if (Stream::writing)
+            if constexpr (Stream::writing)
                 plus_one = difference == 1;
             BS_ASSERT(stream.template serialize<bool>(plus_one));
             if (plus_one)
             {
-                if (Stream::reading)
+                if constexpr (Stream::reading)
                     current = previous + 1;
                 previous = current;
                 return true;
@@ -86,7 +86,7 @@ namespace bitstream
 
             // [126,MaxObjects+1] 
             BS_ASSERT(stream.template serialize<uint32_t>(difference, 126, max_size));
-            if (Stream::reading)
+            if constexpr (Stream::reading)
                 current = previous + difference;
             previous = current;
             return true;
