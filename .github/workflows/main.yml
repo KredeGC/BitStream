@@ -60,5 +60,8 @@ jobs:
       run: premake5 build --config=${{ matrix.config }} --architecture=${{ matrix.architecture }}
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+    - name: Print contents of bin
+      if: matrix.machine.os == 'ubuntu-latest'
+      run: ls bin
     - name: Run test
       run: premake5 test --config=${{ matrix.config }} --architecture=${{ matrix.architecture }}

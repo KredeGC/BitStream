@@ -43,9 +43,13 @@ require "scripts/build"
 require "scripts/test"
 
 workspace "BitStream"
-    architecture "x64"
     toolset(_OPTIONS["toolset"])
     startproject "Test"
+    
+    platforms {
+        "x86",
+        "x64"
+    }
     
     configurations {
         "debug",
@@ -88,14 +92,21 @@ project "Test"
     filter "system:linux"
         systemversion "latest"
     
+    -- Architecture
+    filter "platforms:x86"
+        architecture "x86"
+    
+    filter "platforms:x64"
+        architecture "x86_64"
+    
     -- Config
-    filter "configurations:Debug"
+    filter "configurations:debug"
         defines { "BS_DEBUG_BREAK" }
         
         runtime "Debug"
         symbols "on"
         
-    filter "configurations:Release"
+    filter "configurations:release"
         flags { "LinkTimeOptimization" }
 
         runtime "Release"
