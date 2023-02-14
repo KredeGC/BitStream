@@ -43,13 +43,9 @@ require "scripts/build"
 require "scripts/test"
 
 workspace "BitStream"
+    architecture "x64"
     toolset(_OPTIONS["toolset"])
     startproject "Test"
-    
-    platforms {
-        "x86",
-        "x86_64"
-    }
     
     configurations {
         "debug",
@@ -91,13 +87,6 @@ project "Test"
 
     filter "system:linux"
         systemversion "latest"
-    
-    -- Architecture
-    filter "platforms:x86"
-        architecture "x86"
-    
-    filter "platforms:x64"
-        architecture "x86_64"
     
     -- Config
     filter "configurations:Debug"
