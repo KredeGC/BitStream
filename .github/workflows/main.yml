@@ -17,16 +17,13 @@ jobs:
         dialect: [C++17, C++20]
         config: [debug, release]
         machine:
-        - host: linux
-          os: ubuntu-latest
+        - os: ubuntu-latest
           action: gmake2
           toolset: gcc
-        - host: linux
-          os: ubuntu-latest
+        - os: ubuntu-latest
           action: gmake2
           toolset: clang
-        - host: windows
-          os: windows-latest
+        - os: windows-latest
           action: vs2019
           toolset: msc
     runs-on: ${{ matrix.machine.os }}

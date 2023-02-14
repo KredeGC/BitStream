@@ -73,6 +73,12 @@ namespace bitstream
         }
 
 		/**
+		 * @brief Returns the buffer that this reader is currently serializing from
+		 * @return The buffer
+		*/
+		const uint8_t* get_buffer() const noexcept { return reinterpret_cast<const uint8_t*>(m_Buffer); }
+
+		/**
 		 * @brief Returns the number of bits which have been read from the buffer
 		 * @return The number of bits which have been read
 		*/
