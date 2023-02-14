@@ -11,10 +11,15 @@ if not p.modules.test then
             
             local res,msg,sig;
             
+            local architecture = _OPTIONS["architecture"];
+            if (architecture == "x64") then
+                architecture = "x86_64"
+            end
+            
             if (os.host() == "windows") then
-                res,msg,sig = os.execute("bin\\".._OPTIONS["config"].."-windows-x86_64\\Test.exe")
+                res,msg,sig = os.execute("bin\\".._OPTIONS["config"].."-windows-"..architecture.."\\Test.exe")
             else
-                res,msg,sig = os.execute("bin/".._OPTIONS["config"].."-linux-x86_64/Test")
+                res,msg,sig = os.execute("bin/".._OPTIONS["config"].."-linux-"..architecture.."/Test")
             end
             
             if (not res and msg == "exit") then

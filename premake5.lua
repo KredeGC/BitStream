@@ -2,11 +2,29 @@ newoption {
     trigger = "toolset",
     value = "Toolset (eg. gcc, clang, msc)",
     description = "The toolset to use to compile with",
-    default = "gcc",
+    default = os.host() == "windows" and "msc" or "gcc",
     allowed = {
         { "gcc", "gcc and g++ using ld and ar" },
         { "clang", "clang and clang++ using lld and llvm-ar" },
         { "msc", "msbuild and cl using link.exe" }
+    }
+}
+
+newoption {
+    trigger = "dialect",
+    value = "Dialect (eg. C++17, C++20)",
+    description = "The dialect to use when generating project files",
+    default = "C++17",
+}
+
+newoption {
+    trigger = "architecture",
+    value = "Architecture",
+    description = "The architecture to target",
+    default = "x64",
+    allowed = {
+        { "x86", "32 bit x86 architecture" },
+        { "x64", "64 bit x86 architecture" }
     }
 }
 
@@ -21,20 +39,17 @@ newoption {
     }
 }
 
-newoption {
-    trigger = "dialect",
-    value = "Dialect (eg. C++17, C++20)",
-    description = "The dialect to use when generating project files",
-    default = "C++17",
-}
-
 require "scripts/build"
 require "scripts/test"
 
 workspace "BitStream"
-    architecture "x64"
-    startproject "Test"
     toolset(_OPTIONS["toolset"])
+    startproject "Test"
+    
+    platforms {
+        "x86",
+        "x86_64"
+    }
     
     configurations {
         "debug",
@@ -66,6 +81,7 @@ project "Test"
         "include"
     }
 
+    -- OS
     filter "system:windows"
         systemversion "latest"
         
@@ -76,6 +92,14 @@ project "Test"
     filter "system:linux"
         systemversion "latest"
     
+    -- Architecture
+    filter "platforms:x86"
+        architecture "x86"
+    
+    filter "platforms:x64"
+        architecture "x86_64"
+    
+    -- Config
     filter "configurations:Debug"
         defines { "BS_DEBUG_BREAK" }
         

@@ -16,6 +16,26 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
 [![Tests](https://img.shields.io/github/actions/workflow/status/KredeGC/BitStream/main.yml?branch=master&style=flat-square)](https://github.com/KredeGC/BitStream/actions/workflows/main.yml)
 </div>
 
+# Table of Content
+* [Compatibility](#compatibility)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Documentation](#documentation)
+* [Serializables - serialize_traits](#serializables---serialize_traits)
+  * [Booleans - bool](#booleans---bool)
+  * [Bounded integers - T](#bounded-integers---t)
+  * [Compile-time bounded integers - bounded_int\<T, T Min, T Max\>](#compile-time-bounded-integers---bounded_intt-t-min-t-max)
+  * [C-style strings - const char*](#c-style-strings---const-char)
+  * [Modern strings - std::basic_string\<T\>](#modern-strings---stdbasic_stringt)
+  * [Single-precision float - float](#single-precision-float---float)
+  * [Half-precision float - half_precision](#half-precision-float---half_precision)
+  * [Bounded float - bounded_range](#bounded-float---bounded_range)
+  * [Quaternion - smallest_three\<Q, BitsPerElement\>](#quaternion---smallest_threeq-bitsperelement)
+* [Serialization Examples](#serialization-examples)
+* [Building and running tests](#building-and-running-tests)
+* [3rd party](#3rd-party)
+* [License](#license)
+
 # Compatibility
 This library was made with C++17 in mind and is not compatible with earlier versions.
 Many of the features use `if constexpr`, which is only available from 17 and up.
@@ -331,6 +351,26 @@ struct serialize_traits<T*, typename std::enable_if_t<std::is_integral_v<T>>>
 ```
 
 More concrete examples of traits can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.
+
+# Building and running tests
+The tests require premake5 as build system.
+Generating project files can be done by running:
+```bash
+# Linux
+premake5 gmake2 --toolset=gcc
+# Windows
+premake5 vs2019 --toolset=msc
+```
+
+Afterwards the tests can be built using the command below:
+```bash
+premake5 build --config=(release | debug)
+```
+
+You can also run the tests using the command below, or simply run the binary located in `bin/{{config}}-{{platform}}-{{architecture}}`:
+```bash
+premake5 test --config=(release | debug)
+```
 
 # 3rd party
 The library has no dependencies, but does build upon some code from the [NetStack](https://github.com/nxrighthere/NetStack) library by Stanislav Denisov, which is free to use, as per their [license](https://github.com/nxrighthere/NetStack/blob/master/LICENSE). The code in question is about quantizing floats and quaternions, which has simply been translated from C# into C++ for the purposes of this library.
