@@ -48,7 +48,7 @@ workspace "BitStream"
     
     platforms {
         "x86",
-        "x86_64"
+        "x64"
     }
     
     configurations {
@@ -100,13 +100,13 @@ project "Test"
         architecture "x86_64"
     
     -- Config
-    filter "configurations:Debug"
+    filter "configurations:debug"
         defines { "BS_DEBUG_BREAK" }
         
         runtime "Debug"
         symbols "on"
         
-    filter "configurations:Release"
+    filter "configurations:release"
         flags { "LinkTimeOptimization" }
 
         runtime "Release"
