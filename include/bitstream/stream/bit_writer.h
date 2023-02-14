@@ -67,6 +67,12 @@ namespace bitstream
         }
 
 		/**
+		 * @brief Returns the buffer that this writer is currently serializing into
+		 * @return The buffer
+		*/
+		uint8_t* get_buffer() const noexcept { return reinterpret_cast<uint8_t*>(m_Buffer); }
+
+		/**
 		 * @brief Returns the number of bits which have been written to the buffer
 		 * @return The number of bits which have been written
 		*/
