@@ -31,4 +31,36 @@ namespace bitstream
 			return true;
 		}
 	};
+
+	/**
+	 * @brief A trait used to serialize multiple boolean values
+	*/
+	template<size_t Size>
+	struct serialize_traits<bool[Size]>
+	{
+		static bool serialize(bit_writer& writer, const bool* values) noexcept
+		{
+			uint32_t unsigned_value;
+			for (size_t i = 0; i < Size; i++)
+			{
+				unsigned_value = values[i];
+				BS_ASSERT(writer.serialize_bits(unsigned_value, 1U));
+			}
+
+			return writer.serialize_bits(unsigned_value, 1U);
+		}
+
+		static bool serialize(bit_reader& reader, bool* values) noexcept
+		{
+			uint32_t unsigned_value;
+			for (size_t i = 0; i < Size; i++)
+			{
+				BS_ASSERT(reader.serialize_bits(unsigned_value, 1U));
+
+				values[i] = unsigned_value;
+			}
+
+			return true;
+		}
+	};
 }

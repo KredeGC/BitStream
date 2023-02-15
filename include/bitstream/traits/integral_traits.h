@@ -13,7 +13,7 @@
 namespace bitstream
 {
 	/**
-	 * @brief Wrapper type for compile-time known integer bounds
+	 * @brief Wrapper type for compiletime known integer bounds
 	 * @tparam T 
 	*/
 	template<typename T, T, T>
@@ -27,6 +27,14 @@ namespace bitstream
 	template<typename T>
 	struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T>>>
 	{
+		/**
+		 * @brief Writes an integer into the @p writer
+		 * @param writer The stream to write to
+		 * @param value The value to serialize
+		 * @param min The minimum bound that @p value can be. Inclusive
+		 * @param max The maximum bound that @p value can be. Inclusive
+		 * @return Success
+		*/
 		static bool serialize(bit_writer& writer, T value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
@@ -59,6 +67,14 @@ namespace bitstream
 			return true;
 		}
 
+		/**
+		 * @brief Reads an integer from the @p reader into @p value
+		 * @param reader The stream to read from
+		 * @param value The value to read into
+		 * @param min The minimum bound that @p value can be. Inclusive
+		 * @param max The maximum bound that @p value can be. Inclusive
+		 * @return Success
+		*/
 		static bool serialize(bit_reader& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
@@ -106,12 +122,18 @@ namespace bitstream
 	/**
 	 * @brief A trait used to serialize integer values with compiletime bounds
 	 * @tparam T A type matching an integer value
-	 * @tparam Min The lower bound
-	 * @tparam Max The upper bound
+	 * @tparam Min The lower bound. Inclusive
+	 * @tparam Max The upper bound. Inclusive
 	*/
 	template<typename T, T Min, T Max>
 	struct serialize_traits<bounded_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T>>>
 	{
+		/**
+		 * @brief Writes an integer into the @p writer
+		 * @param writer The stream to write to
+		 * @param value The value to serialize
+		 * @return Success
+		*/
 		static bool serialize(bit_writer& writer, T value) noexcept
 		{
 			static_assert(Min < Max);
@@ -141,6 +163,12 @@ namespace bitstream
 			return true;
 		}
 
+		/**
+		 * @brief Reads an integer from the @p writer into @p value
+		 * @param reader The stream to read from
+		 * @param value The value to serialize
+		 * @return Success
+		*/
 		static bool serialize(bit_reader& reader, T& value) noexcept
 		{
 			static_assert(Min < Max);

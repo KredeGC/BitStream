@@ -15,6 +15,11 @@ namespace bitstream
 	template<typename T, typename = T>
 	struct array_subset;
 
+	/**
+	 * @brief A trait used for serializing a subset of an array of objects
+	 * @tparam T The type of the object in the array
+	 * @tparam Trait 
+	*/
 	template<typename T, typename Trait>
 	struct serialize_traits<array_subset<T, Trait>>
 	{
@@ -93,6 +98,17 @@ namespace bitstream
         }
 
     public:
+		/**
+		 * @brief Writes a subset of the array @p values into the writer
+		 * @tparam Compare A function type which returns a bool
+		 * @tparam ...Args The types of any additional arguments
+		 * @param writer The stream to write to
+		 * @param values The array of objects to serialize
+		 * @param max_size The size of the array
+		 * @param compare A function which returns true if the object should be written, false otherwise
+		 * @param ...args Any additional arguments to use when serializing each individual object
+		 * @return Success
+		*/
 		template<typename Compare, typename... Args>
 		static bool serialize(bit_writer& writer, T* values, int max_size, Compare compare, Args&&... args) noexcept
 		{
@@ -112,6 +128,17 @@ namespace bitstream
 			return true;
 		}
 
+		/**
+		 * @brief Writes a subset of a serialized array into @p values
+		 * @tparam Compare A stub. Not used on read
+		 * @tparam ...Args The types of any additional arguments
+		 * @param reader The stream to read from
+		 * @param values The array of objects to read into
+		 * @param max_size The size of the array
+		 * @param compare Not used, but kept for compatibility with the serialize write function
+		 * @param ...args Any additional arguments to use when serializing each individual object
+		 * @return Success
+		*/
 		template<typename Compare, typename... Args>
 		static bool serialize(bit_reader& reader, T* values, int max_size, Compare compare, Args&&... args) noexcept
 		{

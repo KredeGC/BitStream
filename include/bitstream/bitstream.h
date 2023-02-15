@@ -12,6 +12,7 @@
 
 // Traits
 #include "traits/array_traits.h"
+#include "traits/bool_trait.h"
 #include "traits/integral_traits.h"
 #include "traits/quantization_traits.h"
 #include "traits/string_traits.h"
