@@ -25,12 +25,14 @@
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
 <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
 <script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
     DoxygenAwesomeParagraphLink.init()
     DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>
@@ -139,6 +141,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac476b43a89c29322a584deec10ebad37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5210ff272ae42c0e5b82062545a32eb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#a5210ff272ae42c0e5b82062545a32eb7">bit_reader</a> (<a class="el" href="classbitstream_1_1bit__reader.html">bit_reader</a> &amp;&amp;other) noexcept</td></tr>
 <tr class="separator:a5210ff272ae42c0e5b82062545a32eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac244b32198f1b826a0afa140dbdb0b99"><td class="memItemLeft" align="right" valign="top">const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#ac244b32198f1b826a0afa140dbdb0b99">get_buffer</a> () const noexcept</td></tr>
+<tr class="memdesc:ac244b32198f1b826a0afa140dbdb0b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the buffer that this reader is currently serializing from.  <a href="classbitstream_1_1bit__reader.html#ac244b32198f1b826a0afa140dbdb0b99">More...</a><br /></td></tr>
+<tr class="separator:ac244b32198f1b826a0afa140dbdb0b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2f10f5335718852475832f3b1011eff"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html#ad2f10f5335718852475832f3b1011eff">get_num_bits_serialized</a> () const noexcept</td></tr>
 <tr class="memdesc:ad2f10f5335718852475832f3b1011eff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bits which have been read from the buffer.  <a href="classbitstream_1_1bit__reader.html#ad2f10f5335718852475832f3b1011eff">More...</a><br /></td></tr>
 <tr class="separator:ad2f10f5335718852475832f3b1011eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -381,6 +386,34 @@ Static Public Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Whether the number of bits can be read from the buffer </dd></dl>
+
+</div>
+</div>
+<a id="ac244b32198f1b826a0afa140dbdb0b99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac244b32198f1b826a0afa140dbdb0b99">&#9670;&nbsp;</a></span>get_buffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t* bitstream::bit_reader::get_buffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the buffer that this reader is currently serializing from. </p>
+<dl class="section return"><dt>Returns</dt><dd>The buffer </dd></dl>
 
 </div>
 </div>

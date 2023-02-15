@@ -25,24 +25,27 @@
 var NAVTREE =
 [
   [ "BitStream", "index.html", [
-    [ "Compatibility", "index.html#autotoc_md0", null ],
-    [ "Installation", "index.html#autotoc_md1", null ],
-    [ "Usage", "index.html#autotoc_md2", null ],
-    [ "Documentation", "index.html#autotoc_md3", null ],
-    [ "Serializables - serialize_traits", "index.html#autotoc_md4", [
-      [ "Bounded integers - T", "index.html#autotoc_md5", null ],
-      [ "Compile-time bounded integers - bounded_int<T, T Min, T Max>", "index.html#autotoc_md6", null ],
-      [ "C-style strings - const char*", "index.html#autotoc_md7", null ],
-      [ "Modern strings - std::basic_string<T>", "index.html#autotoc_md8", null ],
-      [ "Single-precision float - float", "index.html#autotoc_md9", null ],
-      [ "Half-precision float - half_precision", "index.html#autotoc_md10", null ],
-      [ "Bounded float - bounded_range", "index.html#autotoc_md11", null ],
-      [ "Quaternion - smallest_three<Q, BitsPerElement>", "index.html#autotoc_md12", null ]
+    [ "Table of Content", "index.html#autotoc_md0", null ],
+    [ "Compatibility", "index.html#autotoc_md1", null ],
+    [ "Installation", "index.html#autotoc_md2", null ],
+    [ "Usage", "index.html#autotoc_md3", null ],
+    [ "Documentation", "index.html#autotoc_md4", null ],
+    [ "Serializables - serialize_traits", "index.html#autotoc_md5", [
+      [ "Booleans - bool", "index.html#autotoc_md6", null ],
+      [ "Bounded integers - T", "index.html#autotoc_md7", null ],
+      [ "Compile-time bounded integers - bounded_int<T, T Min, T Max>", "index.html#autotoc_md8", null ],
+      [ "C-style strings - const char*", "index.html#autotoc_md9", null ],
+      [ "Modern strings - std::basic_string<T>", "index.html#autotoc_md10", null ],
+      [ "Single-precision float - float", "index.html#autotoc_md11", null ],
+      [ "Half-precision float - half_precision", "index.html#autotoc_md12", null ],
+      [ "Bounded float - bounded_range", "index.html#autotoc_md13", null ],
+      [ "Quaternion - smallest_three<Q, BitsPerElement>", "index.html#autotoc_md14", null ]
     ] ],
-    [ "Serialization Examples", "index.html#autotoc_md13", null ],
-    [ "Extensibility", "index.html#autotoc_md14", null ],
-    [ "3rd party", "index.html#autotoc_md15", null ],
-    [ "License", "index.html#autotoc_md16", null ],
+    [ "Serialization Examples", "index.html#autotoc_md15", null ],
+    [ "Extensibility", "index.html#autotoc_md16", null ],
+    [ "Building and running tests", "index.html#autotoc_md17", null ],
+    [ "3rd party", "index.html#autotoc_md18", null ],
+    [ "License", "index.html#autotoc_md19", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [

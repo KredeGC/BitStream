@@ -4,7 +4,8 @@ var dir_e2861141d777ec03bea8974f785592fa =
       [ "serialize_traits< array_subset< T, Trait > >", "structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html", null ]
     ] ],
     [ "bool_trait.h", "bool__trait_8h.html", [
-      [ "serialize_traits< bool >", "structbitstream_1_1serialize__traits_3_01bool_01_4.html", null ]
+      [ "serialize_traits< bool >", "structbitstream_1_1serialize__traits_3_01bool_01_4.html", null ],
+      [ "serialize_traits< bool[Size]>", "structbitstream_1_1serialize__traits_3_01bool_0fSize_0e_4.html", null ]
     ] ],
     [ "integral_traits.h", "integral__traits_8h.html", [
       [ "serialize_traits< T, typename std::enable_if_t< std::is_integral_v< T > > >", "structbitstream_1_1serialize__traits_3_01T_00_01typename_01std_1_1enable__if__t_3_01std_1_1is__integral__v_3_01T_01_4_01_4_01_4.html", null ],

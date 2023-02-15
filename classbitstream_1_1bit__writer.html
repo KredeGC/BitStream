@@ -25,12 +25,14 @@
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
 <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
 <script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
     DoxygenAwesomeParagraphLink.init()
     DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>
@@ -138,6 +140,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afbfce6c2075172482e2a909400e66119"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae88a7d879c7821868c5e465f859dc269"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#ae88a7d879c7821868c5e465f859dc269">bit_writer</a> (<a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&amp;other) noexcept</td></tr>
 <tr class="separator:ae88a7d879c7821868c5e465f859dc269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c0fd4493b90a2613b49c9bb94f2cd4"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a47c0fd4493b90a2613b49c9bb94f2cd4">get_buffer</a> () const noexcept</td></tr>
+<tr class="memdesc:a47c0fd4493b90a2613b49c9bb94f2cd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the buffer that this writer is currently serializing into.  <a href="classbitstream_1_1bit__writer.html#a47c0fd4493b90a2613b49c9bb94f2cd4">More...</a><br /></td></tr>
+<tr class="separator:a47c0fd4493b90a2613b49c9bb94f2cd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28f498aaae7c2a7716cf119d3d0410dc"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a28f498aaae7c2a7716cf119d3d0410dc">get_num_bits_serialized</a> () const noexcept</td></tr>
 <tr class="memdesc:a28f498aaae7c2a7716cf119d3d0410dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of bits which have been written to the buffer.  <a href="classbitstream_1_1bit__writer.html#a28f498aaae7c2a7716cf119d3d0410dc">More...</a><br /></td></tr>
 <tr class="separator:a28f498aaae7c2a7716cf119d3d0410dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -396,6 +401,34 @@ Friends</h2></td></tr>
 
 <p>Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of bytes written to the buffer </dd></dl>
+
+</div>
+</div>
+<a id="a47c0fd4493b90a2613b49c9bb94f2cd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47c0fd4493b90a2613b49c9bb94f2cd4">&#9670;&nbsp;</a></span>get_buffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* bitstream::bit_writer::get_buffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the buffer that this writer is currently serializing into. </p>
+<dl class="section return"><dt>Returns</dt><dd>The buffer </dd></dl>
 
 </div>
 </div>

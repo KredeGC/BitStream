@@ -25,12 +25,14 @@
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
 <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
 <script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
     DoxygenAwesomeParagraphLink.init()
     DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>
@@ -164,6 +166,10 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 <li>get_bits_required()
 : <a class="el" href="classbitstream_1_1bounded__range.html#ae5898c0f92798bf42028b567a9affa3c">bitstream::bounded_range</a>
 </li>
+<li>get_buffer()
+: <a class="el" href="classbitstream_1_1bit__reader.html#ac244b32198f1b826a0afa140dbdb0b99">bitstream::bit_reader</a>
+, <a class="el" href="classbitstream_1_1bit__writer.html#a47c0fd4493b90a2613b49c9bb94f2cd4">bitstream::bit_writer</a>
+</li>
 <li>get_max()
 : <a class="el" href="classbitstream_1_1bounded__range.html#a1d355bc5e429fe9c6ffff721625008d6">bitstream::bounded_range</a>
 </li>
@@ -217,9 +223,10 @@ $(document).ready(function(){initNavTree('functions_func.html',''); initResizabl
 , <a class="el" href="classbitstream_1_1bit__writer.html#a336d204736110d27c7fc6d7f1831687a">bitstream::bit_writer</a>
 , <a class="el" href="structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html#a70fe412f28a3be2e92f9156e7a5f1f06">bitstream::serialize_traits&lt; array_subset&lt; T, Trait &gt; &gt;</a>
 , <a class="el" href="structbitstream_1_1serialize__traits_3_01bool_01_4.html#a39291cb7a613fdcc5936a18c1a09de86">bitstream::serialize_traits&lt; bool &gt;</a>
-, <a class="el" href="structbitstream_1_1serialize__traits_3_01bounded__int_3_01T_00_01Min_00_01Max_01_4_00_01typename9c523d0773db3b94c59c9098d8d5e3d5.html#ae8e8faa8150b2970b75f7fb2919054a6">bitstream::serialize_traits&lt; bounded_int&lt; T, Min, Max &gt;, typename std::enable_if_t&lt; std::is_integral_v&lt; T &gt; &gt; &gt;</a>
+, <a class="el" href="structbitstream_1_1serialize__traits_3_01bool_0fSize_0e_4.html#a14af8011d4dec306be1b741b86736dad">bitstream::serialize_traits&lt; bool[Size]&gt;</a>
+, <a class="el" href="structbitstream_1_1serialize__traits_3_01bounded__int_3_01T_00_01Min_00_01Max_01_4_00_01typename9c523d0773db3b94c59c9098d8d5e3d5.html#ab896c36ec917fc8fb49ba6e750c018ab">bitstream::serialize_traits&lt; bounded_int&lt; T, Min, Max &gt;, typename std::enable_if_t&lt; std::is_integral_v&lt; T &gt; &gt; &gt;</a>
 , <a class="el" href="structbitstream_1_1serialize__traits_3_01bounded__range_01_4.html#af2715d66132a2409fb5f0608a135fcda">bitstream::serialize_traits&lt; bounded_range &gt;</a>
-, <a class="el" href="structbitstream_1_1serialize__traits_3_01const_01char_01_5_01_4.html#a7943a19d30b218dae5efdc148236305f">bitstream::serialize_traits&lt; const char * &gt;</a>
+, <a class="el" href="structbitstream_1_1serialize__traits_3_01const_01char_01_5_01_4.html#a3aacf2bd2fb15ee32bb9fe04825271b1">bitstream::serialize_traits&lt; const char * &gt;</a>
 , <a class="el" href="structbitstream_1_1serialize__traits_3_01float_01_4.html#add47f1a27e4e60972f805ab2bdf53dbc">bitstream::serialize_traits&lt; float &gt;</a>
 , <a class="el" href="structbitstream_1_1serialize__traits_3_01half__precision_01_4.html#a23b361bb6759f65da75e7ec7ca1b9839">bitstream::serialize_traits&lt; half_precision &gt;</a>
 , <a class="el" href="structbitstream_1_1serialize__traits_3_01smallest__three_3_01Q_00_01BitsPerElement_01_4_01_4.html#a03ae88de26cae16dc089aa1196823248">bitstream::serialize_traits&lt; smallest_three&lt; Q, BitsPerElement &gt; &gt;</a>

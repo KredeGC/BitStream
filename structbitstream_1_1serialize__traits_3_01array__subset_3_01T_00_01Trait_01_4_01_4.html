@@ -25,12 +25,14 @@
 <script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
 <script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
 <script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
 <script type="text/javascript" src="toggle-alternative-theme.js"></script>
 <script type="text/javascript">
     DoxygenAwesomeFragmentCopyButton.init()
     DoxygenAwesomeDarkModeToggle.init()
     DoxygenAwesomeParagraphLink.init()
     DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
 </script>
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="resize.js"></script>
@@ -121,18 +123,35 @@ $(document).ready(function(){initNavTree('structbitstream_1_1serialize__traits_3
 </div><!--header-->
 <div class="contents">
 
+<p>A trait used for serializing a subset of an array of objects.  
+ <a href="structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="array__traits_8h_source.html">array_traits.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a70fe412f28a3be2e92f9156e7a5f1f06"><td class="memTemplParams" colspan="2">template&lt;typename Compare , typename... Args&gt; </td></tr>
 <tr class="memitem:a70fe412f28a3be2e92f9156e7a5f1f06"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html#a70fe412f28a3be2e92f9156e7a5f1f06">serialize</a> (<a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;writer, T *values, int max_size, Compare compare, Args &amp;&amp;... args) noexcept</td></tr>
+<tr class="memdesc:a70fe412f28a3be2e92f9156e7a5f1f06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a subset of the array <code>values</code> into the writer.  <a href="structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html#a70fe412f28a3be2e92f9156e7a5f1f06">More...</a><br /></td></tr>
 <tr class="separator:a70fe412f28a3be2e92f9156e7a5f1f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec3a5a33cf897efe01c495f077cf7a05"><td class="memTemplParams" colspan="2">template&lt;typename Compare , typename... Args&gt; </td></tr>
 <tr class="memitem:aec3a5a33cf897efe01c495f077cf7a05"><td class="memTemplItemLeft" align="right" valign="top">static bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html#aec3a5a33cf897efe01c495f077cf7a05">serialize</a> (<a class="el" href="classbitstream_1_1bit__reader.html">bit_reader</a> &amp;reader, T *values, int max_size, Compare compare, Args &amp;&amp;... args) noexcept</td></tr>
+<tr class="memdesc:aec3a5a33cf897efe01c495f077cf7a05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes a subset of a serialized array into <code>values</code>.  <a href="structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html#aec3a5a33cf897efe01c495f077cf7a05">More...</a><br /></td></tr>
 <tr class="separator:aec3a5a33cf897efe01c495f077cf7a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;typename T, typename Trait&gt;<br />
+struct bitstream::serialize_traits&lt; array_subset&lt; T, Trait &gt; &gt;</h3>
+
+<p>A trait used for serializing a subset of an array of objects. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>The type of the object in the array </td></tr>
+    <tr><td class="paramname">Trait</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="aec3a5a33cf897efe01c495f077cf7a05"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aec3a5a33cf897efe01c495f077cf7a05">&#9670;&nbsp;</a></span>serialize() <span class="overload">[1/2]</span></h2>
 
@@ -188,6 +207,26 @@ template&lt;typename Compare , typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Writes a subset of a serialized array into <code>values</code>. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Compare</td><td>A stub. Not used on read </td></tr>
+    <tr><td class="paramname">...Args</td><td>The types of any additional arguments </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reader</td><td>The stream to read from </td></tr>
+    <tr><td class="paramname">values</td><td>The array of objects to read into </td></tr>
+    <tr><td class="paramname">max_size</td><td>The size of the array </td></tr>
+    <tr><td class="paramname">compare</td><td>Not used, but kept for compatibility with the serialize write function </td></tr>
+    <tr><td class="paramname">...args</td><td>Any additional arguments to use when serializing each individual object </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Success </dd></dl>
 
 </div>
 </div>
@@ -246,6 +285,26 @@ template&lt;typename Compare , typename... Args&gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Writes a subset of the array <code>values</code> into the writer. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Compare</td><td>A function type which returns a bool </td></tr>
+    <tr><td class="paramname">...Args</td><td>The types of any additional arguments </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">writer</td><td>The stream to write to </td></tr>
+    <tr><td class="paramname">values</td><td>The array of objects to serialize </td></tr>
+    <tr><td class="paramname">max_size</td><td>The size of the array </td></tr>
+    <tr><td class="paramname">compare</td><td>A function which returns true if the object should be written, false otherwise </td></tr>
+    <tr><td class="paramname">...args</td><td>Any additional arguments to use when serializing each individual object </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Success </dd></dl>
 
 </div>
 </div>

@@ -7,6 +7,7 @@ var classbitstream_1_1bit__reader =
     [ "bit_reader", "classbitstream_1_1bit__reader.html#a5210ff272ae42c0e5b82062545a32eb7", null ],
     [ "align", "classbitstream_1_1bit__reader.html#adb05b04a7e51f4d77b969a8cd8ea71e3", null ],
     [ "can_serialize_bits", "classbitstream_1_1bit__reader.html#ae922ce79e1be384cb826e1f2a8a0d7b0", null ],
+    [ "get_buffer", "classbitstream_1_1bit__reader.html#ac244b32198f1b826a0afa140dbdb0b99", null ],
     [ "get_num_bits_serialized", "classbitstream_1_1bit__reader.html#ad2f10f5335718852475832f3b1011eff", null ],
     [ "get_remaining_bits", "classbitstream_1_1bit__reader.html#a9af359b85465a9572303a42cad85aed4", null ],
     [ "get_total_bits", "classbitstream_1_1bit__reader.html#a62cbc70995add6f93a452789033f9963", null ],
