@@ -150,7 +150,8 @@ Compatibility</h1>
 <p>This library was made with C++17 in mind and is not compatible with earlier versions. Many of the features use <code>if constexpr</code>, which is only available from 17 and up. If you really want it to work with earlier versions, you should just be able to replace the newer features with C++1x counterparts.</p>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Installation</h1>
-<p>As this is a header-only library, you can simply copy the header files directly into your project and include them where relevant. The header files can either be downloaded from the <a href="https://github.com/KredeGC/BitStream/releases">releases page</a> or from the <a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream"><code>include/</code></a> directory on the master branch. The source and header files inside the <code>test/</code> directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.</p>
+<p>As this is a header-only library, you can simply copy the header files directly into your project and include them where relevant. The header files can either be downloaded from the <a href="https://github.com/KredeGC/BitStream/releases">releases page</a> or from the <a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream"><code>include/</code></a> directory on the master branch.</p>
+<p>The source and header files inside the <code>test/</code> directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.</p>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Usage</h1>
 <p>The library has a global header file (<a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h"><code>bitstream/bitstream.h</code></a>) which includes every other header file in the library.</p>
@@ -159,6 +160,7 @@ Usage</h1>
 <li><a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream/stream/"><code>stream/</code></a> - Files relating to streams that read and write bits</li>
 <li><a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/"><code>traits/</code></a> - Files relating to various serialization traits, like serializble strings, integrals etc.</li>
 </ul>
+<p>An important aspect of the serialiaztion is performance, since the library is meant to be used in a tight loop, like with networking. This is why most operations don't use exceptions, but instead return true or false depending on whether the operation was a success. It's important to check these return values after every operation, especially when reading. You can check it manually or use the <code><a class="el" href="assert_8h.html#ac9d13046c56499e4cef74e2ae4f14c1c">BS_ASSERT(x)</a></code> macro for this, if you want your function to return false on failure.</p>
 <p>It is also possible to dynamically put a break point or trap when a bitstream would have otherwise returned false. This can be great for debugging custom serialization code, but should generally be left out of production code. Simply <code>#define BS_DEBUG_BREAK</code> before including any of the library header files if you want to break when an operation fails.</p>
 <p>For more examples of usage, see the <a href="#serialization-examples">Serialization Examples</a> below. You can also look at the unit tests to get a better idea about what you can expect from the library.</p>
 <h1><a class="anchor" id="autotoc_md4"></a>
@@ -202,8 +204,10 @@ C-style strings - const char*</h2>
 <p>A trait that only covers c-style strings.<br  />
  Takes the pointer and a maximum expected string length.</p>
 <p>The call signature can be seen below: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> serialize&lt;const char*&gt;(<span class="keyword">const</span> <span class="keywordtype">char</span>* value, uint32_t max_size);</div>
-</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span>* value = <span class="stringliteral">&quot;Hello world!&quot;</span>;</div>
-<div class="line"><span class="keywordtype">bool</span> status = stream.serialize&lt;<span class="keyword">const</span> <span class="keywordtype">char</span>*&gt;(value, 32);</div>
+</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span>* in_value = <span class="stringliteral">&quot;Hello world!&quot;</span>;</div>
+<div class="line"><span class="keywordtype">char</span> out_value[32]{ 0 };</div>
+<div class="line"><span class="keywordtype">bool</span> status_write = writer.serialize&lt;<span class="keyword">const</span> <span class="keywordtype">char</span>*&gt;(in_value, 32);</div>
+<div class="line"><span class="keywordtype">bool</span> status_read = reader.serialize&lt;<span class="keyword">const</span> <span class="keywordtype">char</span>*&gt;(out_value, 32);</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md10"></a>
 Modern strings - std::basic_string&lt;T&gt;</h2>
 <p>A trait that covers any combination of basic_string, including strings with different allocators.<br  />
@@ -211,33 +215,42 @@ Modern strings - std::basic_string&lt;T&gt;</h2>
 <p>The, somewhat bloated, call signature can be seen below: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> serialize&lt;std::basic_string&lt;T, Traits, Alloc&gt;&gt;(std::basic_string&lt;T, Traits, Alloc&gt;&amp; value, uint32_t max_size);</div>
 <div class="line"><span class="comment">// For std::string this would look like:</span></div>
 <div class="line"><span class="keywordtype">bool</span> serialize&lt;std::string&gt;(std::string&amp; value, uint32_t max_size);</div>
-</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line">std::string value = <span class="stringliteral">&quot;Hello world!&quot;</span>;</div>
-<div class="line"><span class="keywordtype">bool</span> status = stream.serialize&lt;std::string&gt;(value, 32);</div>
+</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line">std::string in_value = <span class="stringliteral">&quot;Hello world!&quot;</span>;</div>
+<div class="line">std::string out_value;</div>
+<div class="line"><span class="keywordtype">bool</span> status_write = writer.serialize&lt;std::string&gt;(in_value, 32);</div>
+<div class="line"><span class="keywordtype">bool</span> status_read = reader.serialize&lt;std::string&gt;(out_value, 32);</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md11"></a>
 Single-precision float - float</h2>
 <p>A trait that covers an entire float, with no quantization.<br  />
  Takes a reference to the float.</p>
 <p>The call signature can be seen below: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> serialize&lt;float&gt;(<span class="keywordtype">float</span>&amp; value);</div>
-</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line"><span class="keywordtype">float</span> value = 0.12345678f;</div>
-<div class="line"><span class="keywordtype">bool</span> status = stream.serialize&lt;<span class="keywordtype">float</span>&gt;(value);</div>
+</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line"><span class="keywordtype">float</span> in_value = 0.12345678f;</div>
+<div class="line"><span class="keywordtype">float</span> out_value;</div>
+<div class="line"><span class="keywordtype">bool</span> status_write = writer.serialize&lt;<span class="keywordtype">float</span>&gt;(in_value);</div>
+<div class="line"><span class="keywordtype">bool</span> status_read = reader.serialize&lt;<span class="keywordtype">float</span>&gt;(out_value);</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md12"></a>
 Half-precision float - half_precision</h2>
 <p>A trait that covers a float which has been quantized to 16 bits.<br  />
  Takes a reference to the float.</p>
 <p>The call signature can be seen below: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> serialize&lt;half_precision&gt;(<span class="keywordtype">float</span>&amp; value);</div>
-</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line"><span class="keywordtype">float</span> value = 0.12345678f;</div>
-<div class="line"><span class="keywordtype">bool</span> status = stream.serialize&lt;half_precision&gt;(value);</div>
+</div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line"><span class="keywordtype">float</span> in_value = 0.12345678f;</div>
+<div class="line"><span class="keywordtype">float</span> out_value;</div>
+<div class="line"><span class="keywordtype">bool</span> status_write = writer.serialize&lt;half_precision&gt;(in_value);</div>
+<div class="line"><span class="keywordtype">bool</span> status_read = reader.serialize&lt;half_precision&gt;(out_value);</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md13"></a>
 Bounded float - bounded_range</h2>
-<p>A trait that covers a quantized float.<br  />
+<p>A trait that covers a bounded float.<br  />
  Takes a reference to the bounded_range and a reference to the float.</p>
-<p>The call signature can be seen below: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> serialize&lt;bounded_range&gt;(bounded_range&amp; range, <span class="keywordtype">float</span>&amp; value);</div>
+<p>The call signature can be seen below: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> serialize&lt;bounded_range&gt;(<span class="keyword">const</span> bounded_range&amp; range, <span class="keywordtype">float</span>&amp; value);</div>
 </div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line">bounded_range range(1.0f, 4.0f, 1.0f / 128.0f);</div>
-<div class="line"><span class="keywordtype">float</span> value = 0.1234f;</div>
-<div class="line"><span class="keywordtype">bool</span> status = stream.serialize&lt;bounded_range&gt;(range, value);</div>
+<div class="line"><span class="keywordtype">float</span> in_value = 0.1234f;</div>
+<div class="line"><span class="keywordtype">float</span> out_value;</div>
+<div class="line"><span class="keywordtype">bool</span> status_write = writer.serialize&lt;bounded_range&gt;(range, in_value);</div>
+<div class="line"><span class="keywordtype">bool</span> status_read = reader.serialize&lt;bounded_range&gt;(range, out_value);</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md14"></a>
 Quaternion - smallest_three&lt;Q, BitsPerElement&gt;</h2>
 <p>A trait that covers any quaternion type in any order, as long as it's consistent.<br  />
+ Quantizes the quaternion using the given BitsPerElement.<br  />
  Takes a reference to the quaternion.</p>
 <p>The call signature can be seen below: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> serialize&lt;smallest_three&lt;Q, BitsPerElement&gt;&gt;(Q&amp; value);</div>
 </div><!-- fragment --><p> As well as a short example of its usage: </p><div class="fragment"><div class="line"><span class="keyword">struct </span>quaternion</div>
@@ -247,13 +260,16 @@ Quaternion - smallest_three&lt;Q, BitsPerElement&gt;</h2>
 <div class="line">    <span class="keywordtype">float</span> y;</div>
 <div class="line">    <span class="keywordtype">float</span> z;</div>
 <div class="line">    </div>
+<div class="line">    <span class="comment">// This needs to return the same order as the constructor</span></div>
 <div class="line">    <span class="keywordtype">float</span> operator[](<span class="keywordtype">size_t</span> index)<span class="keyword"> const</span></div>
 <div class="line"><span class="keyword">    </span>{</div>
 <div class="line">        <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">float</span>*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)[index];</div>
 <div class="line">    }</div>
 <div class="line">};</div>
-<div class="line">quaternion value = { 1.0f, 0.0f, 0.0f, 0.0f };</div>
-<div class="line"><span class="keywordtype">bool</span> status = stream.serialize&lt;smallest_three&lt;quaternion, 12&gt;&gt;(value);</div>
+<div class="line">quaternion in_value = { 1.0f, 0.0f, 0.0f, 0.0f };</div>
+<div class="line">quaternion out_value;</div>
+<div class="line"><span class="keywordtype">bool</span> status_write = writer.serialize&lt;smallest_three&lt;quaternion, 12&gt;&gt;(in_value);</div>
+<div class="line"><span class="keywordtype">bool</span> status_read = reader.serialize&lt;smallest_three&lt;quaternion, 12&gt;&gt;(out_value);</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md15"></a>
 Serialization Examples</h1>
 <p>The examples below follow the same structure: First writing to a buffer and then reading from it. Each example is littered with comments about the procedure, as well as what outcome is expected.</p>
@@ -262,7 +278,7 @@ Serialization Examples</h1>
 <div class="line">bit_writer writer(buffer, 4);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Write the value</span></div>
-<div class="line">uint32_t value = 27; <span class="comment">// We can choose any value below 2^5. Otherwise we need more bits</span></div>
+<div class="line">uint32_t value = 27; <span class="comment">// We can choose any value below 2^5. Otherwise we need more than 5 bits</span></div>
 <div class="line">writer.serialize_bits(value, 5);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
@@ -280,10 +296,10 @@ Serialization Examples</h1>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Write the value</span></div>
 <div class="line">int32_t value = -45; <span class="comment">// We can choose any value within the range below</span></div>
-<div class="line">writer.serialize&lt;int32_t&gt;(value, -90, 40);</div>
+<div class="line">writer.serialize&lt;int32_t&gt;(value, -90, 40); <span class="comment">// A lower and upper bound which the value will be quantized between</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
-<div class="line">uint32_t num_bytes = writer.flush();</div>
+<div class="line">writer.flush();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
 <div class="line">bit_reader reader(std::move(writer));</div>
@@ -300,7 +316,7 @@ Serialization Examples</h1>
 <div class="line">writer.serialize&lt;<span class="keyword">const</span> <span class="keywordtype">char</span>*&gt;(value, 32U); <span class="comment">// The second argument is the maximum size we expect the string to be</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
-<div class="line">uint32_t num_bytes = writer.flush();</div>
+<div class="line">writer.flush();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
 <div class="line">bit_reader reader(std::move(writer));</div>
@@ -308,6 +324,23 @@ Serialization Examples</h1>
 <div class="line"><span class="comment">// Read the value back</span></div>
 <div class="line"><span class="keywordtype">char</span> out_value[32]; <span class="comment">// Set the size to the max size</span></div>
 <div class="line">reader.serialize&lt;<span class="keyword">const</span> <span class="keywordtype">char</span>*&gt;(out_value, 32U); <span class="comment">// out_value should now contain &quot;Hello world!\0&quot;</span></div>
+</div><!-- fragment --><p>Writing a std::string into the buffer: </p><div class="fragment"><div class="line"><span class="comment">// Create a writer, referencing the buffer and its size</span></div>
+<div class="line">uint8_t buffer[32];</div>
+<div class="line">bit_writer writer(buffer, 32);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Write the value</span></div>
+<div class="line">std::string value = <span class="stringliteral">&quot;Hello world!&quot;</span>;</div>
+<div class="line">writer.serialize&lt;std::string&gt;(value, 32U); <span class="comment">// The second argument is the maximum size we expect the string to be</span></div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
+<div class="line">writer.flush();</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
+<div class="line">bit_reader reader(std::move(writer));</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Read the value back</span></div>
+<div class="line">std::string out_value; <span class="comment">// The string will be resized if the output doesn&#39;t fit</span></div>
+<div class="line">reader.serialize&lt;std::string&gt;(out_value, 32U); <span class="comment">// out_value should now contain &quot;Hello world!&quot;</span></div>
 </div><!-- fragment --><p>Writing a float into the buffer with a bounded range and precision: </p><div class="fragment"><div class="line"><span class="comment">// Create a writer, referencing the buffer and its size</span></div>
 <div class="line">uint8_t buffer[4];</div>
 <div class="line">bit_writer writer(buffer, 4);</div>
@@ -318,7 +351,7 @@ Serialization Examples</h1>
 <div class="line">writer.serialize&lt;bounded_range&gt;(range, value);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
-<div class="line">uint32_t num_bytes = writer.flush();</div>
+<div class="line">writer.flush();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
 <div class="line">bit_reader reader(std::move(writer));</div>
@@ -340,9 +373,9 @@ Extensibility</h1>
 <div class="line">    <span class="keyword">static</span> <span class="keywordtype">bool</span> serialize(bit_reader&amp; stream, ...)</div>
 <div class="line">    { ... }</div>
 <div class="line">};</div>
-</div><!-- fragment --><p>Note that <code>TRAIT_TYPE</code> does not necessarily have to be part of the function definitions. It is purely used to specify which trait to use when serializing, since it cannot be deduced from the arguments.<br  />
+</div><!-- fragment --><p>Note that <code>TRAIT_TYPE</code> does not necessarily have to be part of the serialize function definitions. It is purely used to specify which trait to use when serializing, since it cannot be deduced from the arguments.<br  />
  To use the trait above to serialize an object you need to explicitly specify it: </p><div class="fragment"><div class="line"><span class="keywordtype">bool</span> status = writer.serialize&lt;TRAIT_TYPE&gt;(...);</div>
-</div><!-- fragment --><p>The specialization can also be unified, if writing and reading look similar: </p><div class="fragment"><div class="line"><span class="keyword">template</span>&lt;&gt;</div>
+</div><!-- fragment --><p>The specialization can also be unified with templating, if writing and reading look similar: </p><div class="fragment"><div class="line"><span class="keyword">template</span>&lt;&gt;</div>
 <div class="line"><span class="keyword">struct </span>serialize_traits&lt;TRAIT_TYPE&gt; <span class="comment">// The type to use when serializing</span></div>
 <div class="line">{</div>
 <div class="line">    <span class="comment">// Will be called when writing or reading the object to a stream</span></div>
@@ -354,6 +387,8 @@ Extensibility</h1>
 <div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><span class="keyword">struct </span>serialize_traits&lt;T*, <span class="keyword">typename</span> std::enable_if_t&lt;std::is_integral_v&lt;T&gt;&gt;&gt;</div>
 <div class="line">{ ... };</div>
+<div class="line"><span class="comment">// An example which would use the above trait</span></div>
+<div class="line"><span class="keywordtype">bool</span> status = writer.serialize&lt;int16_t*&gt;(...);</div>
 </div><!-- fragment --><p>More concrete examples of traits can be found in the <a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/"><code>traits/</code></a> directory.</p>
 <h1><a class="anchor" id="autotoc_md17"></a>
 Building and running tests</h1>
@@ -365,10 +400,11 @@ Building and running tests</h1>
 </div><!-- fragment --><p>You can also run the tests using the command below, or simply run the binary located in <code>bin/{{config}}-{{platform}}-{{architecture}}</code>: </p><div class="fragment"><div class="line">premake5 test --config=(release | debug)</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md18"></a>
 3rd party</h1>
-<p>The library has no dependencies, but does build upon some code from the <a href="https://github.com/nxrighthere/NetStack">NetStack</a> library by Stanislav Denisov, which is free to use, as per their <a href="https://github.com/nxrighthere/NetStack/blob/master/LICENSE">license</a>. The code in question is about quantizing floats and quaternions, which has simply been translated from C# into C++ for the purposes of this library.</p>
+<p>The library has no dependencies, but does build upon some code from the <a href="https://github.com/nxrighthere/NetStack">NetStack</a> library by Stanislav Denisov, which is free to use, as per their <a href="https://github.com/nxrighthere/NetStack/blob/master/LICENSE">MIT license</a>. The code in question is about quantizing floats and quaternions, which has simply been translated from C# into C++ for the purposes of this library.</p>
+<p>If you do not wish to use float, half or quaternion quantization, you can simply remove the <a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/"><code>quantization/</code></a> directory from the library, in which case you will not need to include or adhere to the license for NetStack.</p>
 <h1><a class="anchor" id="autotoc_md19"></a>
 License</h1>
-<p>The library is licensed under the <a href="https://github.com/KredeGC/BitStream/blob/master/LICENSE">BSD-3-Clause license</a> and is subject to the terms and conditions in that license as well as the <a href="https://github.com/nxrighthere/NetStack/blob/master/LICENSE">NetStack license</a>. </p>
+<p>The library is licensed under the <a href="https://github.com/KredeGC/BitStream/blob/master/LICENSE">BSD-3-Clause license</a> and is subject to the terms and conditions in that license. In addition to this, everything in the <a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/"><code>quantization/</code></a> directory is subject to the <a href="https://github.com/nxrighthere/NetStack/blob/master/LICENSE">MIT license</a> from <a href="https://github.com/nxrighthere/NetStack">NetStack</a>. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 </div><!-- doc-content -->
