@@ -99,20 +99,20 @@ namespace bitstream
 	struct serialize_traits<smallest_three<Q, BitsPerElement>>
 	{
 		template<typename Stream>
-		static bool serialize(Stream& reader, Q& value) noexcept
+		static bool serialize(Stream& stream, Q& value) noexcept
 		{
 			quantized_quaternion quantized_quat;
 
 			if constexpr (Stream::writing)
 				quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
 
-			BS_ASSERT(reader.serialize_bits(quantized_quat.m, 2));
+			BS_ASSERT(stream.serialize_bits(quantized_quat.m, 2));
 
-			BS_ASSERT(reader.serialize_bits(quantized_quat.a, BitsPerElement));
+			BS_ASSERT(stream.serialize_bits(quantized_quat.a, BitsPerElement));
 
-			BS_ASSERT(reader.serialize_bits(quantized_quat.b, BitsPerElement));
+			BS_ASSERT(stream.serialize_bits(quantized_quat.b, BitsPerElement));
 
-			BS_ASSERT(reader.serialize_bits(quantized_quat.c, BitsPerElement));
+			BS_ASSERT(stream.serialize_bits(quantized_quat.c, BitsPerElement));
 
 			if constexpr (Stream::reading)
 				value = smallest_three<Q, BitsPerElement>::dequantize(quantized_quat);

@@ -44,6 +44,7 @@ If you really want it to work with earlier versions, you should just be able to 
 # Installation
 As this is a header-only library, you can simply copy the header files directly into your project and include them where relevant.
 The header files can either be downloaded from the [releases page](https://github.com/KredeGC/BitStream/releases) or from the [`include/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream) directory on the master branch.
+
 The source and header files inside the `test/` directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.
 
 # Usage
@@ -54,6 +55,11 @@ The files are stored in categories:
 * [`quantization/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/) - Files relating to quantizing floats and quaternions into fewer bits
 * [`stream/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/stream/) - Files relating to streams that read and write bits
 * [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) - Files relating to various serialization traits, like serializble strings, integrals etc.
+
+An important aspect of the serialiaztion is performance, since the library is meant to be used in a tight loop, like with networking.
+This is why most operations don't use exceptions, but instead return true or false depending on whether the operation was a success.
+It's important to check these return values after every operation, especially when reading.
+You can check it manually or use the `BS_ASSERT(x)` macro for this, if you want your function to return false on failure.
 
 It is also possible to dynamically put a break point or trap when a bitstream would have otherwise returned false. This can be great for debugging custom serialization code, but should generally be left out of production code. Simply `#define BS_DEBUG_BREAK` before including any of the library header files if you want to break when an operation fails.
 
@@ -127,8 +133,10 @@ bool serialize<const char*>(const char* value, uint32_t max_size);
 ```
 As well as a short example of its usage:
 ```cpp
-const char* value = "Hello world!";
-bool status = stream.serialize<const char*>(value, 32);
+const char* in_value = "Hello world!";
+char out_value[32]{ 0 };
+bool status_write = writer.serialize<const char*>(in_value, 32);
+bool status_read = reader.serialize<const char*>(out_value, 32);
 ```
 
 ## Modern strings - std::basic_string\<T\>
@@ -143,8 +151,10 @@ bool serialize<std::string>(std::string& value, uint32_t max_size);
 ```
 As well as a short example of its usage:
 ```cpp
-std::string value = "Hello world!";
-bool status = stream.serialize<std::string>(value, 32);
+std::string in_value = "Hello world!";
+std::string out_value;
+bool status_write = writer.serialize<std::string>(in_value, 32);
+bool status_read = reader.serialize<std::string>(out_value, 32);
 ```
 
 ## Single-precision float - float
@@ -157,8 +167,10 @@ bool serialize<float>(float& value);
 ```
 As well as a short example of its usage:
 ```cpp
-float value = 0.12345678f;
-bool status = stream.serialize<float>(value);
+float in_value = 0.12345678f;
+float out_value;
+bool status_write = writer.serialize<float>(in_value);
+bool status_read = reader.serialize<float>(out_value);
 ```
 
 ## Half-precision float - half_precision
@@ -171,27 +183,32 @@ bool serialize<half_precision>(float& value);
 ```
 As well as a short example of its usage:
 ```cpp
-float value = 0.12345678f;
-bool status = stream.serialize<half_precision>(value);
+float in_value = 0.12345678f;
+float out_value;
+bool status_write = writer.serialize<half_precision>(in_value);
+bool status_read = reader.serialize<half_precision>(out_value);
 ```
 
 ## Bounded float - bounded_range
-A trait that covers a quantized float.<br/>
+A trait that covers a bounded float.<br/>
 Takes a reference to the bounded_range and a reference to the float.
 
 The call signature can be seen below:
 ```cpp
-bool serialize<bounded_range>(bounded_range& range, float& value);
+bool serialize<bounded_range>(const bounded_range& range, float& value);
 ```
 As well as a short example of its usage:
 ```cpp
 bounded_range range(1.0f, 4.0f, 1.0f / 128.0f);
-float value = 0.1234f;
-bool status = stream.serialize<bounded_range>(range, value);
+float in_value = 0.1234f;
+float out_value;
+bool status_write = writer.serialize<bounded_range>(range, in_value);
+bool status_read = reader.serialize<bounded_range>(range, out_value);
 ```
 
 ## Quaternion - smallest_three\<Q, BitsPerElement\>
 A trait that covers any quaternion type in any order, as long as it's consistent.<br/>
+Quantizes the quaternion using the given BitsPerElement.<br/>
 Takes a reference to the quaternion.
 
 The call signature can be seen below:
@@ -207,13 +224,16 @@ struct quaternion
     float y;
     float z;
     
+    // This needs to return the same order as the constructor
     float operator[](size_t index) const
     {
         return reinterpret_cast<const float*>(this)[index];
     }
 };
-quaternion value = { 1.0f, 0.0f, 0.0f, 0.0f };
-bool status = stream.serialize<smallest_three<quaternion, 12>>(value);
+quaternion in_value = { 1.0f, 0.0f, 0.0f, 0.0f };
+quaternion out_value;
+bool status_write = writer.serialize<smallest_three<quaternion, 12>>(in_value);
+bool status_read = reader.serialize<smallest_three<quaternion, 12>>(out_value);
 ```
 
 # Serialization Examples
@@ -226,7 +246,7 @@ uint8_t buffer[4]; // Buffer must be a multiple of 4 bytes / 32 bits
 bit_writer writer(buffer, 4);
 
 // Write the value
-uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more bits
+uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more than 5 bits
 writer.serialize_bits(value, 5);
 
 // Flush the writer's remaining state into the buffer
@@ -248,10 +268,10 @@ bit_writer writer(buffer, 4);
 
 // Write the value
 int32_t value = -45; // We can choose any value within the range below
-writer.serialize<int32_t>(value, -90, 40);
+writer.serialize<int32_t>(value, -90, 40); // A lower and upper bound which the value will be quantized between
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+writer.flush();
 
 // Create a reader by moving and invalidating the writer
 bit_reader reader(std::move(writer));
@@ -272,7 +292,7 @@ const char* value = "Hello world!";
 writer.serialize<const char*>(value, 32U); // The second argument is the maximum size we expect the string to be
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+writer.flush();
 
 // Create a reader by moving and invalidating the writer
 bit_reader reader(std::move(writer));
@@ -280,6 +300,27 @@ bit_reader reader(std::move(writer));
 // Read the value back
 char out_value[32]; // Set the size to the max size
 reader.serialize<const char*>(out_value, 32U); // out_value should now contain "Hello world!\0"
+```
+
+Writing a std::string into the buffer:
+```cpp
+// Create a writer, referencing the buffer and its size
+uint8_t buffer[32];
+bit_writer writer(buffer, 32);
+
+// Write the value
+std::string value = "Hello world!";
+writer.serialize<std::string>(value, 32U); // The second argument is the maximum size we expect the string to be
+
+// Flush the writer's remaining state into the buffer
+writer.flush();
+
+// Create a reader by moving and invalidating the writer
+bit_reader reader(std::move(writer));
+
+// Read the value back
+std::string out_value; // The string will be resized if the output doesn't fit
+reader.serialize<std::string>(out_value, 32U); // out_value should now contain "Hello world!"
 ```
 
 Writing a float into the buffer with a bounded range and precision:
@@ -294,7 +335,7 @@ float value = 1.2345678f;
 writer.serialize<bounded_range>(range, value);
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+writer.flush();
 
 // Create a reader by moving and invalidating the writer
 bit_reader reader(std::move(writer));
@@ -323,13 +364,14 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
 };
 ```
 
-Note that `TRAIT_TYPE` does not necessarily have to be part of the function definitions. It is purely used to specify which trait to use when serializing, since it cannot be deduced from the arguments.<br/>
+Note that `TRAIT_TYPE` does not necessarily have to be part of the serialize function definitions.
+It is purely used to specify which trait to use when serializing, since it cannot be deduced from the arguments.<br/>
 To use the trait above to serialize an object you need to explicitly specify it:
 ```cpp
 bool status = writer.serialize<TRAIT_TYPE>(...);
 ```
 
-The specialization can also be unified, if writing and reading look similar:
+The specialization can also be unified with templating, if writing and reading look similar:
 ```cpp
 template<>
 struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
@@ -348,6 +390,8 @@ It also works with `enable_if`:
 template<typename T>
 struct serialize_traits<T*, typename std::enable_if_t<std::is_integral_v<T>>>
 { ... };
+// An example which would use the above trait
+bool status = writer.serialize<int16_t*>(...);
 ```
 
 More concrete examples of traits can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.
@@ -373,7 +417,11 @@ premake5 test --config=(release | debug)
 ```
 
 # 3rd party
-The library has no dependencies, but does build upon some code from the [NetStack](https://github.com/nxrighthere/NetStack) library by Stanislav Denisov, which is free to use, as per their [license](https://github.com/nxrighthere/NetStack/blob/master/LICENSE). The code in question is about quantizing floats and quaternions, which has simply been translated from C# into C++ for the purposes of this library.
+The library has no dependencies, but does build upon some code from the [NetStack](https://github.com/nxrighthere/NetStack) library by Stanislav Denisov, which is free to use, as per their [MIT license](https://github.com/nxrighthere/NetStack/blob/master/LICENSE).
+The code in question is about quantizing floats and quaternions, which has simply been translated from C# into C++ for the purposes of this library.
+
+If you do not wish to use float, half or quaternion quantization, you can simply remove the [`quantization/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/) directory from the library, in which case you will not need to include or adhere to the license for NetStack.
 
 # License
-The library is licensed under the [BSD-3-Clause license](https://github.com/KredeGC/BitStream/blob/master/LICENSE) and is subject to the terms and conditions in that license as well as the [NetStack license](https://github.com/nxrighthere/NetStack/blob/master/LICENSE).
+The library is licensed under the [BSD-3-Clause license](https://github.com/KredeGC/BitStream/blob/master/LICENSE) and is subject to the terms and conditions in that license.
+In addition to this, everything in the [`quantization/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/) directory is subject to the [MIT license](https://github.com/nxrighthere/NetStack/blob/master/LICENSE) from [NetStack](https://github.com/nxrighthere/NetStack).
