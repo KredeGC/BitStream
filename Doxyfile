@@ -173,7 +173,7 @@ FILE_PATTERNS          = *.c \
                          *.qsf \
                          *.ice
 RECURSIVE              = YES
-EXCLUDE                = test \
+EXCLUDE                = src \
                          doxygen-awesome-css
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       =

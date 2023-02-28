@@ -4,7 +4,8 @@
 #include <string>
 
 #define BS_ADD_TEST3(func_ptr, line) void func_ptr(); \
-	static int test_##line = (::bitstream::test::unit::add_test(#func_ptr, func_ptr), 0); \
+	struct test_struct_##func_ptr##_##line { test_struct_##func_ptr##_##line() { ::bitstream::test::unit::add_test(#func_ptr, func_ptr); } }; \
+	static test_struct_##func_ptr##_##line test_var_##func_ptr##_##line; \
 	void func_ptr()
 
 #define BS_ADD_TEST2(func_ptr, line) BS_ADD_TEST3(func_ptr, line)

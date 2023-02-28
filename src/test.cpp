@@ -1,4 +1,4 @@
-#include "test.h"
+#include "shared/test.h"
 
 #include <bitstream/bitstream.h>
 

@@ -45,7 +45,7 @@ If you really want it to work with earlier versions, you should just be able to 
 As this is a header-only library, you can simply copy the header files directly into your project and include them where relevant.
 The header files can either be downloaded from the [releases page](https://github.com/KredeGC/BitStream/releases) or from the [`include/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream) directory on the master branch.
 
-The source and header files inside the `test/` directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.
+The source and header files inside the `src/` directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.
 
 # Usage
 The library has a global header file ([`bitstream/bitstream.h`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h)) which includes every other header file in the library.
