@@ -3,7 +3,7 @@
 #include "../utility/crc.h"
 #include "../utility/endian.h"
 
-#include "bit_writer.h"
+#include "byte_buffer.h"
 #include "serialize_traits.h"
 
 #include <cstdint>
@@ -22,6 +22,9 @@ namespace bitstream
 		static constexpr bool writing = false;
 		static constexpr bool reading = true;
 
+		/**
+		 * @brief Default construct a reader pointing to a null buffer
+		*/
 		bit_reader() noexcept :
 			m_Buffer(nullptr),
 			m_NumBitsRead(0),
@@ -30,6 +33,11 @@ namespace bitstream
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
 
+		/**
+		 * @brief Construct a reader pointing to the given byte array with @p num_bytes size
+		 * @param bytes The byte array to read from
+		 * @param num_bytes The maximum number of bytes that we can read
+		*/
 		bit_reader(const void* bytes, uint32_t num_bytes) noexcept :
 			m_Buffer(static_cast<const uint32_t*>(bytes)),
 			m_NumBitsRead(0),
@@ -37,22 +45,20 @@ namespace bitstream
 			m_Scratch(0),
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
-        
-		explicit bit_reader(bit_writer&& other) noexcept :
-            m_Buffer(other.m_Buffer),
-            m_NumBitsRead(0),
-            m_TotalBits(other.m_NumBitsWritten),
-            m_Scratch(0),
-            m_ScratchBits(0),
-            m_WordIndex(0)
-        {
-            other.m_Buffer = nullptr;
-            other.m_NumBitsWritten = 0;
-            other.m_TotalBits = 0;
-            other.m_Scratch = 0;
-            other.m_ScratchBits = 0;
-            other.m_WordIndex = 0;
-        }
+
+		/**
+		 * @brief Construct a reader pointing to the given @p buffer
+		 * @param buffer The buffer to read from
+		 * @param num_bytes The maximum number of bytes that we can read
+		*/
+		template<size_t Size>
+		explicit bit_reader(byte_buffer<Size>& buffer, uint32_t num_bytes) noexcept :
+			m_Buffer(reinterpret_cast<uint32_t*>(buffer.Bytes)),
+			m_NumBitsRead(0),
+			m_TotalBits(num_bytes * 8),
+			m_Scratch(0),
+			m_ScratchBits(0),
+			m_WordIndex(0) {}
 
 		bit_reader(const bit_reader&) = delete;
         

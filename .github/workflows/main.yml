@@ -48,7 +48,7 @@ jobs:
       if: matrix.machine.os == 'windows-latest' && matrix.machine.toolset == 'msc'
       uses: microsoft/setup-msbuild@v1.1
     - name: Install 32-bit gcc libs
-      if: matrix.machine.os == 'ubuntu-latest'
+      if: matrix.architecture == 'x86' && matrix.machine.os == 'ubuntu-latest'
       run: sudo apt-get install gcc-multilib g++-multilib
     - name: Run premake
       run: premake5 ${{ matrix.machine.action }} --toolset=${{ matrix.machine.toolset }} --dialect=${{ matrix.dialect }}

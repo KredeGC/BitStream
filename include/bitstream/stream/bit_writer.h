@@ -3,6 +3,7 @@
 #include "../utility/crc.h"
 #include "../utility/endian.h"
 
+#include "byte_buffer.h"
 #include "serialize_traits.h"
 
 #include <cstdint>
@@ -26,6 +27,9 @@ namespace bitstream
 		static constexpr bool writing = true;
 		static constexpr bool reading = false;
 
+		/**
+		 * @brief Default construct a writer pointing to a null buffer
+		*/
 		bit_writer() noexcept :
 			m_Buffer(nullptr),
 			m_NumBitsWritten(0),
@@ -34,6 +38,11 @@ namespace bitstream
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
 
+		/**
+		 * @brief Construct a writer pointing to the given byte array with @p num_bytes size
+		 * @param bytes The byte array to write to
+		 * @param num_bytes The number of bytes in the array
+		*/
 		bit_writer(void* bytes, uint32_t num_bytes) noexcept :
 			m_Buffer(static_cast<uint32_t*>(bytes)),
 			m_NumBitsWritten(0),
@@ -47,6 +56,19 @@ namespace bitstream
                 BS_BREAKPOINT();
 #endif
 		}
+
+		/**
+		 * @brief Construct a writer pointing to the given @p buffer
+		 * @param buffer The buffer to write to
+		*/
+		template<size_t Size>
+		explicit bit_writer(byte_buffer<Size>& buffer) noexcept :
+			m_Buffer(reinterpret_cast<uint32_t*>(buffer.Bytes)),
+			m_NumBitsWritten(0),
+			m_TotalBits(Size * 8),
+			m_Scratch(0),
+			m_ScratchBits(0),
+			m_WordIndex(0) {}
 
 		bit_writer(const bit_writer&) = delete;
         
@@ -65,6 +87,25 @@ namespace bitstream
             other.m_ScratchBits = 0;
             other.m_WordIndex = 0;
         }
+
+		bit_writer& operator=(const bit_writer&) = delete;
+
+		bit_writer& operator=(bit_writer&& rhs) noexcept
+		{
+			m_Buffer = rhs.m_Buffer;
+			m_NumBitsWritten = rhs.m_NumBitsWritten;
+			m_TotalBits = rhs.m_TotalBits;
+			m_Scratch = rhs.m_Scratch;
+			m_ScratchBits = rhs.m_ScratchBits;
+			m_WordIndex = rhs.m_WordIndex;
+
+			rhs.m_Buffer = nullptr;
+			rhs.m_NumBitsWritten = 0;
+			rhs.m_TotalBits = 0;
+			rhs.m_Scratch = 0;
+			rhs.m_ScratchBits = 0;
+			rhs.m_WordIndex = 0;
+		}
 
 		/**
 		 * @brief Returns the buffer that this writer is currently serializing into

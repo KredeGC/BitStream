@@ -14,8 +14,8 @@ namespace bitstream::test::stream
 		uint32_t in_value2 = 99;
         
 		// Write some values with too many bits
-		uint8_t buffer[4]{ 0 };
-		bit_writer writer(buffer, 4);
+		byte_buffer<4> buffer;
+		bit_writer writer(buffer);
         
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 11));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 11));
@@ -27,7 +27,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint32_t out_value1;
 		uint32_t out_value2;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 11));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 11));
@@ -48,8 +48,8 @@ namespace bitstream::test::stream
 		constexpr uint32_t bits_required = utility::bits_to_represent(1111);
 
 		// Write some values with a few bits
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, bits_required));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, bits_required));
@@ -62,7 +62,7 @@ namespace bitstream::test::stream
 		uint32_t out_value1;
 		uint32_t out_value2;
 		uint32_t out_value3;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, bits_required));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, bits_required));
@@ -80,8 +80,8 @@ namespace bitstream::test::stream
 		uint32_t value = 3;
 
 		// Write some initial values and finish with a checksum
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
+		byte_buffer<16> buffer;
+		bit_writer writer(buffer);
 
 		writer.prepend_checksum();
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
@@ -89,7 +89,7 @@ namespace bitstream::test::stream
 
 		// Read the checksum and validate
 		uint32_t out_value;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_checksum(protocol_version));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
@@ -305,8 +305,8 @@ namespace bitstream::test::stream
 		uint32_t nested_value = 511;
 
 		// Write some initial value with a bit offset
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
