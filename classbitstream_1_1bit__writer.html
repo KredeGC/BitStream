@@ -133,13 +133,23 @@ $(document).ready(function(){initNavTree('classbitstream_1_1bit__writer.html',''
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a26b4d4e60928a451073536d68d45b078"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a26b4d4e60928a451073536d68d45b078">bit_writer</a> () noexcept</td></tr>
+<tr class="memdesc:a26b4d4e60928a451073536d68d45b078"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default construct a writer pointing to a null buffer.  <a href="classbitstream_1_1bit__writer.html#a26b4d4e60928a451073536d68d45b078">More...</a><br /></td></tr>
 <tr class="separator:a26b4d4e60928a451073536d68d45b078"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a163c7387e418cc8f6d9c0306c6bc5200"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a163c7387e418cc8f6d9c0306c6bc5200">bit_writer</a> (void *bytes, uint32_t num_bytes) noexcept</td></tr>
+<tr class="memdesc:a163c7387e418cc8f6d9c0306c6bc5200"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a writer pointing to the given byte array with <code>num_bytes</code> size.  <a href="classbitstream_1_1bit__writer.html#a163c7387e418cc8f6d9c0306c6bc5200">More...</a><br /></td></tr>
 <tr class="separator:a163c7387e418cc8f6d9c0306c6bc5200"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e2444c80521bd3f23d64a5ebb1f9a00"><td class="memTemplParams" colspan="2">template&lt;size_t Size&gt; </td></tr>
+<tr class="memitem:a8e2444c80521bd3f23d64a5ebb1f9a00"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a8e2444c80521bd3f23d64a5ebb1f9a00">bit_writer</a> (<a class="el" href="structbitstream_1_1byte__buffer.html">byte_buffer</a>&lt; Size &gt; &amp;buffer) noexcept</td></tr>
+<tr class="memdesc:a8e2444c80521bd3f23d64a5ebb1f9a00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a writer pointing to the given <code>buffer</code>.  <a href="classbitstream_1_1bit__writer.html#a8e2444c80521bd3f23d64a5ebb1f9a00">More...</a><br /></td></tr>
+<tr class="separator:a8e2444c80521bd3f23d64a5ebb1f9a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbfce6c2075172482e2a909400e66119"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#afbfce6c2075172482e2a909400e66119">bit_writer</a> (const <a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;)=delete</td></tr>
 <tr class="separator:afbfce6c2075172482e2a909400e66119"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae88a7d879c7821868c5e465f859dc269"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#ae88a7d879c7821868c5e465f859dc269">bit_writer</a> (<a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&amp;other) noexcept</td></tr>
 <tr class="separator:ae88a7d879c7821868c5e465f859dc269"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b664e59905c25a01325c39b2e5303bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a4b664e59905c25a01325c39b2e5303bc">operator=</a> (const <a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;)=delete</td></tr>
+<tr class="separator:a4b664e59905c25a01325c39b2e5303bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12b4d5adfa48372fc59317d519230d1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a12b4d5adfa48372fc59317d519230d1e">operator=</a> (<a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&amp;rhs) noexcept</td></tr>
+<tr class="separator:a12b4d5adfa48372fc59317d519230d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47c0fd4493b90a2613b49c9bb94f2cd4"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__writer.html#a47c0fd4493b90a2613b49c9bb94f2cd4">get_buffer</a> () const noexcept</td></tr>
 <tr class="memdesc:a47c0fd4493b90a2613b49c9bb94f2cd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the buffer that this writer is currently serializing into.  <a href="classbitstream_1_1bit__writer.html#a47c0fd4493b90a2613b49c9bb94f2cd4">More...</a><br /></td></tr>
 <tr class="separator:a47c0fd4493b90a2613b49c9bb94f2cd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,7 +210,7 @@ Friends</h2></td></tr>
 <div class="textblock"><p>A stream for writing objects tightly into a buffer. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a26b4d4e60928a451073536d68d45b078"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a26b4d4e60928a451073536d68d45b078">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a26b4d4e60928a451073536d68d45b078">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[1/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -222,10 +232,12 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Default construct a writer pointing to a null buffer. </p>
+
 </div>
 </div>
 <a id="a163c7387e418cc8f6d9c0306c6bc5200"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a163c7387e418cc8f6d9c0306c6bc5200">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a163c7387e418cc8f6d9c0306c6bc5200">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[2/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -258,10 +270,55 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
+<p>Construct a writer pointing to the given byte array with <code>num_bytes</code> size. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bytes</td><td>The byte array to write to. Should be 4-byte aligned if possible </td></tr>
+    <tr><td class="paramname">num_bytes</td><td>The number of bytes in the array. Must be a multiple of 4 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8e2444c80521bd3f23d64a5ebb1f9a00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e2444c80521bd3f23d64a5ebb1f9a00">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[3/5]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t Size&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bitstream::bit_writer::bit_writer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structbitstream_1_1byte__buffer.html">byte_buffer</a>&lt; Size &gt; &amp;&#160;</td>
+          <td class="paramname"><em>buffer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a writer pointing to the given <code>buffer</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>The buffer to write to </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
 <a id="afbfce6c2075172482e2a909400e66119"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbfce6c2075172482e2a909400e66119">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#afbfce6c2075172482e2a909400e66119">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[4/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -287,7 +344,7 @@ Friends</h2></td></tr>
 </div>
 </div>
 <a id="ae88a7d879c7821868c5e465f859dc269"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae88a7d879c7821868c5e465f859dc269">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[4/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ae88a7d879c7821868c5e465f859dc269">&#9670;&nbsp;</a></span>bit_writer() <span class="overload">[5/5]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -514,6 +571,58 @@ Friends</h2></td></tr>
 
 <p>Returns the size of the buffer, in bits. </p>
 <dl class="section return"><dt>Returns</dt><dd>The size of the buffer, in bits </dd></dl>
+
+</div>
+</div>
+<a id="a12b4d5adfa48372fc59317d519230d1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12b4d5adfa48372fc59317d519230d1e">&#9670;&nbsp;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a>&amp; bitstream::bit_writer::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4b664e59905c25a01325c39b2e5303bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b664e59905c25a01325c39b2e5303bc">&#9670;&nbsp;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a>&amp; bitstream::bit_writer::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classbitstream_1_1bit__writer.html">bit_writer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>

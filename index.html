@@ -151,7 +151,7 @@ Compatibility</h1>
 <h1><a class="anchor" id="autotoc_md2"></a>
 Installation</h1>
 <p>As this is a header-only library, you can simply copy the header files directly into your project and include them where relevant. The header files can either be downloaded from the <a href="https://github.com/KredeGC/BitStream/releases">releases page</a> or from the <a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream"><code>include/</code></a> directory on the master branch.</p>
-<p>The source and header files inside the <code>test/</code> directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.</p>
+<p>The source and header files inside the <code>src/</code> directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.</p>
 <h1><a class="anchor" id="autotoc_md3"></a>
 Usage</h1>
 <p>The library has a global header file (<a href="https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h"><code>bitstream/bitstream.h</code></a>) which includes every other header file in the library.</p>
@@ -274,8 +274,8 @@ Quaternion - smallest_three&lt;Q, BitsPerElement&gt;</h2>
 Serialization Examples</h1>
 <p>The examples below follow the same structure: First writing to a buffer and then reading from it. Each example is littered with comments about the procedure, as well as what outcome is expected.</p>
 <p>Writing the first 5 bits of an int to the buffer, then reading it back: </p><div class="fragment"><div class="line"><span class="comment">// Create a writer, referencing the buffer and its size</span></div>
-<div class="line">uint8_t buffer[4]; <span class="comment">// Buffer must be a multiple of 4 bytes / 32 bits</span></div>
-<div class="line">bit_writer writer(buffer, 4);</div>
+<div class="line">byte_buffer&lt;4&gt; buffer; <span class="comment">// Buffer must be a multiple of 4 bytes / 32 bits</span></div>
+<div class="line">bit_writer writer(buffer);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Write the value</span></div>
 <div class="line">uint32_t value = 27; <span class="comment">// We can choose any value below 2^5. Otherwise we need more than 5 bits</span></div>
@@ -291,59 +291,59 @@ Serialization Examples</h1>
 <div class="line">uint32_t out_value; <span class="comment">// We don&#39;t have to initialize it yet</span></div>
 <div class="line">reader.serialize_bits(out_value, 5); <span class="comment">// out_value should now have a value of 27</span></div>
 </div><!-- fragment --><p>Writing a signed int to the buffer, within a range: </p><div class="fragment"><div class="line"><span class="comment">// Create a writer, referencing the buffer and its size</span></div>
-<div class="line">uint8_t buffer[4];</div>
-<div class="line">bit_writer writer(buffer, 4);</div>
+<div class="line">byte_buffer&lt;4&gt; buffer;</div>
+<div class="line">bit_writer writer(buffer);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Write the value</span></div>
 <div class="line">int32_t value = -45; <span class="comment">// We can choose any value within the range below</span></div>
 <div class="line">writer.serialize&lt;int32_t&gt;(value, -90, 40); <span class="comment">// A lower and upper bound which the value will be quantized between</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
-<div class="line">writer.flush();</div>
+<div class="line">uint32_t num_bytes = writer.flush();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
-<div class="line">bit_reader reader(std::move(writer));</div>
+<div class="line">bit_reader reader(buffer, num_bytes);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Read the value back</span></div>
 <div class="line">int32_t out_value; <span class="comment">// We don&#39;t have to initialize it yet</span></div>
 <div class="line">reader.serialize&lt;int32_t&gt;(out_value, -90, 40); <span class="comment">// out_value should now have a value of -45</span></div>
 </div><!-- fragment --><p>Writing a c-style string into the buffer: </p><div class="fragment"><div class="line"><span class="comment">// Create a writer, referencing the buffer and its size</span></div>
-<div class="line">uint8_t buffer[32];</div>
-<div class="line">bit_writer writer(buffer, 32);</div>
+<div class="line">byte_buffer&lt;32&gt; buffer;</div>
+<div class="line">bit_writer writer(buffer);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Write the value</span></div>
 <div class="line"><span class="keyword">const</span> <span class="keywordtype">char</span>* value = <span class="stringliteral">&quot;Hello world!&quot;</span>;</div>
 <div class="line">writer.serialize&lt;<span class="keyword">const</span> <span class="keywordtype">char</span>*&gt;(value, 32U); <span class="comment">// The second argument is the maximum size we expect the string to be</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
-<div class="line">writer.flush();</div>
+<div class="line">uint32_t num_bytes = writer.flush();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
-<div class="line">bit_reader reader(std::move(writer));</div>
+<div class="line">bit_reader reader(buffer, num_bytes);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Read the value back</span></div>
 <div class="line"><span class="keywordtype">char</span> out_value[32]; <span class="comment">// Set the size to the max size</span></div>
 <div class="line">reader.serialize&lt;<span class="keyword">const</span> <span class="keywordtype">char</span>*&gt;(out_value, 32U); <span class="comment">// out_value should now contain &quot;Hello world!\0&quot;</span></div>
 </div><!-- fragment --><p>Writing a std::string into the buffer: </p><div class="fragment"><div class="line"><span class="comment">// Create a writer, referencing the buffer and its size</span></div>
-<div class="line">uint8_t buffer[32];</div>
-<div class="line">bit_writer writer(buffer, 32);</div>
+<div class="line">byte_buffer&lt;32&gt; buffer;</div>
+<div class="line">bit_writer writer(buffer);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Write the value</span></div>
 <div class="line">std::string value = <span class="stringliteral">&quot;Hello world!&quot;</span>;</div>
 <div class="line">writer.serialize&lt;std::string&gt;(value, 32U); <span class="comment">// The second argument is the maximum size we expect the string to be</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
-<div class="line">writer.flush();</div>
+<div class="line">uint32_t num_bytes = writer.flush();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
-<div class="line">bit_reader reader(std::move(writer));</div>
+<div class="line">bit_reader reader(buffer, num_bytes);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Read the value back</span></div>
 <div class="line">std::string out_value; <span class="comment">// The string will be resized if the output doesn&#39;t fit</span></div>
 <div class="line">reader.serialize&lt;std::string&gt;(out_value, 32U); <span class="comment">// out_value should now contain &quot;Hello world!&quot;</span></div>
 </div><!-- fragment --><p>Writing a float into the buffer with a bounded range and precision: </p><div class="fragment"><div class="line"><span class="comment">// Create a writer, referencing the buffer and its size</span></div>
-<div class="line">uint8_t buffer[4];</div>
-<div class="line">bit_writer writer(buffer, 4);</div>
+<div class="line">byte_buffer&lt;4&gt; buffer;</div>
+<div class="line">bit_writer writer(buffer);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Write the value</span></div>
 <div class="line">bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); <span class="comment">// Min, Max, Precision</span></div>
@@ -351,10 +351,10 @@ Serialization Examples</h1>
 <div class="line">writer.serialize&lt;bounded_range&gt;(range, value);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Flush the writer&#39;s remaining state into the buffer</span></div>
-<div class="line">writer.flush();</div>
+<div class="line">uint32_t num_bytes = writer.flush();</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Create a reader by moving and invalidating the writer</span></div>
-<div class="line">bit_reader reader(std::move(writer));</div>
+<div class="line">bit_reader reader(buffer, num_bytes);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Read the value back</span></div>
 <div class="line"><span class="keywordtype">float</span> out_value;</div>

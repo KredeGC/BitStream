@@ -7,6 +7,7 @@ var annotated_dup =
       [ "smallest_three", "classbitstream_1_1smallest__three.html", null ],
       [ "bit_reader", "classbitstream_1_1bit__reader.html", "classbitstream_1_1bit__reader" ],
       [ "bit_writer", "classbitstream_1_1bit__writer.html", "classbitstream_1_1bit__writer" ],
+      [ "byte_buffer", "structbitstream_1_1byte__buffer.html", "structbitstream_1_1byte__buffer" ],
       [ "serialize_traits", "structbitstream_1_1serialize__traits.html", null ],
       [ "array_subset", "structbitstream_1_1array__subset.html", null ],
       [ "serialize_traits< array_subset< T, Trait > >", "structbitstream_1_1serialize__traits_3_01array__subset_3_01T_00_01Trait_01_4_01_4.html", null ],

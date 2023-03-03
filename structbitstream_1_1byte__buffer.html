@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BitStream: include/bitstream/stream/bit_reader.h File Reference</title>
+<title>BitStream: bitstream::byte_buffer&lt; Size &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -96,7 +96,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:cf05388f2679ee054f2beb29a391d25f4e673ac3&amp;dn=gpl-2.0.txt GPL-v2 */
-$(document).ready(function(){initNavTree('bit__reader_8h.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('structbitstream_1_1byte__buffer.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -116,41 +116,55 @@ $(document).ready(function(){initNavTree('bit__reader_8h.html',''); initResizabl
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structbitstream_1_1byte__buffer-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">bit_reader.h File Reference</div>  </div>
+<div class="title">bitstream::byte_buffer&lt; Size &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="assert_8h_source.html">../utility/assert.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="crc_8h_source.html">../utility/crc.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="endian_8h_source.html">../utility/endian.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="byte__buffer_8h_source.html">byte_buffer.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="serialize__traits_8h_source.html">serialize_traits.h</a>&quot;</code><br />
-<code>#include &lt;cstdint&gt;</code><br />
-<code>#include &lt;cstring&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
-<code>#include &lt;type_traits&gt;</code><br />
-</div>
-<p><a href="bit__reader_8h_source.html">Go to the source code of this file.</a></p>
+
+<p>A byte buffer aligned to 4 bytes.  
+ <a href="structbitstream_1_1byte__buffer.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="byte__buffer_8h_source.html">byte_buffer.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbitstream_1_1bit__reader.html">bitstream::bit_reader</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A stream for reading objects from a tightly packed buffer.  <a href="classbitstream_1_1bit__reader.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>
-Namespaces</h2></td></tr>
-<tr class="memitem:namespacebitstream"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacebitstream.html">bitstream</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a3a06b254839b23c0cfec04b1fb8d245c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structbitstream_1_1byte__buffer.html#a3a06b254839b23c0cfec04b1fb8d245c">Bytes</a> [Size]</td></tr>
+<tr class="separator:a3a06b254839b23c0cfec04b1fb8d245c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;size_t Size&gt;<br />
+struct bitstream::byte_buffer&lt; Size &gt;</h3>
+
+<p>A byte buffer aligned to 4 bytes. </p>
+<dl class="section note"><dt>Note</dt><dd>Can be used with <a class="el" href="classbitstream_1_1bit__reader.html" title="A stream for reading objects from a tightly packed buffer.">bit_reader</a> and <a class="el" href="classbitstream_1_1bit__writer.html" title="A stream for writing objects tightly into a buffer.">bit_writer</a> </dd></dl>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3a06b254839b23c0cfec04b1fb8d245c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a06b254839b23c0cfec04b1fb8d245c">&#9670;&nbsp;</a></span>Bytes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;size_t Size&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t <a class="el" href="structbitstream_1_1byte__buffer.html">bitstream::byte_buffer</a>&lt; Size &gt;::Bytes[Size]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>include/bitstream/stream/<a class="el" href="byte__buffer_8h_source.html">byte_buffer.h</a></li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_ed4e77077c3501ec74ff7e7f2c050466.html">bitstream</a></li><li class="navelem"><a class="el" href="dir_2e9798abf64eea682b12989b39e9885a.html">stream</a></li><li class="navelem"><a class="el" href="bit__reader_8h.html">bit_reader.h</a></li>
+    <li class="navelem"><a class="el" href="namespacebitstream.html">bitstream</a></li><li class="navelem"><a class="el" href="structbitstream_1_1byte__buffer.html">byte_buffer</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>

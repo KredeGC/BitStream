@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['pad_5fto_5fsize_132',['pad_to_size',['../classbitstream_1_1bit__reader.html#a1e90c9026d8fc6085e2c64afbae1a935',1,'bitstream::bit_reader::pad_to_size()'],['../classbitstream_1_1bit__writer.html#a3b8ac9641c5f7172e59031b27bb864e3',1,'bitstream::bit_writer::pad_to_size(uint32_t num_bytes) noexcept']]],
-  ['prepend_5fchecksum_133',['prepend_checksum',['../classbitstream_1_1bit__writer.html#ab93b353e6bd420f60e1e81267404bac1',1,'bitstream::bit_writer']]]
+  ['operator_3d_138',['operator=',['../classbitstream_1_1bit__reader.html#a547b5ca46a5c226fe4b29941e4ae5711',1,'bitstream::bit_reader::operator=(const bit_reader &amp;)=delete'],['../classbitstream_1_1bit__reader.html#a933088ad118a0a7e48595ae109f08594',1,'bitstream::bit_reader::operator=(bit_reader &amp;&amp;rhs) noexcept'],['../classbitstream_1_1bit__writer.html#a4b664e59905c25a01325c39b2e5303bc',1,'bitstream::bit_writer::operator=(const bit_writer &amp;)=delete'],['../classbitstream_1_1bit__writer.html#a12b4d5adfa48372fc59317d519230d1e',1,'bitstream::bit_writer::operator=(bit_writer &amp;&amp;rhs) noexcept']]]
 ];

@@ -2,6 +2,7 @@ var classbitstream_1_1bit__writer =
 [
     [ "bit_writer", "classbitstream_1_1bit__writer.html#a26b4d4e60928a451073536d68d45b078", null ],
     [ "bit_writer", "classbitstream_1_1bit__writer.html#a163c7387e418cc8f6d9c0306c6bc5200", null ],
+    [ "bit_writer", "classbitstream_1_1bit__writer.html#a8e2444c80521bd3f23d64a5ebb1f9a00", null ],
     [ "bit_writer", "classbitstream_1_1bit__writer.html#afbfce6c2075172482e2a909400e66119", null ],
     [ "bit_writer", "classbitstream_1_1bit__writer.html#ae88a7d879c7821868c5e465f859dc269", null ],
     [ "align", "classbitstream_1_1bit__writer.html#aca8bb43479ecf7ecee77cf73a3707a24", null ],
@@ -11,6 +12,8 @@ var classbitstream_1_1bit__writer =
     [ "get_num_bits_serialized", "classbitstream_1_1bit__writer.html#a28f498aaae7c2a7716cf119d3d0410dc", null ],
     [ "get_remaining_bits", "classbitstream_1_1bit__writer.html#a916b0df57863d6acd9030509637624b8", null ],
     [ "get_total_bits", "classbitstream_1_1bit__writer.html#abdbc2eeb75ca675241bd95ab32e3198d", null ],
+    [ "operator=", "classbitstream_1_1bit__writer.html#a12b4d5adfa48372fc59317d519230d1e", null ],
+    [ "operator=", "classbitstream_1_1bit__writer.html#a4b664e59905c25a01325c39b2e5303bc", null ],
     [ "pad_to_size", "classbitstream_1_1bit__writer.html#a3b8ac9641c5f7172e59031b27bb864e3", null ],
     [ "prepend_checksum", "classbitstream_1_1bit__writer.html#ab93b353e6bd420f60e1e81267404bac1", null ],
     [ "serialize", "classbitstream_1_1bit__writer.html#a336d204736110d27c7fc6d7f1831687a", null ],
