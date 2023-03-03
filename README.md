@@ -242,8 +242,8 @@ The examples below follow the same structure: First writing to a buffer and then
 Writing the first 5 bits of an int to the buffer, then reading it back:
 ```cpp
 // Create a writer, referencing the buffer and its size
-uint8_t buffer[4]; // Buffer must be a multiple of 4 bytes / 32 bits
-bit_writer writer(buffer, 4);
+byte_buffer<4> buffer; // Buffer must be a multiple of 4 bytes / 32 bits
+bit_writer writer(buffer);
 
 // Write the value
 uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more than 5 bits
@@ -263,18 +263,18 @@ reader.serialize_bits(out_value, 5); // out_value should now have a value of 27
 Writing a signed int to the buffer, within a range:
 ```cpp
 // Create a writer, referencing the buffer and its size
-uint8_t buffer[4];
-bit_writer writer(buffer, 4);
+byte_buffer<4> buffer;
+bit_writer writer(buffer);
 
 // Write the value
 int32_t value = -45; // We can choose any value within the range below
 writer.serialize<int32_t>(value, -90, 40); // A lower and upper bound which the value will be quantized between
 
 // Flush the writer's remaining state into the buffer
-writer.flush();
+uint32_t num_bytes = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(std::move(writer));
+bit_reader reader(buffer, num_bytes);
 
 // Read the value back
 int32_t out_value; // We don't have to initialize it yet
@@ -284,18 +284,18 @@ reader.serialize<int32_t>(out_value, -90, 40); // out_value should now have a va
 Writing a c-style string into the buffer:
 ```cpp
 // Create a writer, referencing the buffer and its size
-uint8_t buffer[32];
-bit_writer writer(buffer, 32);
+byte_buffer<32> buffer;
+bit_writer writer(buffer);
 
 // Write the value
 const char* value = "Hello world!";
 writer.serialize<const char*>(value, 32U); // The second argument is the maximum size we expect the string to be
 
 // Flush the writer's remaining state into the buffer
-writer.flush();
+uint32_t num_bytes = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(std::move(writer));
+bit_reader reader(buffer, num_bytes);
 
 // Read the value back
 char out_value[32]; // Set the size to the max size
@@ -305,18 +305,18 @@ reader.serialize<const char*>(out_value, 32U); // out_value should now contain "
 Writing a std::string into the buffer:
 ```cpp
 // Create a writer, referencing the buffer and its size
-uint8_t buffer[32];
-bit_writer writer(buffer, 32);
+byte_buffer<32> buffer;
+bit_writer writer(buffer);
 
 // Write the value
 std::string value = "Hello world!";
 writer.serialize<std::string>(value, 32U); // The second argument is the maximum size we expect the string to be
 
 // Flush the writer's remaining state into the buffer
-writer.flush();
+uint32_t num_bytes = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(std::move(writer));
+bit_reader reader(buffer, num_bytes);
 
 // Read the value back
 std::string out_value; // The string will be resized if the output doesn't fit
@@ -326,8 +326,8 @@ reader.serialize<std::string>(out_value, 32U); // out_value should now contain "
 Writing a float into the buffer with a bounded range and precision:
 ```cpp
 // Create a writer, referencing the buffer and its size
-uint8_t buffer[4];
-bit_writer writer(buffer, 4);
+byte_buffer<4> buffer;
+bit_writer writer(buffer);
 
 // Write the value
 bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); // Min, Max, Precision
@@ -335,10 +335,10 @@ float value = 1.2345678f;
 writer.serialize<bounded_range>(range, value);
 
 // Flush the writer's remaining state into the buffer
-writer.flush();
+uint32_t num_bytes = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(std::move(writer));
+bit_reader reader(buffer, num_bytes);
 
 // Read the value back
 float out_value;
