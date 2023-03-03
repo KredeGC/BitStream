@@ -12,8 +12,8 @@ namespace bitstream::test::traits
 	void test_integral(T value)
 	{
 		// Test integral numbers
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<T>(value, Min, Max));
 		uint32_t num_bytes = writer.flush();
@@ -36,8 +36,8 @@ namespace bitstream::test::traits
 		using trait = bounded_int<T, Min, Max>;
 
 		// Test integral numbers
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(value));
 		uint32_t num_bytes = writer.flush();

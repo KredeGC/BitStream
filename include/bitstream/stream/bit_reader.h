@@ -35,7 +35,7 @@ namespace bitstream
 
 		/**
 		 * @brief Construct a reader pointing to the given byte array with @p num_bytes size
-		 * @param bytes The byte array to read from
+		 * @param bytes The byte array to read from. Should be 4-byte aligned if possible. The size of the array must be a multiple of 4
 		 * @param num_bytes The maximum number of bytes that we can read
 		*/
 		bit_reader(const void* bytes, uint32_t num_bytes) noexcept :
@@ -77,6 +77,27 @@ namespace bitstream
             other.m_ScratchBits = 0;
             other.m_WordIndex = 0;
         }
+
+		bit_reader& operator=(const bit_reader&) = delete;
+
+		bit_reader& operator=(bit_reader&& rhs) noexcept
+		{
+			m_Buffer = rhs.m_Buffer;
+			m_NumBitsRead = rhs.m_NumBitsRead;
+			m_TotalBits = rhs.m_TotalBits;
+			m_Scratch = rhs.m_Scratch;
+			m_ScratchBits = rhs.m_ScratchBits;
+			m_WordIndex = rhs.m_WordIndex;
+
+			rhs.m_Buffer = nullptr;
+			rhs.m_NumBitsRead = 0;
+			rhs.m_TotalBits = 0;
+			rhs.m_Scratch = 0;
+			rhs.m_ScratchBits = 0;
+			rhs.m_WordIndex = 0;
+            
+            return *this;
+		}
 
 		/**
 		 * @brief Returns the buffer that this reader is currently serializing from

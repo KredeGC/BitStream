@@ -16,8 +16,8 @@ namespace bitstream::test::traits
 		const char* value = "Hello, world!";
 
 		// Write a char array, but make sure the word count isn't whole
-		uint8_t buffer[32];
-		bit_writer writer(buffer, 32);
+		byte_buffer<32> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -44,8 +44,8 @@ namespace bitstream::test::traits
 		const char* value = "Hello, world!";
 
 		// Write a char array, but with an uneven bit offset
-		uint8_t buffer[32];
-		bit_writer writer(buffer, 32);
+		byte_buffer<32> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 6));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -74,8 +74,8 @@ namespace bitstream::test::traits
 		std::string value = "Hello, world!";
 
 		// Write a string, but make sure the word count isn't whole
-		uint8_t buffer[32];
-		bit_writer writer(buffer, 32);
+		byte_buffer<32> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<std::string>(value, 32U));
@@ -101,8 +101,8 @@ namespace bitstream::test::traits
 		std::wstring value = L"Hello, world!";
 
 		// Write a widechar string, but make sure the word count isn't whole
-		uint8_t buffer[64];
-		bit_writer writer(buffer, 64); // wchar_t is apparently platform dependent and can be 16 or 32 bits
+		byte_buffer<64> buffer; // wchar_t is apparently platform dependent and can be 16 or 32 bits
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<std::wstring>(value, 32U));
 		uint32_t num_bytes = writer.flush();

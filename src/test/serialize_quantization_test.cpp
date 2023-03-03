@@ -16,8 +16,8 @@ namespace bitstream::test::traits
 		// Test float
 		float value_in = 3.141592f;
 
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
+		byte_buffer<16> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<float>(value_in));
 		uint32_t num_bytes = writer.flush();
@@ -38,8 +38,8 @@ namespace bitstream::test::traits
 		// Test half precision float
 		float value_in = 3.141592f;
 
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
+		byte_buffer<16> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<half_precision>(value_in));
 		uint32_t num_bytes = writer.flush();
@@ -63,8 +63,8 @@ namespace bitstream::test::traits
 		float value_in = 3.141592f;
 		bounded_range range(0.0f, 5.0f, 0.0001f);
 
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
+		byte_buffer<16> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<bounded_range>(range, value_in));
 		uint32_t num_bytes = writer.flush();
@@ -88,8 +88,8 @@ namespace bitstream::test::traits
 		// Test smallest three
 		quaternion value_in(0.0f, std::sin(2.0f), std::cos(2.0f), 0.0f);
 
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
+		byte_buffer<16> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(value_in));
 		uint32_t num_bytes = writer.flush();

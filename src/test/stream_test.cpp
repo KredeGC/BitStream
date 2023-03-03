@@ -104,8 +104,8 @@ namespace bitstream::test::stream
 		uint32_t in_value2 = 6;
 
 		// Write some initial value, pad it, and then write another value
-		uint8_t buffer[32];
-		bit_writer writer(buffer, 32);
+		byte_buffer<32> buffer;
+		bit_writer writer(buffer);
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 3));
 		BS_TEST_ASSERT(writer.pad_to_size(31));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 5));
@@ -116,7 +116,7 @@ namespace bitstream::test::stream
 		// Read the values and validate padding
 		uint32_t out_value1;
 		uint32_t out_value2;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 3));
 		BS_TEST_ASSERT(reader.pad_to_size(31));
@@ -132,8 +132,8 @@ namespace bitstream::test::stream
 		uint32_t value = 3;
 
 		// Write a bit offset and the align to byte
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.align());
@@ -143,7 +143,7 @@ namespace bitstream::test::stream
 
 		// Read back the the bit offset and validate the alignment
 		uint32_t out_value;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
 		BS_TEST_ASSERT(reader.get_remaining_bits() > 0);
@@ -161,8 +161,8 @@ namespace bitstream::test::stream
 		uint32_t num_bits = 2 * 8 - 2;
 
 		// Write some values with a few bits
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, num_bits));
@@ -173,7 +173,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint8_t out_value[2];
 		uint32_t out_padding;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, num_bits));
@@ -192,8 +192,8 @@ namespace bitstream::test::stream
 		uint32_t num_bits = 5 * 8 - 1;
 
 		// Write some values with a few bits
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, num_bits));
@@ -204,7 +204,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint8_t out_value[5];
 		uint32_t out_padding;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, num_bits));
@@ -223,8 +223,8 @@ namespace bitstream::test::stream
 		uint32_t num_bits = 10 * 8 - 3;
 
 		// Write some values with a few bits
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
+		byte_buffer<16> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, num_bits));
@@ -235,7 +235,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint8_t out_value[10];
 		uint32_t out_padding;
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, num_bits));
@@ -253,16 +253,16 @@ namespace bitstream::test::stream
 		uint32_t nested_value = 511;
 
 		// Write some initial value with a bit offset
-		uint8_t buffer[8]{ 0 };
-		bit_writer writer(buffer, 8);
+		byte_buffer<8> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
 
 		{
 			// Write nested values
-			uint8_t nested_buffer[8]{ 0 };
-			bit_writer nested_writer(nested_buffer, 8);
+            byte_buffer<8> nested_buffer;
+            bit_writer nested_writer(nested_buffer);
 
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));
@@ -313,8 +313,8 @@ namespace bitstream::test::stream
 
 		{
 			// Write nested values
-			uint8_t nested_buffer[8]{ 0 };
-			bit_writer nested_writer(nested_buffer, 8);
+            byte_buffer<8> nested_buffer;
+            bit_writer nested_writer(nested_buffer);
 
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));

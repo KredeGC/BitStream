@@ -27,8 +27,8 @@ namespace bitstream::test::traits
 
 		auto compare = [](uint32_t value) { return value != 21 && value != 42 && value != 99; };
 
-		uint8_t buffer[16]{ 0 };
-		bit_writer writer(buffer, 16);
+		byte_buffer<16> buffer;
+		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(values_in, 6, compare)); // Use bounded_int for writing
 		uint32_t num_bytes = writer.flush();
@@ -37,7 +37,7 @@ namespace bitstream::test::traits
 
 
 		uint32_t values_out[6];
-		bit_reader reader(std::move(writer));
+		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize<array_subset<uint32_t>>(values_out, 6, compare, 0U, 2048U)); // Use min, max arguments for reading
 

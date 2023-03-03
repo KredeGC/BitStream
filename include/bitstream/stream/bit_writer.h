@@ -40,8 +40,8 @@ namespace bitstream
 
 		/**
 		 * @brief Construct a writer pointing to the given byte array with @p num_bytes size
-		 * @param bytes The byte array to write to
-		 * @param num_bytes The number of bytes in the array
+		 * @param bytes The byte array to write to. Should be 4-byte aligned if possible
+		 * @param num_bytes The number of bytes in the array. Must be a multiple of 4
 		*/
 		bit_writer(void* bytes, uint32_t num_bytes) noexcept :
 			m_Buffer(static_cast<uint32_t*>(bytes)),
@@ -105,6 +105,8 @@ namespace bitstream
 			rhs.m_Scratch = 0;
 			rhs.m_ScratchBits = 0;
 			rhs.m_WordIndex = 0;
+            
+            return *this;
 		}
 
 		/**
