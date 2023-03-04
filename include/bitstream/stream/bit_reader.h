@@ -15,6 +15,7 @@ namespace bitstream
 {
 	/**
 	 * @brief A stream for reading objects from a tightly packed buffer
+	 * @note Does not take ownership of the buffer
 	*/
 	class bit_reader
 	{

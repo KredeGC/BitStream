@@ -17,6 +17,7 @@ namespace bitstream
     
 	/**
 	 * @brief A stream for writing objects tightly into a buffer
+	 * @note Does not take ownership of the buffer
 	*/
 	class bit_writer
 	{
