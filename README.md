@@ -343,6 +343,8 @@ float out_value;
 reader.serialize<bounded_range>(range, out_value); // out_value should now be a value close to 1.2345678f
 ```
 
+These examples can also be seen in [`src/test/examples_test.cpp`](https://github.com/KredeGC/BitStream/tree/master/src/test/examples_test.cpp).
+
 # Extensibility
 The library is made with extensibility in mind.
 The `bit_writer` and `bit_reader` use a template trait specialization of the given type to deduce how to serialize and deserialize the object.

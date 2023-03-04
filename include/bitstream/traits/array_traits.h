@@ -12,6 +12,10 @@
 
 namespace bitstream
 {
+    /**
+     * @brief Wrapper type for subsets of arrays
+     * @tparam T The type of the array
+    */
 	template<typename T, typename = T>
 	struct array_subset;
 
