@@ -386,12 +386,14 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
 The specialization can also be templated to work with a number of types.
 It also works with `enable_if`:
 ```cpp
-// This trait will be used by any integral pointer type (char*, uint16_t* etc.)
+// This trait will be used by any non-const integral pointer type (char*, uint16_t* etc.)
 template<typename T>
-struct serialize_traits<T*, typename std::enable_if_t<std::is_integral_v<T>>>
+struct serialize_traits<T*, typename std::enable_if_t<std::is_integral_v<T> && !std::is_const_v<T>>>
 { ... };
-// An example which would use the above trait
+// An example which will use the above trait
 bool status = writer.serialize<int16_t*>(...);
+// An example which won't use it (and won't compile)
+bool status = writer.serialize<const int16_t*>(...);
 ```
 
 More concrete examples of traits can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.

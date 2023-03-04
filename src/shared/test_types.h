@@ -19,4 +19,11 @@ namespace bitstream::test
             return values[index];
 		}
 	};
+    
+    enum class test_enum
+    {
+        FirstValue = 3,
+        SecondValue = 1,
+        ThirdValue
+    };
 }
