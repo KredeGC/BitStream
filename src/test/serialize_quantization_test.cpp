@@ -86,7 +86,7 @@ namespace bitstream::test::traits
 		using trait = smallest_three<quaternion, 11>;
 
 		// Test smallest three
-		quaternion value_in(0.0f, std::sin(2.0f), std::cos(2.0f), 0.0f);
+		quaternion value_in{ 0.0f, std::sin(2.0f), std::cos(2.0f), 0.0f };
 
 		byte_buffer<16> buffer;
 		bit_writer writer(buffer);
@@ -102,7 +102,7 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<trait>(value_out));
 
-		float dot = value_in.x * value_out.x + value_in.y * value_out.y + value_in.z * value_out.z + value_in.w * value_out.w;
+		float dot = value_in[0] * value_out[0] + value_in[1] * value_out[1] + value_in[2] * value_out[2] + value_in[3] * value_out[3];
 
 		if (dot < 0.0f)
 			dot *= -1.0f;

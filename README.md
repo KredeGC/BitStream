@@ -219,18 +219,16 @@ As well as a short example of its usage:
 ```cpp
 struct quaternion
 {
-    float w;
-    float x;
-    float y;
-    float z;
-    
-    // This needs to return the same order as the constructor
+    // smallest_three supports any combination of w, x, y and z, as long as it's consistent
+    float values[4];
+
+    // The constructor order must be the same as the operator[]
     float operator[](size_t index) const
     {
-        return reinterpret_cast<const float*>(this)[index];
+        return values[index];
     }
 };
-quaternion in_value = { 1.0f, 0.0f, 0.0f, 0.0f };
+quaternion in_value{ 1.0f, 0.0f, 0.0f, 0.0f };
 quaternion out_value;
 bool status_write = writer.serialize<smallest_three<quaternion, 12>>(in_value);
 bool status_read = reader.serialize<smallest_three<quaternion, 12>>(out_value);

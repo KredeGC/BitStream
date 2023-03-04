@@ -40,12 +40,12 @@ namespace bitstream::test::quantization
 
 	BS_ADD_TEST(test_smallest_three)
 	{
-		quaternion quat_in(0.0f, std::sin(2.0f), std::cos(2.0f), 0.0f);
+		quaternion quat_in{ 0.0f, std::sin(2.0f), std::cos(2.0f), 0.0f };
 
 		auto quantized_quat = smallest_three<quaternion, 11>::quantize(quat_in);
 		quaternion quat_out = smallest_three<quaternion, 11>::dequantize(quantized_quat);
 
-		float dot = quat_in.x * quat_out.x + quat_in.y * quat_out.y + quat_in.z * quat_out.z + quat_in.w * quat_out.w;
+		float dot = quat_in[0] * quat_out[0] + quat_in[1] * quat_out[1] + quat_in[2] * quat_out[2] + quat_in[3] * quat_out[3];
 
 		if (dot < 0.0f)
 			dot *= -1.0f;
