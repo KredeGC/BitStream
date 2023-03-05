@@ -159,7 +159,10 @@ namespace bitstream
 				m_WordIndex++;
 			}
 
-			return (m_NumBitsWritten - 1U) / 8U + 1U;
+			if (m_NumBitsWritten > 0U)
+				return (m_NumBitsWritten - 1U) / 8U + 1U;
+			else
+				return 0U;
 		}
 
 		/**
@@ -189,13 +192,13 @@ namespace bitstream
 			uint32_t num_bytes = flush();
 
 			// Copy protocol version to buffer
-			std::memcpy(m_Buffer, &protocol_version, sizeof(uint32_t));
+			*m_Buffer = protocol_version;
 
 			// Generate checksum of version + data
 			uint32_t checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(m_Buffer), num_bytes);
 
 			// Put checksum at beginning
-			std::memcpy(m_Buffer, &checksum, sizeof(uint32_t));
+			*m_Buffer = checksum;
 
 			return num_bytes;
 		}
@@ -209,18 +212,20 @@ namespace bitstream
 		{
 			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
 
-			flush();
-
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsWritten);
 
-			// Set to the padding to 0
-			std::memset(m_Buffer + m_WordIndex, 0, num_bytes - m_WordIndex * 4U);
+			uint32_t offset = m_NumBitsWritten / 32;
+			uint32_t zero = 0;
 
-			m_NumBitsWritten = num_bytes * 8U;
+			// Serialize words
+			for (uint32_t i = offset; i < num_bytes / 4; i++)
+				BS_ASSERT(serialize_bits(zero, 32));
 
-			m_Scratch = 0ULL;
-			m_ScratchBits = (num_bytes % 4U) * 8U;
-			m_WordIndex = num_bytes / 4U;
+			uint32_t remainder = num_bytes * 8U - m_NumBitsWritten;
+
+			// Align to byte
+			if (remainder % 32U != 0U)
+				BS_ASSERT(serialize_bits(zero, remainder));
 
 			return true;
 		}

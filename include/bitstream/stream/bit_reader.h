@@ -139,21 +139,24 @@ namespace bitstream
 		*/
 		bool serialize_checksum(uint32_t protocol_version) noexcept
 		{
+			BS_ASSERT(m_NumBitsRead == 0);
+
+			BS_ASSERT(can_serialize_bits(32U));
+
 			uint32_t num_bytes = (m_TotalBits - 1U) / 8U + 1U;
 
 			// Read the checksum
-			uint32_t checksum;
-			std::memcpy(&checksum, m_Buffer, sizeof(uint32_t));
+			uint32_t checksum = *m_Buffer;
 
 			// Copy protocol version to buffer
 			uint32_t* buffer = const_cast<uint32_t*>(m_Buffer); // Somewhat of a hack, but it's faster to change the checksum twice than allocate memory for it
-			std::memcpy(buffer, &protocol_version, sizeof(uint32_t));
+			*buffer = protocol_version;
 
 			// Generate checksum to compare against
 			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(buffer), num_bytes);
 
 			// Write the checksum back, just in case
-			std::memcpy(buffer, &checksum, sizeof(uint32_t));
+			*buffer = checksum;
 
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
@@ -174,30 +177,23 @@ namespace bitstream
             
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsRead);
 
-			// Align with word size
-			uint32_t remainder = m_NumBitsRead % 32;
-			if (remainder != 0)
-			{
-				uint32_t zero;
-				bool status = serialize_bits(zero, 32 - remainder);
-
-				BS_ASSERT(status && zero == 0);
-			}
+			uint32_t offset = m_NumBitsRead / 32;
+			uint32_t zero;
 
 			// Test for zeros in padding
-			for (uint32_t i = m_WordIndex; i < num_bytes / 4; i++)
+			for (uint32_t i = offset; i < num_bytes / 4; i++)
 			{
-				uint32_t zero = 0;
 				bool status = serialize_bits(zero, 32);
 
 				BS_ASSERT(status && zero == 0);
 			}
 
+			uint32_t remainder = num_bytes * 8U - m_NumBitsRead;
+
 			// Test the last word more carefully, as it may have data
-			if (num_bytes % 4 != 0)
+			if (remainder % 32U != 0U)
 			{
-				uint32_t zero = 0;
-				bool status = serialize_bits(zero, (num_bytes % 4) * 8);
+				bool status = serialize_bits(zero, remainder);
 
 				BS_ASSERT(status && zero == 0);
 			}
