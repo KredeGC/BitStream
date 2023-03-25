@@ -72,9 +72,9 @@ namespace bitstream::utility
 #elif defined(__linux__)
             return __builtin_bswap32(value);
 #else
-			const uint32_t first = (value << 24)	& 0xFF000000;
+			const uint32_t first =  (value << 24)	& 0xFF000000;
 			const uint32_t second = (value << 8)	& 0x00FF0000;
-			const uint32_t third = (value >> 8)		& 0x0000FF00;
+			const uint32_t third =  (value >> 8)	& 0x0000FF00;
 			const uint32_t fourth = (value >> 24)	& 0x000000FF;
 
 			return first | second | third | fourth;

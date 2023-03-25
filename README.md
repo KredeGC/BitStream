@@ -32,6 +32,11 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
   * [Bounded float - bounded_range](#bounded-float---bounded_range)
   * [Quaternion - smallest_three\<Q, BitsPerElement\>](#quaternion---smallest_threeq-bitsperelement)
 * [Serialization Examples](#serialization-examples)
+* [Extensibility](#extensibility)
+  * [Adding new serializables types](#adding-new-serializables-types)
+  * [Unified serialization](#unified-serialization)
+  * [Partial trait specializations](#partial-trait-specializations)
+  * [Trait deduction](#trait-deduction)
 * [Building and running tests](#building-and-running-tests)
 * [3rd party](#3rd-party)
 * [License](#license)
@@ -50,7 +55,7 @@ The source and header files inside the `src/` directory are only tests and shoul
 # Usage
 The library has a global header file ([`bitstream/bitstream.h`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h)) which includes every other header file in the library.
 
-If you only need certain features, you can simply include the files you need.
+If you only need certain features you can instead opt to just include the files you need.
 The files are stored in categories:
 * [`quantization/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/quantization/) - Files relating to quantizing floats and quaternions into fewer bits
 * [`stream/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/stream/) - Files relating to streams that read and write bits
@@ -58,12 +63,13 @@ The files are stored in categories:
 
 An important aspect of the serialiaztion is performance, since the library is meant to be used in a tight loop, like with networking.
 This is why most operations don't use exceptions, but instead return true or false depending on whether the operation was a success.
-It's important to check these return values after every operation, especially when reading.
+It's important to check these return values after every operation, especially when reading from an unknown source.
 You can check it manually or use the `BS_ASSERT(x)` macro for this, if you want your function to return false on failure.
 
 It is also possible to dynamically put a break point or trap when a bitstream would have otherwise returned false. This can be great for debugging custom serialization code, but should generally be left out of production code. Simply `#define BS_DEBUG_BREAK` before including any of the library header files if you want to break when an operation fails.
 
-For more examples of usage, see the [Serialization Examples](#serialization-examples) below.
+For more concrete examples of usage, see the [Serialization Examples](#serialization-examples) below.
+If you need to add your own serializable types you should also look at the [Extensibility](#extensibility) section.
 You can also look at the unit tests to get a better idea about what you can expect from the library.
 
 # Documentation
@@ -348,11 +354,15 @@ These examples can also be seen in [`src/test/examples_test.cpp`](https://github
 # Extensibility
 The library is made with extensibility in mind.
 The `bit_writer` and `bit_reader` use a template trait specialization of the given type to deduce how to serialize and deserialize the object.
+The only requirements of the trait is that it has (or can deduce) 2 static functions which take a bit_writer& and a bit_reader& respectively as their first argument.
+The 2 functions must also return a bool indicating whether the serialization was a success or not, but can otherwise take any number of additional arguments.
+
+## Adding new serializables types
 The general structure of a trait looks like the following:
 
 ```cpp
 template<>
-struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
+struct serialize_traits<TRAIT_TYPE> // The type to use when referencing this specific trait
 {
     // Will be called when writing the object to a stream
     static bool serialize(bit_writer& stream, ...)
@@ -364,14 +374,10 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
 };
 ```
 
-Note that `TRAIT_TYPE` does not necessarily have to be part of the serialize function definitions.
-It is purely used to specify which trait to use when serializing, since it cannot be deduced from the arguments.<br/>
-To use the trait above to serialize an object you need to explicitly specify it:
-```cpp
-bool status = writer.serialize<TRAIT_TYPE>(...);
-```
-
-The specialization can also be unified with templating, if writing and reading look similar:
+## Unified serialization
+The serialization can also be unified with templating, if writing and reading look similar.
+If some parts of the serialization process don't match entirely you can query the `Stream::reading` or `Stream::writing` and branch depending on the value.
+An example of this can be seen below:
 ```cpp
 template<>
 struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
@@ -379,20 +385,69 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
     // Will be called when writing or reading the object to a stream
     template<typename Stream>
     static bool serialize(Stream& stream, ...)
+    {
+        // Some code that looks the same for writing and reading
+        
+        if constexpr (Stream::writing) {
+            // Code that should only be run when writing
+        }
+        
+        // A variable that differs if the stream is writing or reading
+        int value = Stream::reading ? 0 : 1;
+        
+        ...
+    }
+};
+```
+
+## Partial trait specializations
+The specialization can also be templated to work with a number of types.
+It also works with `enable_if` as the second argument:
+```cpp
+// This trait will be used by any non-const integral pointer type (char*, uint16_t* etc.)
+template<typename T>
+struct serialize_traits<T*, typename std::enable_if_t<std::is_integral_v<T> && !std::is_const_v<T>>>
+{ ... };
+// An example which will use the above trait
+bool status = writer.serialize<int16_t*>(...);
+// An example which won't use it (and won't compile)
+bool status = writer.serialize<const int16_t*>(...);
+```
+
+Note that `TRAIT_TYPE` does not necessarily have to be part of the serialize function definitions.
+It can just be used to specify which trait to use when serializing, if it cannot be deduced from the arguments.<br/>
+Below is an example where we serialize an object by explicitly defining the trait type:
+```cpp
+bool status = writer.serialize<TRAIT_TYPE>(...);
+```
+
+## Trait deduction
+When calling the `serialize` function on a `bit_writer` or `bit_reader`, the trait can sometimes be deduced instead of being explicitly declared.
+This can only be done if the type of the second argument in the `static bool serialize(...)` function is (roughly) the same as the trait type.
+An example of the structure for an implicit trait can be seen below:
+```cpp
+template<>
+struct serialize_traits<TRAIT_TYPE> // The type to use when referencing this specific trait
+{
+    // The second argument is the same as TRAIT_TYPE (const and lvalue references are removed when deducing)
+    static bool serialize(bit_writer& stream, const TRAIT_TYPE&, ...)
+    { ... }
+    
+    // The second argument is the same as TRAIT_TYPE (lvalue is removed)
+    static bool serialize(bit_reader& stream, TRAIT_TYPE&, ...)
     { ... }
 };
 ```
 
-The specialization can also be templated to work with a number of types.
-It also works with `enable_if`:
+The above trait could then be used when implicitly serializing an object of type `TRAIT_TYPE`:
 ```cpp
-// This trait will be used by any integral pointer type (char*, uint16_t* etc.)
-template<typename T>
-struct serialize_traits<T*, typename std::enable_if_t<std::is_integral_v<T>>>
-{ ... };
-// An example which would use the above trait
-bool status = writer.serialize<int16_t*>(...);
+TRAIT_TYPE value;
+bool status = writer.serialize(value, ...);
 ```
+
+It doesn't work on all types, and there is some guesswork involved relating to const qualifiers.
+E.g. a trait of type `char` is treated the same as `const char&` and thus the call would be ambiguous if both had a trait specialization.
+In case of ambiguity you will still be able to declare the trait explicitly when calling the `serialize` function.
 
 More concrete examples of traits can be found in the [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) directory.
 

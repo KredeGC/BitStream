@@ -2,6 +2,7 @@
 #include "../utility/assert.h"
 #include "../utility/crc.h"
 #include "../utility/endian.h"
+#include "../utility/meta.h"
 
 #include "byte_buffer.h"
 #include "serialize_traits.h"
@@ -17,6 +18,7 @@ namespace bitstream
     
 	/**
 	 * @brief A stream for writing objects tightly into a buffer
+	 * @note Does not take ownership of the buffer
 	*/
 	class bit_writer
 	{
@@ -43,7 +45,7 @@ namespace bitstream
 		 * @param bytes The byte array to write to. Should be 4-byte aligned if possible
 		 * @param num_bytes The number of bytes in the array. Must be a multiple of 4
 		*/
-		bit_writer(void* bytes, uint32_t num_bytes) noexcept :
+		explicit bit_writer(void* bytes, uint32_t num_bytes) noexcept :
 			m_Buffer(static_cast<uint32_t*>(bytes)),
 			m_NumBitsWritten(0),
 			m_TotalBits(num_bytes * 8),
@@ -158,7 +160,10 @@ namespace bitstream
 				m_WordIndex++;
 			}
 
-			return (m_NumBitsWritten - 1U) / 8U + 1U;
+			if (m_NumBitsWritten > 0U)
+				return (m_NumBitsWritten - 1U) / 8U + 1U;
+			else
+				return 0U;
 		}
 
 		/**
@@ -188,13 +193,13 @@ namespace bitstream
 			uint32_t num_bytes = flush();
 
 			// Copy protocol version to buffer
-			std::memcpy(m_Buffer, &protocol_version, sizeof(uint32_t));
+			*m_Buffer = protocol_version;
 
 			// Generate checksum of version + data
 			uint32_t checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(m_Buffer), num_bytes);
 
 			// Put checksum at beginning
-			std::memcpy(m_Buffer, &checksum, sizeof(uint32_t));
+			*m_Buffer = checksum;
 
 			return num_bytes;
 		}
@@ -208,18 +213,20 @@ namespace bitstream
 		{
 			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
 
-			flush();
-
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsWritten);
 
-			// Set to the padding to 0
-			std::memset(m_Buffer + m_WordIndex, 0, num_bytes - m_WordIndex * 4U);
+			uint32_t offset = m_NumBitsWritten / 32;
+			uint32_t zero = 0;
 
-			m_NumBitsWritten = num_bytes * 8U;
+			// Serialize words
+			for (uint32_t i = offset; i < num_bytes / 4; i++)
+				BS_ASSERT(serialize_bits(zero, 32));
 
-			m_Scratch = 0ULL;
-			m_ScratchBits = (num_bytes % 4U) * 8U;
-			m_WordIndex = num_bytes / 4U;
+			uint32_t remainder = num_bytes * 8U - m_NumBitsWritten;
+
+			// Align to byte
+			if (remainder % 32U != 0U)
+				BS_ASSERT(serialize_bits(zero, remainder));
 
 			return true;
 		}
@@ -348,16 +355,38 @@ namespace bitstream
 		}
 
 		/**
-		 * @brief Writes to the buffer, using the given `Trait`.
+		 * @brief Writes to the buffer, using the given @p Trait.
+		 * @note The Trait type in this function must always be explicitly declared
 		 * @tparam Trait A template specialization of serialize_trait<>
 		 * @tparam ...Args The types of the arguments to pass to the serialize function
 		 * @param ...args The arguments to pass to the serialize function
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>
-		bool serialize(Args&&... args) noexcept(noexcept(serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...)))
+		bool serialize(Args&&... args) noexcept(utility::is_noexcept_serialize_v<Trait, bit_writer, Args...>)
 		{
+			static_assert(utility::has_serialize_v<Trait, bit_writer, Args...>, "Could not find serializable trait for the given type. Remember to specialize serializable_traits<> with the given type");
+
 			return serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...);
+		}
+
+		/**
+		 * @brief Writes to the buffer, by trying to deduce the trait.
+		 * @note The Trait type in this function is always implicit and will be deduced from the first argument if possible.
+		 * If the trait cannot be deduced it will not compile.
+		 * @tparam ...Args The types of the arguments to pass to the serialize function
+		 * @tparam Trait A template specialization of serialize_trait<>
+		 * @param ...args The arguments to pass to the serialize function
+		 * @return Whether successful or not
+		*/
+		template<typename Trait, typename... Args>
+		bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_writer, Args...>, bit_writer, Trait, Args...>)
+		{
+			using deduce_t = utility::deduce_trait_t<Trait, bit_writer, Args...>;
+
+			static_assert(utility::has_serialize_v<deduce_t, bit_writer, Trait, Args...>, "Could not deduce serializable trait for the given arguments. Remember to specialize serializable_traits<> with the given type");
+
+			return serialize_traits<deduce_t>::serialize(*this, std::forward<Trait>(arg), std::forward<Args>(args)...);
 		}
 
 	private:

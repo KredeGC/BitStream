@@ -25,7 +25,7 @@ namespace bitstream
 	 * @tparam T A type matching an integer value
 	*/
 	template<typename T>
-	struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T>>>
+	struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T> && !std::is_const_v<T>>>
 	{
 		/**
 		 * @brief Writes an integer into the @p writer
@@ -126,7 +126,7 @@ namespace bitstream
 	 * @tparam Max The upper bound. Inclusive
 	*/
 	template<typename T, T Min, T Max>
-	struct serialize_traits<bounded_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T>>>
+	struct serialize_traits<bounded_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T> && !std::is_const_v<T>>>
 	{
 		/**
 		 * @brief Writes an integer into the @p writer

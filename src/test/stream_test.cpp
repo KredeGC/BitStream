@@ -77,14 +77,14 @@ namespace bitstream::test::stream
 	{
 		// Test checksum
 		uint32_t protocol_version = 0xDEADBEEF;
-		uint32_t value = 3;
+		uint32_t value = 5;
 
 		// Write some initial values and finish with a checksum
 		byte_buffer<16> buffer;
 		bit_writer writer(buffer);
 
 		writer.prepend_checksum();
-		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
+		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
 		uint16_t num_bytes = writer.serialize_checksum(protocol_version);
 
 		// Read the checksum and validate
@@ -92,12 +92,41 @@ namespace bitstream::test::stream
 		bit_reader reader(buffer, num_bytes);
 
 		BS_TEST_ASSERT(reader.serialize_checksum(protocol_version));
-		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
+		BS_TEST_ASSERT(reader.serialize_bits(out_value, 3));
 
 		BS_TEST_ASSERT(out_value == value);
 	}
 
-	BS_ADD_TEST(test_serialize_padding)
+	BS_ADD_TEST(test_serialize_padding_small)
+	{
+		// Test padding
+		uint32_t in_value1 = 3;
+		uint32_t in_value2 = 6;
+
+		// Write some initial value, pad it, and then write another value
+		byte_buffer<32> buffer;
+		bit_writer writer(buffer);
+		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 3));
+		BS_TEST_ASSERT(writer.pad_to_size(2));
+		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 5));
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 3);
+
+		// Read the values and validate padding
+		uint32_t out_value1;
+		uint32_t out_value2;
+		bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 3));
+		BS_TEST_ASSERT(reader.pad_to_size(2));
+		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 5));
+
+		BS_TEST_ASSERT(out_value1 == in_value1);
+		BS_TEST_ASSERT(out_value2 == in_value2);
+	}
+
+	BS_ADD_TEST(test_serialize_padding_large)
 	{
 		// Test padding
 		uint32_t in_value1 = 3;

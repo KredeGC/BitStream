@@ -2,6 +2,7 @@
 #include "../utility/assert.h"
 #include "../utility/crc.h"
 #include "../utility/endian.h"
+#include "../utility/meta.h"
 
 #include "byte_buffer.h"
 #include "serialize_traits.h"
@@ -15,6 +16,7 @@ namespace bitstream
 {
 	/**
 	 * @brief A stream for reading objects from a tightly packed buffer
+	 * @note Does not take ownership of the buffer
 	*/
 	class bit_reader
 	{
@@ -38,7 +40,7 @@ namespace bitstream
 		 * @param bytes The byte array to read from. Should be 4-byte aligned if possible. The size of the array must be a multiple of 4
 		 * @param num_bytes The maximum number of bytes that we can read
 		*/
-		bit_reader(const void* bytes, uint32_t num_bytes) noexcept :
+		explicit bit_reader(const void* bytes, uint32_t num_bytes) noexcept :
 			m_Buffer(static_cast<const uint32_t*>(bytes)),
 			m_NumBitsRead(0),
 			m_TotalBits(num_bytes * 8),
@@ -138,21 +140,24 @@ namespace bitstream
 		*/
 		bool serialize_checksum(uint32_t protocol_version) noexcept
 		{
+			BS_ASSERT(m_NumBitsRead == 0);
+
+			BS_ASSERT(can_serialize_bits(32U));
+
 			uint32_t num_bytes = (m_TotalBits - 1U) / 8U + 1U;
 
 			// Read the checksum
-			uint32_t checksum;
-			std::memcpy(&checksum, m_Buffer, sizeof(uint32_t));
+			uint32_t checksum = *m_Buffer;
 
 			// Copy protocol version to buffer
 			uint32_t* buffer = const_cast<uint32_t*>(m_Buffer); // Somewhat of a hack, but it's faster to change the checksum twice than allocate memory for it
-			std::memcpy(buffer, &protocol_version, sizeof(uint32_t));
+			*buffer = protocol_version;
 
 			// Generate checksum to compare against
 			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(buffer), num_bytes);
 
 			// Write the checksum back, just in case
-			std::memcpy(buffer, &checksum, sizeof(uint32_t));
+			*buffer = checksum;
 
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
@@ -173,30 +178,23 @@ namespace bitstream
             
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsRead);
 
-			// Align with word size
-			uint32_t remainder = m_NumBitsRead % 32;
-			if (remainder != 0)
-			{
-				uint32_t zero;
-				bool status = serialize_bits(zero, 32 - remainder);
-
-				BS_ASSERT(status && zero == 0);
-			}
+			uint32_t offset = m_NumBitsRead / 32;
+			uint32_t zero;
 
 			// Test for zeros in padding
-			for (uint32_t i = m_WordIndex; i < num_bytes / 4; i++)
+			for (uint32_t i = offset; i < num_bytes / 4; i++)
 			{
-				uint32_t zero = 0;
 				bool status = serialize_bits(zero, 32);
 
 				BS_ASSERT(status && zero == 0);
 			}
 
+			uint32_t remainder = num_bytes * 8U - m_NumBitsRead;
+
 			// Test the last word more carefully, as it may have data
-			if (num_bytes % 4 != 0)
+			if (remainder % 32U != 0U)
 			{
-				uint32_t zero = 0;
-				bool status = serialize_bits(zero, (num_bytes % 4) * 8);
+				bool status = serialize_bits(zero, remainder);
 
 				BS_ASSERT(status && zero == 0);
 			}
@@ -312,16 +310,38 @@ namespace bitstream
 		}
 
 		/**
-		 * @brief Reads from the buffer, using the given `Trait`.
+		 * @brief Reads from the buffer, using the given @p Trait.
+		 * @note The Trait type in this function must always be explicitly declared
 		 * @tparam Trait A template specialization of serialize_trait<>
 		 * @tparam ...Args The types of the arguments to pass to the serialize function
 		 * @param ...args The arguments to pass to the serialize function
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>
-		bool serialize(Args&&... args) noexcept(noexcept(serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...)))
+		bool serialize(Args&&... args) noexcept(utility::is_noexcept_serialize_v<Trait, bit_reader, Args...>)
 		{
+			static_assert(utility::has_serialize_v<Trait, bit_reader, Args...>, "Could not find serializable trait for the given type. Remember to specialize serializable_traits<> with the given type");
+
 			return serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...);
+		}
+
+		/**
+		 * @brief Reads from the buffer, by trying to deduce the trait.
+		 * @note The Trait type in this function is always implicit and will be deduced from the first argument if possible.
+		 * If the trait cannot be deduced it will not compile.
+		 * @tparam Trait A template specialization of serialize_trait<>
+		 * @tparam ...Args The types of the arguments to pass to the serialize function
+		 * @param ...args The arguments to pass to the serialize function
+		 * @return Whether successful or not
+		*/
+		template<typename Trait, typename... Args>
+		bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_reader, Args...>, bit_reader, Trait, Args...>)
+		{
+			using deduce_t = utility::deduce_trait_t<Trait, bit_reader, Args...>;
+
+			static_assert(utility::has_serialize_v<deduce_t, bit_reader, Trait, Args...>, "Could not deduce serializable trait for the given arguments. Remember to specialize serializable_traits<> with the given type");
+
+			return serialize_traits<deduce_t>::serialize(*this, std::forward<Trait>(arg), std::forward<Args>(args)...);
 		}
 
 	private:
