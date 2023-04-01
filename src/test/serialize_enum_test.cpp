@@ -29,6 +29,6 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(reader.serialize<test_enum>(out_value, 1, 3));
 
-		BS_TEST_ASSERT_OPERATION(out_value, == , value);
+		BS_TEST_ASSERT(out_value == value);
 	}
 }

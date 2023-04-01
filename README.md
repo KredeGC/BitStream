@@ -354,7 +354,7 @@ These examples can also be seen in [`src/test/examples_test.cpp`](https://github
 # Extensibility
 The library is made with extensibility in mind.
 The `bit_writer` and `bit_reader` use a template trait specialization of the given type to deduce how to serialize and deserialize the object.
-The only requirements of the trait is that it has (or can deduce) 2 static functions which take a bit_writer& and a bit_reader& respectively as their first argument.
+The only requirements of the trait is that it has (or can deduce) 2 static functions which take a `bit_writer&` and a `bit_reader&` respectively as their first argument.
 The 2 functions must also return a bool indicating whether the serialization was a success or not, but can otherwise take any number of additional arguments.
 
 ## Adding new serializables types

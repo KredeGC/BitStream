@@ -13,42 +13,6 @@
 namespace bitstream
 {
 	/**
-	 * @brief A trait used to serialize a float as-is, without any bound checking or quantization
-	*/
-	template<>
-	struct serialize_traits<float>
-	{
-        /**
-		 * @brief Serializes a whole float into or out of the @p stream
-         * @tparam Stream The type of stream to use. Usually bit_writer or bit_reader
-		 * @param stream The stream to serialize to
-		 * @param value The string to serialize
-		 * @return Success
-        */
-        template<typename Stream>
-		static bool serialize(Stream& stream, float& value) noexcept
-		{
-			union float_int
-			{
-				float f;
-				uint32_t i;
-			};
-
-			float_int tmp;
-            
-            if constexpr (Stream::writing)
-                tmp.f = value;
-
-			BS_ASSERT(stream.serialize_bits(tmp.i, 32));
-            
-            if constexpr (Stream::reading)
-			    value = tmp.f;
-
-			return true;
-		}
-	};
-
-	/**
 	 * @brief A trait used to serialize a single-precision float as half-precision
 	*/
 	template<>

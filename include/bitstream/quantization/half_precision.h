@@ -28,6 +28,7 @@ namespace bitstream
 {
 	/**
 	 * @brief Class for quantizing single-precision floats into half-precision
+	 * @note This is not standard compliant, since it violates strict aliasing rules
 	*/
 	class half_precision
 	{
