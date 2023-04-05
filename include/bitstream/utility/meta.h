@@ -44,7 +44,7 @@ namespace bitstream::utility
 	// Non-const value
 	template<typename Trait, typename Stream, typename... Args>
 	struct deduce_trait<std::enable_if_t<
-		!std::is_pointer_v<std::decay_t<Trait>>&&
+		!std::is_pointer_v<std::decay_t<Trait>> &&
 		has_serialize_v<base_t<Trait>, Stream, Trait, Args...>>,
 		Trait, Stream, Args...>
 	{
@@ -54,7 +54,7 @@ namespace bitstream::utility
 	// Const value
 	template<typename Trait, typename Stream, typename... Args>
 	struct deduce_trait<std::enable_if_t<
-		!std::is_pointer_v<std::decay_t<Trait>>&&
+		!std::is_pointer_v<std::decay_t<Trait>> &&
 		has_serialize_v<std::add_const_t<base_t<Trait>>, Stream, Trait, Args...>>,
 		Trait, Stream, Args...>
 	{
@@ -64,7 +64,7 @@ namespace bitstream::utility
 	// Non-const pointer
 	template<typename Trait, typename Stream, typename... Args>
 	struct deduce_trait<std::enable_if_t<
-		std::is_pointer_v<std::decay_t<Trait>>&&
+		std::is_pointer_v<std::decay_t<Trait>> &&
 		has_serialize_v<std::add_pointer_t<base_t<Trait>>, Stream, Trait, Args...>>,
 		Trait, Stream, Args...>
 	{
@@ -74,7 +74,7 @@ namespace bitstream::utility
 	// Const pointer
 	template<typename Trait, typename Stream, typename... Args>
 	struct deduce_trait<std::enable_if_t<
-		std::is_pointer_v<std::decay_t<Trait>>&&
+		std::is_pointer_v<std::decay_t<Trait>> &&
 		has_serialize_v<std::add_pointer_t<std::add_const_t<base_t<Trait>>>, Stream, Trait, Args...>>,
 		Trait, Stream, Args...>
 	{

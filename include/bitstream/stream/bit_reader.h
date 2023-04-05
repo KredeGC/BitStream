@@ -329,9 +329,10 @@ namespace bitstream
 		 * @brief Reads from the buffer, by trying to deduce the trait.
 		 * @note The Trait type in this function is always implicit and will be deduced from the first argument if possible.
 		 * If the trait cannot be deduced it will not compile.
-		 * @tparam Trait A template specialization of serialize_trait<>
+		 * @tparam Trait The type of the first argument, which will be used to deduce the trait specialization
 		 * @tparam ...Args The types of the arguments to pass to the serialize function
-		 * @param ...args The arguments to pass to the serialize function
+		 * @param arg The first argument to pass to the serialize function
+		 * @param ...args The rest of the arguments to pass to the serialize function
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>

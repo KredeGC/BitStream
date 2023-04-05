@@ -6,6 +6,7 @@
 #include "../stream/bit_writer.h"
 
 #include <cstdint>
+#include <cstring>
 
 namespace bitstream
 {
