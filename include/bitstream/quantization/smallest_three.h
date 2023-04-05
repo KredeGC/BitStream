@@ -134,7 +134,7 @@ namespace bitstream
 			float b = data.b * unpacker - half_range * unpacker;
 			float c = data.c * unpacker - half_range * unpacker;
 
-			float d = std::sqrtf(1.0f - ((a * a) + (b * b) + (c * c)));
+			float d = std::sqrt(1.0f - ((a * a) + (b * b) + (c * c)));
 
 			switch (data.m)
 			{
