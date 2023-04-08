@@ -155,6 +155,46 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(out_value2 == in_value2);
 	}
 
+	BS_ADD_TEST(test_serialize_padding_empty)
+	{
+		// Write some initial value, pad it, and then write another value
+		byte_buffer<32> buffer;
+		bit_writer writer(buffer);
+		BS_TEST_ASSERT(writer.pad_to_size(30));
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 30);
+
+		// Read the values and validate padding
+		bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.pad_to_size(30));
+	}
+
+	BS_ADD_TEST(test_serialize_padding_full)
+	{
+		// Test padding
+		uint32_t in_value = 3;
+
+		// Write some initial value, pad it, and then write another value
+		byte_buffer<32> buffer;
+		bit_writer writer(buffer);
+		BS_TEST_ASSERT(writer.serialize_bits(in_value, 3));
+		BS_TEST_ASSERT(writer.pad_to_size(32));
+		uint32_t num_bytes = writer.flush();
+
+		BS_TEST_ASSERT(num_bytes == 32);
+
+		// Read the values and validate padding
+		uint32_t out_value;
+		bit_reader reader(buffer, num_bytes);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_value, 3));
+		BS_TEST_ASSERT(reader.pad_to_size(32));
+
+		BS_TEST_ASSERT(out_value == in_value);
+	}
+
 	void test_serialize_align()
 	{
 		// Test align

@@ -178,24 +178,23 @@ namespace bitstream
             
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsRead);
 
-			uint32_t offset = m_NumBitsRead / 32;
+			uint32_t remainder = (num_bytes * 8U - m_NumBitsRead) % 32U;
 			uint32_t zero;
 
-			// Test for zeros in padding
-			for (uint32_t i = offset; i < num_bytes / 4; i++)
+			// Test the last word more carefully, as it may have data
+			if (remainder != 0U)
 			{
-				bool status = serialize_bits(zero, 32);
-
+				bool status = serialize_bits(zero, remainder);
 				BS_ASSERT(status && zero == 0);
 			}
 
-			uint32_t remainder = num_bytes * 8U - m_NumBitsRead;
+			uint32_t offset = m_NumBitsRead / 32;
+            uint32_t max = num_bytes / 4;
 
-			// Test the last word more carefully, as it may have data
-			if (remainder % 32U != 0U)
+			// Test for zeros in padding
+			for (uint32_t i = offset; i < max; i++)
 			{
-				bool status = serialize_bits(zero, remainder);
-
+				bool status = serialize_bits(zero, 32);
 				BS_ASSERT(status && zero == 0);
 			}
 

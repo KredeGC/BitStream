@@ -214,19 +214,32 @@ namespace bitstream
 			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
 
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsWritten);
-
-			uint32_t offset = m_NumBitsWritten / 32;
+            
+            if (m_NumBitsWritten == 0)
+            {
+                std::memset(m_Buffer, 0, num_bytes);
+                
+                m_NumBitsWritten = num_bytes * 8;
+                m_Scratch = 0;
+                m_ScratchBits = 0;
+                m_WordIndex = num_bytes / 4;
+                
+                return true;
+            }
+            
+            uint32_t remainder = (num_bytes * 8U - m_NumBitsWritten) % 32U;
 			uint32_t zero = 0;
 
-			// Serialize words
-			for (uint32_t i = offset; i < num_bytes / 4; i++)
-				BS_ASSERT(serialize_bits(zero, 32));
-
-			uint32_t remainder = num_bytes * 8U - m_NumBitsWritten;
-
 			// Align to byte
-			if (remainder % 32U != 0U)
+			if (remainder != 0U)
 				BS_ASSERT(serialize_bits(zero, remainder));
+
+			uint32_t offset = m_NumBitsWritten / 32;
+            uint32_t max = num_bytes / 4;
+
+			// Serialize words
+			for (uint32_t i = offset; i < max; i++)
+				BS_ASSERT(serialize_bits(zero, 32));
 
 			return true;
 		}
