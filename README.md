@@ -254,10 +254,10 @@ uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need mor
 writer.serialize_bits(value, 5);
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+uint32_t num_bits = writer.flush();
 
 // Create a reader, referencing the buffer and bytes written
-bit_reader reader(buffer, num_bytes);
+bit_reader reader(buffer, num_bits);
 
 // Read the value back
 uint32_t out_value; // We don't have to initialize it yet
@@ -275,10 +275,10 @@ int32_t value = -45; // We can choose any value within the range below
 writer.serialize<int32_t>(value, -90, 40); // A lower and upper bound which the value will be quantized between
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+uint32_t num_bits = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(buffer, num_bytes);
+bit_reader reader(buffer, num_bits);
 
 // Read the value back
 int32_t out_value; // We don't have to initialize it yet
@@ -296,10 +296,10 @@ const char* value = "Hello world!";
 writer.serialize<const char*>(value, 32U); // The second argument is the maximum size we expect the string to be
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+uint32_t num_bits = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(buffer, num_bytes);
+bit_reader reader(buffer, num_bits);
 
 // Read the value back
 char out_value[32]; // Set the size to the max size
@@ -317,10 +317,10 @@ std::string value = "Hello world!";
 writer.serialize<std::string>(value, 32U); // The second argument is the maximum size we expect the string to be
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+uint32_t num_bits = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(buffer, num_bytes);
+bit_reader reader(buffer, num_bits);
 
 // Read the value back
 std::string out_value; // The string will be resized if the output doesn't fit
@@ -339,10 +339,10 @@ float value = 1.2345678f;
 writer.serialize<bounded_range>(range, value);
 
 // Flush the writer's remaining state into the buffer
-uint32_t num_bytes = writer.flush();
+uint32_t num_bits = writer.flush();
 
 // Create a reader by moving and invalidating the writer
-bit_reader reader(buffer, num_bytes);
+bit_reader reader(buffer, num_bits);
 
 // Read the value back
 float out_value;
@@ -354,7 +354,7 @@ These examples can also be seen in [`src/test/examples_test.cpp`](https://github
 # Extensibility
 The library is made with extensibility in mind.
 The `bit_writer` and `bit_reader` use a template trait specialization of the given type to deduce how to serialize and deserialize the object.
-The only requirements of the trait is that it has (or can deduce) 2 static functions which take a bit_writer& and a bit_reader& respectively as their first argument.
+The only requirements of the trait is that it has (or can deduce) 2 static functions which take a `bit_writer&` and a `bit_reader&` respectively as their first argument.
 The 2 functions must also return a bool indicating whether the serialization was a success or not, but can otherwise take any number of additional arguments.
 
 ## Adding new serializables types

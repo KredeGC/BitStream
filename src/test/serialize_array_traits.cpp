@@ -31,13 +31,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(values_in, 6, compare)); // Use bounded_int for writing
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 6);
+		BS_TEST_ASSERT_OPERATION(writer.get_num_bytes_serialized(), == , 6);
 
 
 		uint32_t values_out[6];
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<array_subset<uint32_t>>(values_out, 6, compare, 0U, 2048U)); // Use min, max arguments for reading
 

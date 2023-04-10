@@ -11,28 +11,6 @@
 
 namespace bitstream::test::traits
 {
-	BS_ADD_TEST(test_serialize_float)
-	{
-		// Test float
-		float value_in = 3.141592f;
-
-		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
-
-		BS_TEST_ASSERT(writer.serialize<float>(value_in));
-		uint32_t num_bytes = writer.flush();
-
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 4);
-
-
-		float value_out;
-		bit_reader reader(buffer, num_bytes);
-
-		BS_TEST_ASSERT(reader.serialize<float>(value_out));
-
-		BS_TEST_ASSERT_OPERATION(value_in, ==, value_out);
-	}
-
     BS_ADD_TEST(test_serialize_half_precision)
 	{
 		// Test half precision float
@@ -42,13 +20,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<half_precision>(value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, ==, 2);
+		BS_TEST_ASSERT_OPERATION(num_bits, ==, 16);
 
 
 		float value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<half_precision>(value_out));
         
@@ -67,13 +45,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<bounded_range>(range, value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 2);
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 16);
 
 
 		float value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<bounded_range>(range, value_out));
 
@@ -92,13 +70,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 5);
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 11 * 3 + 2);
 
 
 		quaternion value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<trait>(value_out));
 

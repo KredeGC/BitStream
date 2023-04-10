@@ -1,8 +1,5 @@
 #pragma once
 
-#include <cstdint>
-#include <cmath>
-
 /*
  *  Copyright (c) 2020 Stanislav Denisov, Maxim Munning, Davin Carten
  *
@@ -24,6 +21,9 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+
+#include <cstdint>
+#include <cmath>
 
 namespace bitstream
 {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <string>
 #include <type_traits>
 
@@ -16,8 +17,12 @@ namespace bitstream::test
         {
             return value;
         }
-        
-        return std::string();
+        else
+        {
+            std::stringstream ss;
+            ss << value;
+            return ss.str();
+        }
     }
 }
 

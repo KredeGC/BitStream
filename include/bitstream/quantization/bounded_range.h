@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 /*
  *  Copyright (c) 2018 Stanislav Denisov
  *
@@ -23,6 +21,8 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
  */
+
+#include <cstdint>
 
 namespace bitstream
 {

@@ -16,7 +16,7 @@ namespace bitstream
 	 * @brief Wrapper type for compiletime known integer bounds
 	 * @tparam T 
 	*/
-	template<typename T, T, T>
+	template<typename T, T = (std::numeric_limits<T>::min)(), T = (std::numeric_limits<T>::max)()>
 	struct bounded_int;
 
 #pragma region integral types

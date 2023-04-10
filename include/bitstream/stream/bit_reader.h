@@ -36,14 +36,14 @@ namespace bitstream
 			m_WordIndex(0) {}
 
 		/**
-		 * @brief Construct a reader pointing to the given byte array with @p num_bytes size
+		 * @brief Construct a reader pointing to the given byte array with @p num_bits
 		 * @param bytes The byte array to read from. Should be 4-byte aligned if possible. The size of the array must be a multiple of 4
-		 * @param num_bytes The maximum number of bytes that we can read
+		 * @param num_bits The maximum number of bits that we can read
 		*/
-		explicit bit_reader(const void* bytes, uint32_t num_bytes) noexcept :
+		explicit bit_reader(const void* bytes, uint32_t num_bits) noexcept :
 			m_Buffer(static_cast<const uint32_t*>(bytes)),
 			m_NumBitsRead(0),
-			m_TotalBits(num_bytes * 8),
+			m_TotalBits(num_bits),
 			m_Scratch(0),
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
@@ -51,13 +51,13 @@ namespace bitstream
 		/**
 		 * @brief Construct a reader pointing to the given @p buffer
 		 * @param buffer The buffer to read from
-		 * @param num_bytes The maximum number of bytes that we can read
+		 * @param num_bits The maximum number of bits that we can read
 		*/
 		template<size_t Size>
-		explicit bit_reader(byte_buffer<Size>& buffer, uint32_t num_bytes) noexcept :
+		explicit bit_reader(byte_buffer<Size>& buffer, uint32_t num_bits) noexcept :
 			m_Buffer(reinterpret_cast<uint32_t*>(buffer.Bytes)),
 			m_NumBitsRead(0),
-			m_TotalBits(num_bytes * 8),
+			m_TotalBits(num_bits),
 			m_Scratch(0),
 			m_ScratchBits(0),
 			m_WordIndex(0) {}
@@ -112,6 +112,12 @@ namespace bitstream
 		 * @return The number of bits which have been read
 		*/
 		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsRead; }
+
+		/**
+		 * @brief Returns the number of bytes which have been read from the buffer
+		 * @return The number of bytes which have been read
+		*/
+		uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsRead > 0U ? ((m_NumBitsRead - 1U) / 8U + 1U) : 0U; }
 
 		/**
 		 * @brief Returns whether the @p num_bits be read from the buffer
@@ -178,24 +184,23 @@ namespace bitstream
             
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsRead);
 
-			uint32_t offset = m_NumBitsRead / 32;
+			uint32_t remainder = (num_bytes * 8U - m_NumBitsRead) % 32U;
 			uint32_t zero;
 
-			// Test for zeros in padding
-			for (uint32_t i = offset; i < num_bytes / 4; i++)
+			// Test the last word more carefully, as it may have data
+			if (remainder != 0U)
 			{
-				bool status = serialize_bits(zero, 32);
-
+				bool status = serialize_bits(zero, remainder);
 				BS_ASSERT(status && zero == 0);
 			}
 
-			uint32_t remainder = num_bytes * 8U - m_NumBitsRead;
+			uint32_t offset = m_NumBitsRead / 32;
+            uint32_t max = num_bytes / 4;
 
-			// Test the last word more carefully, as it may have data
-			if (remainder % 32U != 0U)
+			// Test for zeros in padding
+			for (uint32_t i = offset; i < max; i++)
 			{
-				bool status = serialize_bits(zero, remainder);
-
+				bool status = serialize_bits(zero, 32);
 				BS_ASSERT(status && zero == 0);
 			}
 
@@ -329,9 +334,10 @@ namespace bitstream
 		 * @brief Reads from the buffer, by trying to deduce the trait.
 		 * @note The Trait type in this function is always implicit and will be deduced from the first argument if possible.
 		 * If the trait cannot be deduced it will not compile.
-		 * @tparam Trait A template specialization of serialize_trait<>
+		 * @tparam Trait The type of the first argument, which will be used to deduce the trait specialization
 		 * @tparam ...Args The types of the arguments to pass to the serialize function
-		 * @param ...args The arguments to pass to the serialize function
+		 * @param arg The first argument to pass to the serialize function
+		 * @param ...args The rest of the arguments to pass to the serialize function
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>

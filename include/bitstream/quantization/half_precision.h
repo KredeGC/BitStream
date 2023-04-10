@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 /*
  *  Copyright (c) 2018 Stanislav Denisov
  *
@@ -24,6 +22,9 @@
  *  SOFTWARE.
  */
 
+#include <cstdint>
+#include <cstring>
+
 namespace bitstream
 {
 	/**
@@ -31,29 +32,15 @@ namespace bitstream
 	*/
 	class half_precision
 	{
-	private:
-		union Values
-		{
-			float f;
-			int32_t i;
-		};
-
 	public:
 		inline static uint16_t quantize(float value)
 		{
-			Values values
-			{
-				value
-			};
+			int32_t tmp;
+			std::memcpy(&tmp, &value, sizeof(float));
 
-			return quantize(values.i);
-		}
-
-		inline static uint16_t quantize(int32_t value)
-		{
-			int32_t s = (value >> 16) & 0x00008000;
-			int32_t e = ((value >> 23) & 0X000000FF) - (127 - 15);
-			int32_t m = value & 0X007FFFFF;
+			int32_t s = (tmp >> 16) & 0x00008000;
+			int32_t e = ((tmp >> 23) & 0X000000FF) - (127 - 15);
+			int32_t m = tmp & 0X007FFFFF;
 
 			if (e <= 0) {
 				if (e < -10)
@@ -94,7 +81,7 @@ namespace bitstream
 
 		inline static float dequantize(uint16_t value)
 		{
-			uint32_t result;
+			uint32_t tmp;
 			uint32_t mantissa = (uint32_t)(value & 1023);
 			uint32_t exponent = 0XFFFFFFF2;
 
@@ -106,22 +93,22 @@ namespace bitstream
 					}
 
 					mantissa &= 0XFFFFFBFF;
-					result = (((uint32_t)value & 0x8000) << 16) | ((exponent + 127) << 23) | (mantissa << 13);
+					tmp = (((uint32_t)value & 0x8000) << 16) | ((exponent + 127) << 23) | (mantissa << 13);
 				}
 				else
 				{
-					result = (uint32_t)((value & 0x8000) << 16);
+					tmp = (uint32_t)((value & 0x8000) << 16);
 				}
 			}
 			else
 			{
-				result = ((((uint32_t)value & 0x8000) << 16) | ((((((uint32_t)value >> 10) & 0X1F) - 15) + 127) << 23)) | (mantissa << 13);
+				tmp = ((((uint32_t)value & 0x8000) << 16) | ((((((uint32_t)value >> 10) & 0X1F) - 15) + 127) << 23)) | (mantissa << 13);
 			}
 
-			Values values;
-			values.i = result;
+			float result;
+			std::memcpy(&result, &tmp, sizeof(float));
 
-			return values.f;
+			return result;
 		}
 	};
 }
