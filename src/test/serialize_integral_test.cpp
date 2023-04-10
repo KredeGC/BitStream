@@ -16,14 +16,14 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<T>(value, Min, Max));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, <= , sizeof(T));
-		BS_TEST_ASSERT_OPERATION(writer.get_num_bits_serialized(), <= , 8 * sizeof(T));
+		BS_TEST_ASSERT_OPERATION(num_bits, <= , 8 * sizeof(T));
+		BS_TEST_ASSERT_OPERATION(writer.get_num_bytes_serialized(), <= , sizeof(T));
 
 
 		T out_value = 0;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<T>(out_value, Min, Max));
 
@@ -40,14 +40,14 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(value));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, <= , sizeof(T));
-		BS_TEST_ASSERT_OPERATION(writer.get_num_bits_serialized(), <= , 8 * sizeof(T));
+		BS_TEST_ASSERT_OPERATION(num_bits, <= , 8 * sizeof(T));
+		BS_TEST_ASSERT_OPERATION(writer.get_num_bytes_serialized(), <= , sizeof(T));
 
 
 		T out_value = 0;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<trait>(out_value));
 

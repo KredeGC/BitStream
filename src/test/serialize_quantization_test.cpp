@@ -20,13 +20,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<half_precision>(value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, ==, 2);
+		BS_TEST_ASSERT_OPERATION(num_bits, ==, 16);
 
 
 		float value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<half_precision>(value_out));
         
@@ -45,13 +45,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<bounded_range>(range, value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 2);
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 16);
 
 
 		float value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<bounded_range>(range, value_out));
 
@@ -70,13 +70,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 5);
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 11 * 3 + 2);
 
 
 		quaternion value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<trait>(value_out));
 
