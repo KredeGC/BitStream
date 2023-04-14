@@ -21,14 +21,14 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, ==, 17);
+		BS_TEST_ASSERT_OPERATION(writer.get_num_bytes_serialized(), ==, 17);
 
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -49,14 +49,14 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 6));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, ==, 15);
+		BS_TEST_ASSERT_OPERATION(writer.get_num_bytes_serialized(), ==, 15);
 
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 6));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -79,14 +79,14 @@ namespace bitstream::test::traits
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<std::string>(value, 32U));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, ==, 17);
+		BS_TEST_ASSERT_OPERATION(writer.get_num_bytes_serialized(), ==, 17);
 
 		// Read the array back and validate
 		uint32_t out_padding;
 		std::string out_value;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<std::string>(out_value, 32U));
@@ -105,13 +105,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<std::wstring>(value, 32U));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, ==, 1 + 13 * sizeof(wchar_t));
+		BS_TEST_ASSERT_OPERATION(writer.get_num_bytes_serialized(), ==, 1 + 13 * sizeof(wchar_t));
 
 		// Read the array back and validate
 		std::wstring out_value;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<std::wstring>(out_value, 32U));
 

@@ -19,13 +19,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
         
 		BS_TEST_ASSERT(writer.serialize<test_enum>(value, 1, 3));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 1);
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 2);
 
 		// Read the enum back and validate
 		test_enum out_value;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<test_enum>(out_value, 1, 3));
 

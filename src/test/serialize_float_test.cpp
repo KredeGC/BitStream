@@ -18,13 +18,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<float>(value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 4);
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 32);
 
 
 		float value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<float>(value_out));
 
@@ -40,13 +40,13 @@ namespace bitstream::test::traits
 		bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<double>(value_in));
-		uint32_t num_bytes = writer.flush();
+		uint32_t num_bits = writer.flush();
 
-		BS_TEST_ASSERT_OPERATION(num_bytes, == , 8);
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 64);
 
 
 		double value_out;
-		bit_reader reader(buffer, num_bytes);
+		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<double>(value_out));
 

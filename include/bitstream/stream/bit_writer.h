@@ -42,8 +42,8 @@ namespace bitstream
 
 		/**
 		 * @brief Construct a writer pointing to the given byte array with @p num_bytes size
-		 * @param bytes The byte array to write to. Should be 4-byte aligned if possible
-		 * @param num_bytes The number of bytes in the array. Must be a multiple of 4
+		 * @param bytes The byte array to write to. Must be 4-byte aligned and the size must be a multiple of 4
+		 * @param num_bytes The number of bytes in the array
 		*/
 		explicit bit_writer(void* bytes, uint32_t num_bytes) noexcept :
 			m_Buffer(static_cast<uint32_t*>(bytes)),
@@ -51,13 +51,7 @@ namespace bitstream
 			m_TotalBits(num_bytes * 8),
 			m_Scratch(0),
 			m_ScratchBits(0),
-			m_WordIndex(0)
-		{
-#ifdef BS_DEBUG_BREAK
-			if (num_bytes % 4 != 0)
-                BS_BREAKPOINT();
-#endif
-		}
+			m_WordIndex(0) {}
 
 		/**
 		 * @brief Construct a writer pointing to the given @p buffer
@@ -124,6 +118,12 @@ namespace bitstream
 		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsWritten; }
 
 		/**
+		 * @brief Returns the number of bytes which have been written to the buffer
+		 * @return The number of bytes which have been written
+		*/
+		uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsWritten > 0U ? ((m_NumBitsWritten - 1U) / 8U + 1U) : 0U; }
+
+		/**
 		 * @brief Returns whether the @p num_bits can fit in the buffer
 		 * @param num_bits The number of bits to test
 		 * @return Whether the number of bits can fit in the buffer
@@ -160,10 +160,7 @@ namespace bitstream
 				m_WordIndex++;
 			}
 
-			if (m_NumBitsWritten > 0U)
-				return (m_NumBitsWritten - 1U) / 8U + 1U;
-			else
-				return 0U;
+			return m_NumBitsWritten;
 		}
 
 		/**
@@ -190,18 +187,18 @@ namespace bitstream
 		*/
 		uint32_t serialize_checksum(uint32_t protocol_version) noexcept
 		{
-			uint32_t num_bytes = flush();
+			uint32_t num_bits = flush();
 
 			// Copy protocol version to buffer
 			*m_Buffer = protocol_version;
 
 			// Generate checksum of version + data
-			uint32_t checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(m_Buffer), num_bytes);
+			uint32_t checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(m_Buffer), get_num_bytes_serialized());
 
 			// Put checksum at beginning
 			*m_Buffer = checksum;
 
-			return num_bytes;
+			return num_bits;
 		}
 
 		/**
@@ -214,19 +211,32 @@ namespace bitstream
 			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
 
 			BS_ASSERT(num_bytes * 8U >= m_NumBitsWritten);
-
-			uint32_t offset = m_NumBitsWritten / 32;
+            
+            if (m_NumBitsWritten == 0)
+            {
+                std::memset(m_Buffer, 0, num_bytes);
+                
+                m_NumBitsWritten = num_bytes * 8;
+                m_Scratch = 0;
+                m_ScratchBits = 0;
+                m_WordIndex = num_bytes / 4;
+                
+                return true;
+            }
+            
+            uint32_t remainder = (num_bytes * 8U - m_NumBitsWritten) % 32U;
 			uint32_t zero = 0;
 
-			// Serialize words
-			for (uint32_t i = offset; i < num_bytes / 4; i++)
-				BS_ASSERT(serialize_bits(zero, 32));
-
-			uint32_t remainder = num_bytes * 8U - m_NumBitsWritten;
-
 			// Align to byte
-			if (remainder % 32U != 0U)
+			if (remainder != 0U)
 				BS_ASSERT(serialize_bits(zero, remainder));
+
+			uint32_t offset = m_NumBitsWritten / 32;
+            uint32_t max = num_bytes / 4;
+
+			// Serialize words
+			for (uint32_t i = offset; i < max; i++)
+				BS_ASSERT(serialize_bits(zero, 32));
 
 			return true;
 		}
