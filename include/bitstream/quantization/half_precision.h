@@ -33,7 +33,7 @@ namespace bitstream
 	class half_precision
 	{
 	public:
-		inline static uint16_t quantize(float value)
+		inline static uint16_t quantize(float value) noexcept
 		{
 			int32_t tmp;
 			std::memcpy(&tmp, &value, sizeof(float));
@@ -79,7 +79,7 @@ namespace bitstream
 			return (uint16_t)(s | (e << 10) | (m >> 13));
 		}
 
-		inline static float dequantize(uint16_t value)
+		inline static float dequantize(uint16_t value) noexcept
 		{
 			uint32_t tmp;
 			uint32_t mantissa = (uint32_t)(value & 1023);

@@ -39,7 +39,7 @@ namespace bitstream::test::traits
 	{
 		// Test bounded float
 		float value_in = 3.141592f;
-		bounded_range range(0.0f, 5.0f, 0.0001f);
+		constexpr bounded_range range(0.0f, 5.0f, 0.0001f);
 
 		byte_buffer<16> buffer;
 		bit_writer writer(buffer);

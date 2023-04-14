@@ -37,10 +37,14 @@ namespace bitstream
 		uint32_t b;
 		uint32_t c;
 
-		quantized_quaternion() = default;
+		constexpr quantized_quaternion() noexcept :
+			m(0),
+			a(0),
+			b(0),
+			c(0) {}
 
-		quantized_quaternion(uint32_t m, uint32_t a, uint32_t b, uint32_t c)
-			: m(m), a(a), b(b), c(c) {}
+		constexpr quantized_quaternion(uint32_t m, uint32_t a, uint32_t b, uint32_t c) noexcept :
+			m(m), a(a), b(b), c(c) {}
 	};
 
 	/**
@@ -55,7 +59,7 @@ namespace bitstream
 		static constexpr float SMALLEST_THREE_PACK = 1.0f / SMALLEST_THREE_UNPACK;
 
 	public:
-		inline static quantized_quaternion quantize(const T& quaternion)
+		inline static quantized_quaternion quantize(const T& quaternion) noexcept
 		{
 			constexpr float half_range = static_cast<float>(1 << (BitsPerElement - 1));
 			constexpr float packer = SMALLEST_THREE_PACK * half_range;
@@ -71,7 +75,7 @@ namespace bitstream
             {
 				float element = quaternion[i];
 
-				float abs = std::abs(element);
+				float abs = element > 0.0f ? element : -element;
 
 				if (abs > max_value)
 				{
@@ -111,21 +115,21 @@ namespace bitstream
 
 			if (sign_minus)
 			{
-				a = (uint32_t)((-af * packer) + half_range);
-				b = (uint32_t)((-bf * packer) + half_range);
-				c = (uint32_t)((-cf * packer) + half_range);
+				a = static_cast<uint32_t>((-af * packer) + half_range);
+				b = static_cast<uint32_t>((-bf * packer) + half_range);
+				c = static_cast<uint32_t>((-cf * packer) + half_range);
 			}
 			else
 			{
-				a = (uint32_t)((af * packer) + half_range);
-				b = (uint32_t)((bf * packer) + half_range);
-				c = (uint32_t)((cf * packer) + half_range);
+				a = static_cast<uint32_t>((af * packer) + half_range);
+				b = static_cast<uint32_t>((bf * packer) + half_range);
+				c = static_cast<uint32_t>((cf * packer) + half_range);
 			}
 
 			return { m, a, b, c };
 		}
 
-		inline static T dequantize(const quantized_quaternion& data)
+		inline static T dequantize(const quantized_quaternion& data) noexcept
 		{
 			constexpr uint32_t half_range = (1 << (BitsPerElement - 1));
 			constexpr float unpacker = SMALLEST_THREE_UNPACK * (1.0f / half_range);
