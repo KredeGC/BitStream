@@ -152,22 +152,15 @@ namespace bitstream
 
 			uint32_t num_bytes = (m_TotalBits - 1U) / 8U + 1U;
 
-			// Read the checksum
-			uint32_t checksum = *m_Buffer;
-
-			// Copy protocol version to buffer
-			uint32_t* buffer = const_cast<uint32_t*>(m_Buffer); // Somewhat of a hack, but it's faster to change the checksum twice than allocate memory for it
-			*buffer = protocol_version;
-
 			// Generate checksum to compare against
-			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(buffer), num_bytes);
-
-			// Write the checksum back, just in case
-			*buffer = checksum;
+			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<const uint8_t*>(&protocol_version), reinterpret_cast<const uint8_t*>(m_Buffer + 1), num_bytes - 4);
 
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
 			m_NumBitsRead += 32U;
+
+			// Read the checksum
+			uint32_t checksum = *m_Buffer;
 
 			// Compare the checksum
 			return generated_checksum == checksum;
