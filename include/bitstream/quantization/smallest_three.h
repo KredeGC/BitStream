@@ -134,9 +134,9 @@ namespace bitstream
 			constexpr uint32_t half_range = (1 << (BitsPerElement - 1));
 			constexpr float unpacker = SMALLEST_THREE_UNPACK * (1.0f / half_range);
             
-			float a = data.a * unpacker - half_range * unpacker;
-			float b = data.b * unpacker - half_range * unpacker;
-			float c = data.c * unpacker - half_range * unpacker;
+			float a = static_cast<float>(data.a * unpacker - half_range * unpacker);
+			float b = static_cast<float>(data.b * unpacker - half_range * unpacker);
+			float c = static_cast<float>(data.c * unpacker - half_range * unpacker);
 
 			float d = std::sqrt(1.0f - ((a * a) + (b * b) + (c * c)));
 
