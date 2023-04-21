@@ -80,8 +80,6 @@ project "Test"
         "src",
         "include"
     }
-    
-    warnings "High"
 
     -- OS
     filter "system:windows"
@@ -93,21 +91,6 @@ project "Test"
 
     filter "system:linux"
         systemversion "latest"
-        
-        buildoptions {
-            "-pedantic",
-            "-Wall",
-            "-Wextra",
-            "-Wno-unknown-pragmas",
-            "-Wshadow",
-            "-Wnon-virtual-dtor",
-            "-Wold-style-cast",
-            "-Wcast-align",
-            "-Wunused",
-            "-Woverloaded-virtual",
-            "-Wpedantic",
-            "-Wimplicit-fallthrough"
-        }
     
     -- Architecture
     filter "platforms:x86"
