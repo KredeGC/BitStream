@@ -91,7 +91,7 @@ namespace bitstream::test::deduction
         // Write the value
         bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); // Min, Max, Precision
         float value = 1.2345678f;
-        writer.serialize(range, value);
+        BS_TEST_ASSERT(writer.serialize(range, value));
 
         // Flush the writer's remaining state into the buffer
         uint32_t num_bits = writer.flush();
@@ -103,7 +103,7 @@ namespace bitstream::test::deduction
 
         // Read the value back
         float out_value;
-        reader.serialize(range, out_value); // out_value should now be a value close to 1.2345678f
+        BS_TEST_ASSERT(reader.serialize(range, out_value)); // out_value should now be a value close to 1.2345678f
 
         BS_TEST_ASSERT_OPERATION(std::abs(value - out_value), <= , range.get_precision());
         BS_TEST_ASSERT_OPERATION(range.get_bits_required(), < , 32);

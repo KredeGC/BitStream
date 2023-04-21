@@ -80,7 +80,9 @@ namespace bitstream::utility
 			return first | second | third | fourth;
 #endif // _WIN32 || __linux__
         }
-
-		return value;
+        else
+        {
+            return value;
+        }
 	}
 }
