@@ -39,7 +39,7 @@ namespace bitstream::test::traits
 		uint32_t values_out[6];
 		bit_reader reader(buffer, num_bits);
 
-		BS_TEST_ASSERT(reader.serialize<array_subset<uint32_t>>(values_out, 6, compare, 0U, 2048U)); // Use min, max arguments for reading
+		BS_TEST_ASSERT(reader.serialize<array_subset<uint32_t>>(values_out, 6, 0U, 2048U)); // Use min, max arguments for reading
 
 		for (int i = 0; i < 6; i++)
 		{

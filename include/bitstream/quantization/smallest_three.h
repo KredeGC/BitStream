@@ -43,8 +43,8 @@ namespace bitstream
 			b(0),
 			c(0) {}
 
-		constexpr quantized_quaternion(uint32_t m, uint32_t a, uint32_t b, uint32_t c) noexcept :
-			m(m), a(a), b(b), c(c) {}
+		constexpr quantized_quaternion(uint32_t w, uint32_t x, uint32_t y, uint32_t z) noexcept :
+			m(w), a(x), b(y), c(z) {}
 	};
 
 	/**

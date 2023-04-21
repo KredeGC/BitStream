@@ -120,6 +120,7 @@ project "Test"
             "-pedantic",
             "-Wall",
             "-Wextra",
+            "-Wno-unknown-pragmas",
             "-Wshadow",
             "-Wnon-virtual-dtor",
             "-Wold-style-cast",

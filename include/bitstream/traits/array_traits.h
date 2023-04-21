@@ -134,7 +134,6 @@ namespace bitstream
 
 		/**
 		 * @brief Writes a subset of a serialized array into @p values
-		 * @tparam Compare A stub. Not used on read
 		 * @tparam ...Args The types of any additional arguments
 		 * @param reader The stream to read from
 		 * @param values The array of objects to read into
@@ -143,8 +142,8 @@ namespace bitstream
 		 * @param ...args Any additional arguments to use when serializing each individual object
 		 * @return Success
 		*/
-		template<typename Compare, typename... Args>
-		static bool serialize(bit_reader& reader, T* values, int max_size, Compare compare, Args&&... args) noexcept
+		template<typename... Args>
+		static bool serialize(bit_reader& reader, T* values, int max_size, Args&&... args) noexcept
 		{
 			int prev_index = -1;
             int index = 0;

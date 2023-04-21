@@ -44,7 +44,7 @@ namespace bitstream
 
 			if (e <= 0) {
 				if (e < -10)
-					return (uint16_t)s;
+					return static_cast<uint16_t>(s);
 
 				m |= 0x00800000;
 
@@ -54,16 +54,16 @@ namespace bitstream
 
 				m = (m + a + b) >> t;
 
-				return (uint16_t)(s | m);
+				return static_cast<uint16_t>(s | m);
 			}
 
 			if (e == 0XFF - (127 - 15)) {
 				if (m == 0)
-					return (uint16_t)(s | 0X7C00);
+					return static_cast<uint16_t>(s | 0X7C00);
 
 				m >>= 13;
 
-				return (uint16_t)(s | 0X7C00 | m | ((m == 0) ? 1 : 0));
+				return static_cast<uint16_t>(s | 0X7C00 | m | ((m == 0) ? 1 : 0));
 			}
 
 			m = m + 0X00000FFF + ((m >> 13) & 1);
@@ -74,15 +74,15 @@ namespace bitstream
 			}
 
 			if (e > 30)
-				return (uint16_t)(s | 0X7C00);
+				return static_cast<uint16_t>(s | 0X7C00);
 
-			return (uint16_t)(s | (e << 10) | (m >> 13));
+			return static_cast<uint16_t>(s | (e << 10) | (m >> 13));
 		}
 
 		inline static float dequantize(uint16_t value) noexcept
 		{
 			uint32_t tmp;
-			uint32_t mantissa = (uint32_t)(value & 1023);
+			uint32_t mantissa = static_cast<uint32_t>(value & 1023);
 			uint32_t exponent = 0XFFFFFFF2;
 
 			if ((value & -33792) == 0) {
@@ -93,16 +93,16 @@ namespace bitstream
 					}
 
 					mantissa &= 0XFFFFFBFF;
-					tmp = (((uint32_t)value & 0x8000) << 16) | ((exponent + 127) << 23) | (mantissa << 13);
+					tmp = ((static_cast<uint32_t>(value) & 0x8000) << 16) | ((exponent + 127) << 23) | (mantissa << 13);
 				}
 				else
 				{
-					tmp = (uint32_t)((value & 0x8000) << 16);
+					tmp = static_cast<uint32_t>((value & 0x8000) << 16);
 				}
 			}
 			else
 			{
-				tmp = ((((uint32_t)value & 0x8000) << 16) | ((((((uint32_t)value >> 10) & 0X1F) - 15) + 127) << 23)) | (mantissa << 13);
+				tmp = ((static_cast<uint32_t>(value) & 0x8000) << 16) | (((((static_cast<uint32_t>(value) >> 10) & 0X1F) - 15) + 127) << 23) | (mantissa << 13);
 			}
 
 			float result;
