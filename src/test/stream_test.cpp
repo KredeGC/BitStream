@@ -83,9 +83,9 @@ namespace bitstream::test::stream
 		byte_buffer<16> buffer;
 		bit_writer writer(buffer);
 
-		writer.prepend_checksum();
+		BS_TEST_ASSERT(writer.prepend_checksum());
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
-		uint16_t num_bits = writer.serialize_checksum(protocol_version);
+		uint32_t num_bits = writer.serialize_checksum(protocol_version);
 
 		// Read the checksum and validate
 		uint32_t out_value;
@@ -336,7 +336,7 @@ namespace bitstream::test::stream
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
-			uint32_t num_nested_bits = nested_writer.flush();
+			nested_writer.flush();
 
 			// Copy the nested buffer into the main writer
 			BS_TEST_ASSERT(nested_writer.serialize_into(writer));

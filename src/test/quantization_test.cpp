@@ -28,7 +28,7 @@ namespace bitstream::test::quantization
 	{
 		float value_in = 3.141592f;
 
-		bounded_range range(0.0f, 5.0f, 0.0001f);
+		constexpr bounded_range range(0.0f, 5.0f, 0.0001f);
 
 		uint32_t quantized_value = range.quantize(value_in);
 

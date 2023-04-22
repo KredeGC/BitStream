@@ -105,46 +105,46 @@ namespace bitstream
 		 * @brief Returns the buffer that this reader is currently serializing from
 		 * @return The buffer
 		*/
-		const uint8_t* get_buffer() const noexcept { return reinterpret_cast<const uint8_t*>(m_Buffer); }
+		[[nodiscard]] const uint8_t* get_buffer() const noexcept { return reinterpret_cast<const uint8_t*>(m_Buffer); }
 
 		/**
 		 * @brief Returns the number of bits which have been read from the buffer
 		 * @return The number of bits which have been read
 		*/
-		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsRead; }
+		[[nodiscard]] uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsRead; }
 
 		/**
 		 * @brief Returns the number of bytes which have been read from the buffer
 		 * @return The number of bytes which have been read
 		*/
-		uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsRead > 0U ? ((m_NumBitsRead - 1U) / 8U + 1U) : 0U; }
+		[[nodiscard]] uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsRead > 0U ? ((m_NumBitsRead - 1U) / 8U + 1U) : 0U; }
 
 		/**
 		 * @brief Returns whether the @p num_bits be read from the buffer
 		 * @param num_bits The number of bits to test
 		 * @return Whether the number of bits can be read from the buffer
 		*/
-		bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsRead + num_bits <= m_TotalBits; }
+		[[nodiscard]] bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsRead + num_bits <= m_TotalBits; }
 
 		/**
 		 * @brief Returns the number of bits which have not been read yet
 		 * @note The same as get_total_bits() - get_num_bits_serialized()
 		 * @return The remaining space in the buffer
 		*/
-		uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsRead; }
+		[[nodiscard]] uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsRead; }
 
 		/**
 		 * @brief Returns the size of the buffer, in bits
 		 * @return The size of the buffer, in bits
 		*/
-		uint32_t get_total_bits() const noexcept { return m_TotalBits; }
+		[[nodiscard]] uint32_t get_total_bits() const noexcept { return m_TotalBits; }
 
 		/**
 		 * @brief Reads the first 32 bits of the buffer and compares it to a checksum of the @p protocol_version and the rest of the buffer
 		 * @param protocol_version A unique version number
 		 * @return Whether the checksum matches what was written
 		*/
-		bool serialize_checksum(uint32_t protocol_version) noexcept
+		[[nodiscard]] bool serialize_checksum(uint32_t protocol_version) noexcept
 		{
 			BS_ASSERT(m_NumBitsRead == 0);
 
@@ -152,22 +152,15 @@ namespace bitstream
 
 			uint32_t num_bytes = (m_TotalBits - 1U) / 8U + 1U;
 
-			// Read the checksum
-			uint32_t checksum = *m_Buffer;
-
-			// Copy protocol version to buffer
-			uint32_t* buffer = const_cast<uint32_t*>(m_Buffer); // Somewhat of a hack, but it's faster to change the checksum twice than allocate memory for it
-			*buffer = protocol_version;
-
 			// Generate checksum to compare against
-			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(buffer), num_bytes);
-
-			// Write the checksum back, just in case
-			*buffer = checksum;
+			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<const uint8_t*>(&protocol_version), reinterpret_cast<const uint8_t*>(m_Buffer + 1), num_bytes - 4);
 
 			// Advance the reader by the size of the checksum (32 bits / 1 word)
 			m_WordIndex++;
 			m_NumBitsRead += 32U;
+
+			// Read the checksum
+			uint32_t checksum = *m_Buffer;
 
 			// Compare the checksum
 			return generated_checksum == checksum;
@@ -178,7 +171,7 @@ namespace bitstream
 		 * @param num_bytes The byte number to pad to
 		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes or if the padded bits are not zeros.
 		*/
-		bool pad_to_size(uint32_t num_bytes) noexcept
+		[[nodiscard]] bool pad_to_size(uint32_t num_bytes) noexcept
 		{
 			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
             
@@ -212,7 +205,7 @@ namespace bitstream
 		 * @notes Return false if the padded bits are not zeros
 		 * @return Returns false if the padded bits are not zeros
 		*/
-		bool align() noexcept
+		[[nodiscard]] bool align() noexcept
 		{
 			uint32_t remainder = m_NumBitsRead % 8U;
 			if (remainder != 0U)
@@ -232,7 +225,7 @@ namespace bitstream
 		 * @param num_bits The number of bits of the @p value to serialize
 		 * @return Returns false if @p num_bits is less than 1 or greater than 32 or if reading the given number of bits would overflow the buffer
 		*/
-		bool serialize_bits(uint32_t& value, uint32_t num_bits) noexcept
+		[[nodiscard]] bool serialize_bits(uint32_t& value, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
@@ -264,7 +257,7 @@ namespace bitstream
 		 * @param num_bits The number of bits of the @p bytes to serialize
 		 * @return Returns false if @p num_bits is less than 1 or if reading the given number of bits would overflow the buffer
 		*/
-		bool serialize_bytes(uint8_t* bytes, uint32_t num_bits) noexcept
+		[[nodiscard]] bool serialize_bytes(uint8_t* bytes, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U);
             
@@ -323,7 +316,7 @@ namespace bitstream
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>
-		bool serialize(Args&&... args) noexcept(utility::is_noexcept_serialize_v<Trait, bit_reader, Args...>)
+		[[nodiscard]] bool serialize(Args&&... args) noexcept(utility::is_noexcept_serialize_v<Trait, bit_reader, Args...>)
 		{
 			static_assert(utility::has_serialize_v<Trait, bit_reader, Args...>, "Could not find serializable trait for the given type. Remember to specialize serializable_traits<> with the given type");
 
@@ -341,7 +334,7 @@ namespace bitstream
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>
-		bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_reader, Args...>, bit_reader, Trait, Args...>)
+		[[nodiscard]] bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_reader, Args...>, bit_reader, Trait, Args...>)
 		{
 			using deduce_t = utility::deduce_trait_t<Trait, bit_reader, Args...>;
 

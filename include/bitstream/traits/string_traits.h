@@ -21,7 +21,7 @@ namespace bitstream
 		 * @brief Writes a c-style string into the @p writer
 		 * @param writer The stream to write to
 		 * @param value The string to serialize
-		 * @param max_size The maximum expected length of the string
+		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
 		static bool serialize(bit_writer& writer, const char* value, uint32_t max_size) noexcept
@@ -44,7 +44,7 @@ namespace bitstream
 		 * @brief Read a c-style string from the @p reader into @p value
 		 * @param reader The stream to read from
 		 * @param value A pointer to the buffer that should be read into. The size of this buffer should be at least @p max_size
-		 * @param max_size The maximum expected length of the string
+		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
 		static bool serialize(bit_reader& reader, char* value, uint32_t max_size) noexcept
@@ -83,7 +83,7 @@ namespace bitstream
 		 * @brief Writes a string into the @p writer
 		 * @param writer The stream to write to
 		 * @param value The string to serialize
-		 * @param max_size The maximum expected length of the string
+		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
 		static bool serialize(bit_writer& writer, const std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept
@@ -106,7 +106,7 @@ namespace bitstream
 		 * @brief Reads a string from the @p reader into @p value
 		 * @param reader The stream to read from
 		 * @param value The string to read into. It will be resized if the read string won't fit
-		 * @param max_size The maximum expected length of the string
+		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
 		static bool serialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept

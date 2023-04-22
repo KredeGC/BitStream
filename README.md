@@ -98,7 +98,7 @@ bool status_read = reader.serialize<bool>(out_value);
 ## Bounded integers - T
 A trait that covers all signed and unsigned integers.<br/>
 Takes the integer by reference and a lower and upper bound.<br/>
-The upper and lower bounds will default to T's upper and lower bound if left unspecified, effectively making the object unbounded.
+The upper and lower bounds will default to T's upper and lower bounds if left unspecified, effectively making the object unbounded.
 
 The call signature can be seen below:
 ```cpp
@@ -115,7 +115,8 @@ bool status_read = reader.serialize<int16_t>(out_value, -512, 2098);
 ## Compile-time bounded integers - bounded_int\<T, T Min, T Max\>
 A trait that covers all signed and unsigned integers within a `bounded_int` wrapper.<br/>
 Takes the integer by reference and a lower and upper bound as template parameters.<br/>
-This is preferable if you know the bounds at compile time as it skips having to calculate the number of bits required.
+This is preferable if you know the bounds at compile time as it skips having to calculate the number of bits required.<br/>
+The upper and lower bounds will default to T's upper and lower bounds if left unspecified, effectively making the object unbounded.
 
 The call signature can be seen below:
 ```cpp
@@ -161,6 +162,22 @@ std::string in_value = "Hello world!";
 std::string out_value;
 bool status_write = writer.serialize<std::string>(in_value, 32);
 bool status_read = reader.serialize<std::string>(out_value, 32);
+```
+
+## Double-precision float - double
+A trait that covers an entire double, with no quantization.<br/>
+Takes a reference to the double.
+
+The call signature can be seen below:
+```cpp
+bool serialize<double>(double& value);
+```
+As well as a short example of its usage:
+```cpp
+double in_value = 0.12345678652;
+double out_value;
+bool status_write = writer.serialize<double>(in_value);
+bool status_read = reader.serialize<double>(out_value);
 ```
 
 ## Single-precision float - float
@@ -256,7 +273,7 @@ writer.serialize_bits(value, 5);
 // Flush the writer's remaining state into the buffer
 uint32_t num_bits = writer.flush();
 
-// Create a reader, referencing the buffer and bytes written
+// Create a reader, referencing the buffer and bits written
 bit_reader reader(buffer, num_bits);
 
 // Read the value back
@@ -277,7 +294,7 @@ writer.serialize<int32_t>(value, -90, 40); // A lower and upper bound which the 
 // Flush the writer's remaining state into the buffer
 uint32_t num_bits = writer.flush();
 
-// Create a reader by moving and invalidating the writer
+// Create a reader, referencing the buffer and bits written
 bit_reader reader(buffer, num_bits);
 
 // Read the value back
@@ -298,7 +315,7 @@ writer.serialize<const char*>(value, 32U); // The second argument is the maximum
 // Flush the writer's remaining state into the buffer
 uint32_t num_bits = writer.flush();
 
-// Create a reader by moving and invalidating the writer
+// Create a reader, referencing the buffer and bits written
 bit_reader reader(buffer, num_bits);
 
 // Read the value back
@@ -319,7 +336,7 @@ writer.serialize<std::string>(value, 32U); // The second argument is the maximum
 // Flush the writer's remaining state into the buffer
 uint32_t num_bits = writer.flush();
 
-// Create a reader by moving and invalidating the writer
+// Create a reader, referencing the buffer and bits written
 bit_reader reader(buffer, num_bits);
 
 // Read the value back
@@ -341,7 +358,7 @@ writer.serialize<bounded_range>(range, value);
 // Flush the writer's remaining state into the buffer
 uint32_t num_bits = writer.flush();
 
-// Create a reader by moving and invalidating the writer
+// Create a reader, referencing the buffer and bits written
 bit_reader reader(buffer, num_bits);
 
 // Read the value back
@@ -373,6 +390,9 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when referencing this spe
     { ... }
 };
 ```
+
+As with any functions, you are free to overload them if you want to serialize an object differently, depending on any parameters you pass.
+As long as their list of parameters starts with `bit_writer&` and `bit_reader&` respectively they will be able to be called.
 
 ## Unified serialization
 The serialization can also be unified with templating, if writing and reading look similar.

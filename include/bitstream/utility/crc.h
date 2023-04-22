@@ -31,4 +31,17 @@ namespace bitstream::utility
 
 		return ~result;
 	}
+
+	inline constexpr uint32_t crc_uint32(const uint8_t* checksum, const uint8_t* bytes, uint32_t size)
+	{
+		uint32_t result = 0xFFFFFFFF;
+
+		for (uint32_t i = 0; i < 4; i++)
+			result = CHECKSUM_TABLE[(result & 0xFF) ^ *(checksum + i)] ^ (result >> 8);
+
+		for (uint32_t i = 0; i < size; i++)
+			result = CHECKSUM_TABLE[(result & 0xFF) ^ *(bytes + i)] ^ (result >> 8);
+
+		return ~result;
+	}
 }

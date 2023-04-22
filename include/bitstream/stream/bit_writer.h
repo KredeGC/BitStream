@@ -109,39 +109,39 @@ namespace bitstream
 		 * @brief Returns the buffer that this writer is currently serializing into
 		 * @return The buffer
 		*/
-		uint8_t* get_buffer() const noexcept { return reinterpret_cast<uint8_t*>(m_Buffer); }
+		[[nodiscard]] uint8_t* get_buffer() const noexcept { return reinterpret_cast<uint8_t*>(m_Buffer); }
 
 		/**
 		 * @brief Returns the number of bits which have been written to the buffer
 		 * @return The number of bits which have been written
 		*/
-		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsWritten; }
+		[[nodiscard]] uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsWritten; }
 
 		/**
 		 * @brief Returns the number of bytes which have been written to the buffer
 		 * @return The number of bytes which have been written
 		*/
-		uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsWritten > 0U ? ((m_NumBitsWritten - 1U) / 8U + 1U) : 0U; }
+		[[nodiscard]] uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsWritten > 0U ? ((m_NumBitsWritten - 1U) / 8U + 1U) : 0U; }
 
 		/**
 		 * @brief Returns whether the @p num_bits can fit in the buffer
 		 * @param num_bits The number of bits to test
 		 * @return Whether the number of bits can fit in the buffer
 		*/
-		bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsWritten + num_bits <= m_TotalBits; }
+		[[nodiscard]] bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsWritten + num_bits <= m_TotalBits; }
 
 		/**
 		 * @brief Returns the number of bits which have not been written yet
 		 * @note The same as get_total_bits() - get_num_bits_serialized()
 		 * @return The remaining space in the buffer
 		*/
-		uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsWritten; }
+		[[nodiscard]] uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsWritten; }
 
         /**
          * @brief Returns the size of the buffer, in bits
          * @return The size of the buffer, in bits
         */
-        uint32_t get_total_bits() const noexcept { return m_TotalBits; }
+		[[nodiscard]] uint32_t get_total_bits() const noexcept { return m_TotalBits; }
         
 		/**
 		 * @brief Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer.
@@ -167,7 +167,7 @@ namespace bitstream
 		 * @brief Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits.
 		 * @return Returns false if anything has already been written to the buffer or if there's no space to write the checksum
 		*/
-		bool prepend_checksum() noexcept
+		[[nodiscard]] bool prepend_checksum() noexcept
 		{
 			BS_ASSERT(m_NumBitsWritten == 0);
 
@@ -206,7 +206,7 @@ namespace bitstream
 		 * @param num_bytes The byte number to pad to
 		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes
 		*/
-		bool pad_to_size(uint32_t num_bytes) noexcept
+		[[nodiscard]] bool pad_to_size(uint32_t num_bytes) noexcept
 		{
 			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
 
@@ -245,7 +245,7 @@ namespace bitstream
 		 * @brief Pads the buffer with up to 8 zeros, so that the next write is byte-aligned
 		 * @return Success
 		*/
-		bool align() noexcept
+		[[nodiscard]] bool align() noexcept
 		{
 			uint32_t remainder = m_ScratchBits % 8U;
 			if (remainder != 0U)
@@ -264,7 +264,7 @@ namespace bitstream
 		 * @param num_bits The number of bits of the @p value to serialize
 		 * @return Returns false if @p num_bits is less than 1 or greater than 32 or if writing the given number of bits would overflow the buffer
 		*/
-		bool serialize_bits(uint32_t value, uint32_t num_bits) noexcept
+		[[nodiscard]] bool serialize_bits(uint32_t value, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
@@ -296,7 +296,7 @@ namespace bitstream
 		 * @param num_bits The number of bits of the @p bytes to serialize
 		 * @return Returns false if @p num_bits is less than 1 or if writing the given number of bits would overflow the buffer
 		*/
-		bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits) noexcept
+		[[nodiscard]] bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U);
             
@@ -347,7 +347,7 @@ namespace bitstream
 		 * @param writer The writer to copy into
 		 * @return Returns false if writing would overflow the buffer
 		*/
-		bool serialize_into(bit_writer& writer) const noexcept
+		[[nodiscard]] bool serialize_into(bit_writer& writer) const noexcept
 		{
 			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Buffer);
 			uint32_t num_bits = get_num_bits_serialized();
@@ -373,7 +373,7 @@ namespace bitstream
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>
-		bool serialize(Args&&... args) noexcept(utility::is_noexcept_serialize_v<Trait, bit_writer, Args...>)
+		[[nodiscard]] bool serialize(Args&&... args) noexcept(utility::is_noexcept_serialize_v<Trait, bit_writer, Args...>)
 		{
 			static_assert(utility::has_serialize_v<Trait, bit_writer, Args...>, "Could not find serializable trait for the given type. Remember to specialize serializable_traits<> with the given type");
 
@@ -391,7 +391,7 @@ namespace bitstream
 		 * @return Whether successful or not
 		*/
 		template<typename Trait, typename... Args>
-		bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_writer, Args...>, bit_writer, Trait, Args...>)
+		[[nodiscard]] bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_writer, Args...>, bit_writer, Trait, Args...>)
 		{
 			using deduce_t = utility::deduce_trait_t<Trait, bit_writer, Args...>;
 

@@ -32,23 +32,26 @@ namespace bitstream
 	class bounded_range
 	{
 	public:
-		bounded_range() = default;
+		constexpr bounded_range() noexcept :
+            m_Min(0),
+            m_Max(0),
+            m_Precision(0),
+            m_BitsRequired(0),
+            m_Mask(0) {}
 
-		bounded_range(float min, float max, float precision) :
+        constexpr bounded_range(float min, float max, float precision) noexcept :
 		    m_Min(min),
             m_Max(max),
-            m_Precision(precision)
-        {
-            m_BitsRequired = log2(static_cast<uint32_t>((m_Max - m_Min) * (1.0f / precision) + 0.5f)) + 1;
-            m_Mask = (1 << m_BitsRequired) - 1;
-        }
+            m_Precision(precision),
+            m_BitsRequired(log2(static_cast<uint32_t>((m_Max - m_Min) * (1.0f / precision) + 0.5f)) + 1),
+            m_Mask((1U << m_BitsRequired) - 1U) {}
         
-        inline float get_min() const { return m_Min; }
-        inline float get_max() const { return m_Max; }
-        inline float get_precision() const { return m_Precision; }
-        inline uint32_t get_bits_required() const { return m_BitsRequired; }
+        constexpr inline float get_min() const noexcept { return m_Min; }
+        constexpr inline float get_max() const noexcept { return m_Max; }
+        constexpr inline float get_precision() const noexcept { return m_Precision; }
+        constexpr inline uint32_t get_bits_required() const noexcept { return m_BitsRequired; }
 
-		inline uint32_t quantize(float value) const
+        constexpr inline uint32_t quantize(float value) const noexcept
         {
             if (value < m_Min)
                 value = m_Min;
@@ -58,7 +61,7 @@ namespace bitstream
             return static_cast<uint32_t>(static_cast<float>((value - m_Min) * (1.0f / m_Precision)) + 0.5f) & m_Mask;
         }
         
-		inline float dequantize(uint32_t data) const
+        constexpr inline float dequantize(uint32_t data) const noexcept
         {
             float adjusted = (static_cast<float>(data) * m_Precision) + m_Min;
 
@@ -71,7 +74,7 @@ namespace bitstream
         }
 
 	private:
-		inline static constexpr uint32_t log2(uint32_t value)
+        constexpr inline static uint32_t log2(uint32_t value) noexcept
         {
             value |= value >> 1;
             value |= value >> 2;
@@ -90,7 +93,7 @@ namespace bitstream
 		uint32_t m_BitsRequired;
 		uint32_t m_Mask;
         
-        inline static constexpr uint32_t DE_BRUIJN[32]
+        constexpr inline static uint32_t DE_BRUIJN[32]
         {
              0,  9,  1, 10, 13, 21,  2, 29,
             11, 14, 16, 18, 22, 25,  3, 30,
