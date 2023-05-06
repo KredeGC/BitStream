@@ -16,5 +16,7 @@ namespace bitstream
 		static_assert(Size % 4 == 0, "Buffer size must be a multiple of 4");
 
 		alignas(uint32_t) uint8_t Bytes[Size];
+
+		uint8_t& operator[](size_t i) noexcept { return Bytes[i]; }
 	};
 }
