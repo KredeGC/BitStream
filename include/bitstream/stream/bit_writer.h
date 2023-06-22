@@ -372,11 +372,9 @@ namespace bitstream
 		 * @param ...args The arguments to pass to the serialize function
 		 * @return Whether successful or not
 		*/
-		template<typename Trait, typename... Args>
-		[[nodiscard]] bool serialize(Args&&... args) noexcept(utility::is_noexcept_serialize_v<Trait, bit_writer, Args...>)
+		template<typename Trait, typename... Args, typename = utility::has_serialize_t<Trait, bit_writer, Args...>>
+		[[nodiscard]] bool serialize(Args&&... args) noexcept(utility::is_serialize_noexcept_v<Trait, bit_writer, Args...>)
 		{
-			static_assert(utility::has_serialize_v<Trait, bit_writer, Args...>, "Could not find serializable trait for the given type. Remember to specialize serializable_traits<> with the given type");
-
 			return serialize_traits<Trait>::serialize(*this, std::forward<Args>(args)...);
 		}
 
@@ -390,14 +388,10 @@ namespace bitstream
 		 * @param ...args The rest of the arguments to pass to the serialize function
 		 * @return Whether successful or not
 		*/
-		template<typename Trait, typename... Args>
-		[[nodiscard]] bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_writer, Args...>, bit_writer, Trait, Args...>)
+		template<typename... Args, typename Trait, typename = utility::has_deduce_serialize_t<Trait, bit_writer, Args...>>
+		[[nodiscard]] bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_deduce_serialize_noexcept_v<Trait, bit_writer, Args...>)
 		{
-			using deduce_t = utility::deduce_trait_t<Trait, bit_writer, Args...>;
-
-			static_assert(utility::has_serialize_v<deduce_t, bit_writer, Trait, Args...>, "Could not deduce serializable trait for the given arguments. Remember to specialize serializable_traits<> with the given type");
-
-			return serialize_traits<deduce_t>::serialize(*this, std::forward<Trait>(arg), std::forward<Args>(args)...);
+			return serialize_traits<utility::deduce_trait_t<Trait, bit_writer, Args...>>::serialize(*this, std::forward<Trait>(arg), std::forward<Args>(args)...);
 		}
 
 	private:

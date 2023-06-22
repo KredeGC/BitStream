@@ -14,7 +14,7 @@ namespace bitstream::test::traits
 		// Test enums
 		test_enum value = test_enum::SecondValue;
 
-		// Write a char array, but make sure the word count isn't whole
+		// Write a an enum
 		byte_buffer<4> buffer;
 		bit_writer writer(buffer);
         
@@ -28,6 +28,31 @@ namespace bitstream::test::traits
 		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<test_enum>(out_value, 1, 3));
+
+		BS_TEST_ASSERT(out_value == value);
+	}
+
+	BS_ADD_TEST(test_serialize_bounded_enum_aligned)
+	{
+		using bounded_type = bounded_enum<test_enum, 1, 3>;
+
+		// Test enums
+		test_enum value = test_enum::SecondValue;
+
+		// Write a an enum
+		byte_buffer<4> buffer;
+		bit_writer writer(buffer);
+
+		BS_TEST_ASSERT(writer.serialize<bounded_type>(value));
+		uint32_t num_bits = writer.flush();
+
+		BS_TEST_ASSERT_OPERATION(num_bits, == , 2);
+
+		// Read the enum back and validate
+		test_enum out_value;
+		bit_reader reader(buffer, num_bits);
+
+		BS_TEST_ASSERT(reader.serialize<bounded_type>(out_value));
 
 		BS_TEST_ASSERT(out_value == value);
 	}

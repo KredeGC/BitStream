@@ -27,6 +27,7 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
   * [Compile-time bounded integers - bounded_int\<T, T Min, T Max\>](#compile-time-bounded-integers---bounded_intt-t-min-t-max)
   * [C-style strings - const char*](#c-style-strings---const-char)
   * [Modern strings - std::basic_string\<T\>](#modern-strings---stdbasic_stringt)
+  * [Double-precision float - double](#double-precision-float---double)
   * [Single-precision float - float](#single-precision-float---float)
   * [Half-precision float - half_precision](#half-precision-float---half_precision)
   * [Bounded float - bounded_range](#bounded-float---bounded_range)
@@ -263,8 +264,8 @@ The examples below follow the same structure: First writing to a buffer and then
 Writing the first 5 bits of an int to the buffer, then reading it back:
 ```cpp
 // Create a writer, referencing the buffer and its size
-byte_buffer<4> buffer; // Buffer must be a multiple of 4 bytes / 32 bits
-bit_writer writer(buffer);
+alignas(uint32_t) uint8_t buffer[4]; // Buffer must be a multiple of 4 bytes / 32 bits and 4-byte-aligned
+bit_writer writer(buffer, 4);
 
 // Write the value
 uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more than 5 bits
@@ -284,7 +285,7 @@ reader.serialize_bits(out_value, 5); // out_value should now have a value of 27
 Writing a signed int to the buffer, within a range:
 ```cpp
 // Create a writer, referencing the buffer and its size
-byte_buffer<4> buffer;
+byte_buffer<4> buffer; // byte_bufer is just a wrapper for a 4-byte aligned buffer
 bit_writer writer(buffer);
 
 // Write the value
