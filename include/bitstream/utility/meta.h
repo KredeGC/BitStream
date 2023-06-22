@@ -14,6 +14,9 @@ namespace bitstream::utility
 	struct has_serialize<std::void_t<decltype(serialize_traits<T>::serialize(std::declval<Stream&>(), std::declval<Args>()...))>, T, Stream, Args...> : std::true_type {};
 
 	template<typename T, typename Stream, typename... Args>
+	using has_serialize_t = std::void_t<decltype(serialize_traits<T>::serialize(std::declval<Stream&>(), std::declval<Args>()...))>;
+
+	template<typename T, typename Stream, typename... Args>
 	constexpr bool has_serialize_v = has_serialize<void, T, Stream, Args...>::value;
 
 
@@ -83,4 +86,7 @@ namespace bitstream::utility
 
 	template<typename Trait, typename Stream, typename... Args>
 	using deduce_trait_t = typename deduce_trait<void, Trait, Stream, Args...>::type;
+
+	template<typename Trait, typename Stream, typename... Args>
+	using has_deduce_serialize_t = has_serialize_t<deduce_trait_t<Trait, Stream, Args...>, Stream, Trait, Args...>;
 }
