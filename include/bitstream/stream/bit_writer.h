@@ -390,7 +390,7 @@ namespace bitstream
 		 * @param ...args The rest of the arguments to pass to the serialize function
 		 * @return Whether successful or not
 		*/
-		template<typename Trait, typename... Args, typename = utility::has_deduce_serialize_t<Trait, bit_writer, Args...>>
+		template<typename Trait, typename... Args, typename = utility::has_serialize_t<utility::deduce_trait_t<Trait, bit_writer, Args...>, bit_writer, Trait, Args...>>
 		[[nodiscard]] bool serialize(Trait&& arg, Args&&... args) noexcept(utility::is_noexcept_serialize_v<utility::deduce_trait_t<Trait, bit_writer, Args...>, bit_writer, Trait, Args...>)
 		{
 			using deduce_t = utility::deduce_trait_t<Trait, bit_writer, Args...>;

@@ -86,7 +86,4 @@ namespace bitstream::utility
 
 	template<typename Trait, typename Stream, typename... Args>
 	using deduce_trait_t = typename deduce_trait<void, Trait, Stream, Args...>::type;
-
-	template<typename Trait, typename Stream, typename... Args>
-	using has_deduce_serialize_t = has_serialize_t<deduce_trait_t<Trait, Stream, Args...>, Stream, Trait, Args...>;
 }
