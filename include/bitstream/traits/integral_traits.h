@@ -27,6 +27,8 @@ namespace bitstream
 	template<typename T>
 	struct serialize_traits<T, typename std::enable_if_t<std::is_integral_v<T> && !std::is_const_v<T>>>
 	{
+		static_assert(sizeof(T) <= 8, "Integers larger than 8 bytes are currently not supported. You will have to write this functionality yourself");
+
 		/**
 		 * @brief Writes an integer into the @p writer
 		 * @param writer The stream to write to
@@ -128,6 +130,8 @@ namespace bitstream
 	template<typename T, T Min, T Max>
 	struct serialize_traits<bounded_int<T, Min, Max>, typename std::enable_if_t<std::is_integral_v<T> && !std::is_const_v<T>>>
 	{
+		static_assert(sizeof(T) <= 8, "Integers larger than 8 bytes are currently not supported. You will have to write this functionality yourself");
+
 		/**
 		 * @brief Writes an integer into the @p writer
 		 * @param writer The stream to write to

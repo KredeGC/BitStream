@@ -21,18 +21,20 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
 * [Installation](#installation)
 * [Usage](#usage)
 * [Documentation](#documentation)
+* [Serialization Examples](#serialization-examples)
 * [Serializables - serialize_traits](#serializables---serialize_traits)
   * [Booleans - bool](#booleans---bool)
   * [Bounded integers - T](#bounded-integers---t)
   * [Compile-time bounded integers - bounded_int\<T, T Min, T Max\>](#compile-time-bounded-integers---bounded_intt-t-min-t-max)
   * [C-style strings - const char*](#c-style-strings---const-char)
+  * [Compile-time bounded C-style strings - bounded_string\<const char*, Max\>](#compile-time-bounded-c-style-strings---bounded_stringconst-char-max)
   * [Modern strings - std::basic_string\<T\>](#modern-strings---stdbasic_stringt)
+  * [Compile-time bounded Modern strings - bounded_string\<std::basic_string\<T\>, Max\>](#compile-time-bounded-modern-strings---bounded_stringstdbasic_stringt-max)
   * [Double-precision float - double](#double-precision-float---double)
   * [Single-precision float - float](#single-precision-float---float)
   * [Half-precision float - half_precision](#half-precision-float---half_precision)
   * [Bounded float - bounded_range](#bounded-float---bounded_range)
   * [Quaternion - smallest_three\<Q, BitsPerElement\>](#quaternion---smallest_threeq-bitsperelement)
-* [Serialization Examples](#serialization-examples)
 * [Extensibility](#extensibility)
   * [Adding new serializables types](#adding-new-serializables-types)
   * [Unified serialization](#unified-serialization)
@@ -54,7 +56,7 @@ The header files can either be downloaded from the [releases page](https://githu
 The source and header files inside the `src/` directory are only tests and should not be included into your project, unless you wish to test the library as part of your pipeline.
 
 # Usage
-The library has a global header file ([`bitstream/bitstream.h`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h)) which includes every other header file in the library.
+The library has a main header file ([`bitstream/bitstream.h`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/bitstream.h)) which includes every other header file in the library.
 
 If you only need certain features you can instead opt to just include the files you need.
 The files are stored in categories:
@@ -75,188 +77,6 @@ You can also look at the unit tests to get a better idea about what you can expe
 
 # Documentation
 Refer to [the documentation](https://kredegc.github.io/BitStream/namespaces.html) for more information about what different classes provide.
-
-# Serializables - serialize_traits
-Below is a noncomprehensive list of serializable traits.
-A big feature of the library is extensibility, which is why you can add your own types as you please, or choose not to include specific types if you don't need them.
-
-## Booleans - bool
-A trait that covers a single bool.<br/>
-Takes the bool by reference and serializes it as a single bit.<br/>
-
-The call signature can be seen below:
-```cpp
-bool serialize<bool>(bool& value);
-```
-As well as a short example of its usage:
-```cpp
-bool in_value = true;
-bool out_value;
-bool status_write = writer.serialize<bool>(in_value);
-bool status_read = reader.serialize<bool>(out_value);
-```
-
-## Bounded integers - T
-A trait that covers all signed and unsigned integers.<br/>
-Takes the integer by reference and a lower and upper bound.<br/>
-The upper and lower bounds will default to T's upper and lower bounds if left unspecified, effectively making the object unbounded.
-
-The call signature can be seen below:
-```cpp
-bool serialize<T>(T& value, T min = numeric_limits<T>::min(), T max = numeric_limits<T>::max());
-```
-As well as a short example of its usage:
-```cpp
-int16_t in_value = 1027;
-int16_t out_value;
-bool status_write = writer.serialize<int16_t>(in_value, -512, 2098);
-bool status_read = reader.serialize<int16_t>(out_value, -512, 2098);
-```
-
-## Compile-time bounded integers - bounded_int\<T, T Min, T Max\>
-A trait that covers all signed and unsigned integers within a `bounded_int` wrapper.<br/>
-Takes the integer by reference and a lower and upper bound as template parameters.<br/>
-This is preferable if you know the bounds at compile time as it skips having to calculate the number of bits required.<br/>
-The upper and lower bounds will default to T's upper and lower bounds if left unspecified, effectively making the object unbounded.
-
-The call signature can be seen below:
-```cpp
-bool serialize<bounded_int<T, Min, Max>>(T& value);
-```
-As well as a short example of its usage:
-```cpp
-int16_t in_value = 1027;
-int16_t out_value;
-bool status_write = writer.serialize<bounded_int<int16_t, -512, 2098>>(in_value);
-bool status_read = reader.serialize<bounded_int<int16_t, -512, 2098>>(out_value);
-```
-
-## C-style strings - const char*
-A trait that only covers c-style strings.<br/>
-Takes the pointer and a maximum expected string length.
-
-The call signature can be seen below:
-```cpp
-bool serialize<const char*>(const char* value, uint32_t max_size);
-```
-As well as a short example of its usage:
-```cpp
-const char* in_value = "Hello world!";
-char out_value[32]{ 0 };
-bool status_write = writer.serialize<const char*>(in_value, 32);
-bool status_read = reader.serialize<const char*>(out_value, 32);
-```
-
-## Modern strings - std::basic_string\<T\>
-A trait that covers any combination of basic_string, including strings with different allocators.<br/>
-Takes a reference to the string and a maximum expected string length.
-
-The, somewhat bloated, call signature can be seen below:
-```cpp
-bool serialize<std::basic_string<T, Traits, Alloc>>(std::basic_string<T, Traits, Alloc>& value, uint32_t max_size);
-// For std::string this would look like:
-bool serialize<std::string>(std::string& value, uint32_t max_size);
-```
-As well as a short example of its usage:
-```cpp
-std::string in_value = "Hello world!";
-std::string out_value;
-bool status_write = writer.serialize<std::string>(in_value, 32);
-bool status_read = reader.serialize<std::string>(out_value, 32);
-```
-
-## Double-precision float - double
-A trait that covers an entire double, with no quantization.<br/>
-Takes a reference to the double.
-
-The call signature can be seen below:
-```cpp
-bool serialize<double>(double& value);
-```
-As well as a short example of its usage:
-```cpp
-double in_value = 0.12345678652;
-double out_value;
-bool status_write = writer.serialize<double>(in_value);
-bool status_read = reader.serialize<double>(out_value);
-```
-
-## Single-precision float - float
-A trait that covers an entire float, with no quantization.<br/>
-Takes a reference to the float.
-
-The call signature can be seen below:
-```cpp
-bool serialize<float>(float& value);
-```
-As well as a short example of its usage:
-```cpp
-float in_value = 0.12345678f;
-float out_value;
-bool status_write = writer.serialize<float>(in_value);
-bool status_read = reader.serialize<float>(out_value);
-```
-
-## Half-precision float - half_precision
-A trait that covers a float which has been quantized to 16 bits.<br/>
-Takes a reference to the float.
-
-The call signature can be seen below:
-```cpp
-bool serialize<half_precision>(float& value);
-```
-As well as a short example of its usage:
-```cpp
-float in_value = 0.12345678f;
-float out_value;
-bool status_write = writer.serialize<half_precision>(in_value);
-bool status_read = reader.serialize<half_precision>(out_value);
-```
-
-## Bounded float - bounded_range
-A trait that covers a bounded float.<br/>
-Takes a reference to the bounded_range and a reference to the float.
-
-The call signature can be seen below:
-```cpp
-bool serialize<bounded_range>(const bounded_range& range, float& value);
-```
-As well as a short example of its usage:
-```cpp
-bounded_range range(1.0f, 4.0f, 1.0f / 128.0f);
-float in_value = 0.1234f;
-float out_value;
-bool status_write = writer.serialize<bounded_range>(range, in_value);
-bool status_read = reader.serialize<bounded_range>(range, out_value);
-```
-
-## Quaternion - smallest_three\<Q, BitsPerElement\>
-A trait that covers any quaternion type in any order, as long as it's consistent.<br/>
-Quantizes the quaternion using the given BitsPerElement.<br/>
-Takes a reference to the quaternion.
-
-The call signature can be seen below:
-```cpp
-bool serialize<smallest_three<Q, BitsPerElement>>(Q& value);
-```
-As well as a short example of its usage:
-```cpp
-struct quaternion
-{
-    // smallest_three supports any combination of w, x, y and z, as long as it's consistent
-    float values[4];
-
-    // The constructor order must be the same as the operator[]
-    float operator[](size_t index) const
-    {
-        return values[index];
-    }
-};
-quaternion in_value{ 1.0f, 0.0f, 0.0f, 0.0f };
-quaternion out_value;
-bool status_write = writer.serialize<smallest_three<quaternion, 12>>(in_value);
-bool status_read = reader.serialize<smallest_three<quaternion, 12>>(out_value);
-```
 
 # Serialization Examples
 The examples below follow the same structure: First writing to a buffer and then reading from it. Each example is littered with comments about the procedure, as well as what outcome is expected.
@@ -368,6 +188,226 @@ reader.serialize<bounded_range>(range, out_value); // out_value should now be a 
 ```
 
 These examples can also be seen in [`src/test/examples_test.cpp`](https://github.com/KredeGC/BitStream/tree/master/src/test/examples_test.cpp).
+
+# Serializables - serialize_traits
+Below is a noncomprehensive list of serializable traits.
+A big feature of the library is extensibility, which is why you can add your own types as you please, or choose not to include specific types if you don't need them.
+
+## Booleans - bool
+A trait that covers a single bool.<br/>
+Takes the bool by reference and serializes it as a single bit.<br/>
+
+The call signature can be seen below:
+```cpp
+bool serialize<bool>(bool& value);
+```
+As well as a short example of its usage:
+```cpp
+bool in_value = true;
+bool out_value;
+bool status_write = writer.serialize<bool>(in_value);
+bool status_read = reader.serialize<bool>(out_value);
+```
+
+## Bounded integers - T
+A trait that covers all signed and unsigned integers.<br/>
+Takes the integer by reference and a lower and upper bound.<br/>
+The upper and lower bounds will default to T's upper and lower bounds if left unspecified, effectively making the object unbounded.
+
+The call signature can be seen below:
+```cpp
+bool serialize<T>(T& value, T min = numeric_limits<T>::min(), T max = numeric_limits<T>::max());
+```
+As well as a short example of its usage:
+```cpp
+int16_t in_value = 1027;
+int16_t out_value;
+bool status_write = writer.serialize<int16_t>(in_value, -512, 2098);
+bool status_read = reader.serialize<int16_t>(out_value, -512, 2098);
+```
+
+## Compile-time bounded integers - bounded_int\<T, T Min, T Max\>
+A trait that covers all signed and unsigned integers within a `bounded_int` wrapper.<br/>
+Takes the integer by reference and a lower and upper bound as template parameters.<br/>
+This is preferable if you know the bounds at compile time as it skips having to calculate the number of bits required.<br/>
+The upper and lower bounds will default to T's upper and lower bounds if left unspecified, effectively making the object unbounded.
+
+The call signature can be seen below:
+```cpp
+bool serialize<bounded_int<T, Min, Max>>(T& value);
+```
+As well as a short example of its usage:
+```cpp
+int16_t in_value = 1027;
+int16_t out_value;
+bool status_write = writer.serialize<bounded_int<int16_t, -512, 2098>>(in_value);
+bool status_read = reader.serialize<bounded_int<int16_t, -512, 2098>>(out_value);
+```
+
+## C-style strings - const char*
+A trait that only covers c-style strings.<br/>
+Takes the pointer and a maximum expected string length.<br/>
+Note: In C++20 UTF-8 strings were given their own type, which means that you either have to cast your `char8_t*` to a `char*` 
+or use `serialize<const char8_t*>` instead.
+
+The call signature can be seen below:
+```cpp
+bool serialize<const char*>(const char* value, uint32_t max_size);
+```
+As well as a short example of its usage:
+```cpp
+const char* in_value = "Hello world!";
+char out_value[32]{ 0 };
+bool status_write = writer.serialize<const char*>(in_value, 32);
+bool status_read = reader.serialize<const char*>(out_value, 32);
+```
+
+## Compile-time bounded C-style strings - bounded_string\<const char*, Max\>
+A trait that only covers c-style strings.<br/>
+Takes the pointer as argument and a maximum expected string length as template parameter.<br/>
+This is preferable if you know the maximum length at compile time as it skips having to calculate the number of bits required.
+
+The call signature can be seen below:
+```cpp
+bool serialize<bounded_string<const char*, MaxSize>>(const char* value);
+```
+As well as a short example of its usage:
+```cpp
+const char* in_value = "Hello world!";
+char out_value[32]{ 0 };
+bool status_write = writer.serialize<bounded_string<const char*, 32U>>(in_value);
+bool status_read = reader.serialize<bounded_string<const char*, 32U>>(out_value);
+```
+
+## Modern strings - std::basic_string\<T\>
+A trait that covers any combination of basic_string, including strings with different allocators.<br/>
+Takes a reference to the string and a maximum expected string length.
+
+The, somewhat bloated, call signature can be seen below:
+```cpp
+bool serialize<std::basic_string<T, Traits, Alloc>>(std::basic_string<T, Traits, Alloc>& value, uint32_t max_size);
+// For std::string this would look like:
+bool serialize<std::string>(std::string& value, uint32_t max_size);
+```
+As well as a short example of its usage:
+```cpp
+std::string in_value = "Hello world!";
+std::string out_value;
+bool status_write = writer.serialize<std::string>(in_value, 32);
+bool status_read = reader.serialize<std::string>(out_value, 32);
+```
+
+## Compile-time bounded Modern strings - bounded_string\<std::basic_string\<T\>, Max\>
+A trait that covers any combination of basic_string, including strings with different allocators.<br/>
+Takes a reference to the string as argument and a maximum expected string length as template parameter.<br/>
+This is preferable if you know the maximum length at compile time as it skips having to calculate the number of bits required.
+
+The, somewhat bloated, call signature can be seen below:
+```cpp
+bool serialize<bounded_string<std::basic_string<T, Traits, Alloc>, MaxSize>>(std::basic_string<T, Traits, Alloc>& value);
+// For std::string this would look like:
+bool serialize<bounded_string<std::string, MaxSize>>(std::string& value);
+```
+As well as a short example of its usage:
+```cpp
+std::string in_value = "Hello world!";
+std::string out_value;
+bool status_write = writer.serialize<bounded_string<std::string, 32U>>(in_value);
+bool status_read = reader.serialize<bounded_string<std::string, 32U>>(out_value);
+```
+
+## Double-precision float - double
+A trait that covers an entire double, with no quantization.<br/>
+Takes a reference to the double.
+
+The call signature can be seen below:
+```cpp
+bool serialize<double>(double& value);
+```
+As well as a short example of its usage:
+```cpp
+double in_value = 0.12345678652;
+double out_value;
+bool status_write = writer.serialize<double>(in_value);
+bool status_read = reader.serialize<double>(out_value);
+```
+
+## Single-precision float - float
+A trait that covers an entire float, with no quantization.<br/>
+Takes a reference to the float.
+
+The call signature can be seen below:
+```cpp
+bool serialize<float>(float& value);
+```
+As well as a short example of its usage:
+```cpp
+float in_value = 0.12345678f;
+float out_value;
+bool status_write = writer.serialize<float>(in_value);
+bool status_read = reader.serialize<float>(out_value);
+```
+
+## Half-precision float - half_precision
+A trait that covers a float which has been quantized to 16 bits.<br/>
+Takes a reference to the float.
+
+The call signature can be seen below:
+```cpp
+bool serialize<half_precision>(float& value);
+```
+As well as a short example of its usage:
+```cpp
+float in_value = 0.12345678f;
+float out_value;
+bool status_write = writer.serialize<half_precision>(in_value);
+bool status_read = reader.serialize<half_precision>(out_value);
+```
+
+## Bounded float - bounded_range
+A trait that covers a bounded float.<br/>
+Takes a reference to the bounded_range and a reference to the float.
+
+The call signature can be seen below:
+```cpp
+bool serialize<bounded_range>(const bounded_range& range, float& value);
+```
+As well as a short example of its usage:
+```cpp
+bounded_range range(1.0f, 4.0f, 1.0f / 128.0f);
+float in_value = 0.1234f;
+float out_value;
+bool status_write = writer.serialize<bounded_range>(range, in_value);
+bool status_read = reader.serialize<bounded_range>(range, out_value);
+```
+
+## Quaternion - smallest_three\<Q, BitsPerElement\>
+A trait that covers any quaternion type in any order, as long as it's consistent.<br/>
+Quantizes the quaternion using the given BitsPerElement.<br/>
+Takes a reference to the quaternion.
+
+The call signature can be seen below:
+```cpp
+bool serialize<smallest_three<Q, BitsPerElement>>(Q& value);
+```
+As well as a short example of its usage:
+```cpp
+struct quaternion
+{
+    // smallest_three supports any combination of w, x, y and z, as long as it's consistent
+    float values[4];
+
+    // The constructor order must be the same as the operator[]
+    float operator[](size_t index) const
+    {
+        return values[index];
+    }
+};
+quaternion in_value{ 1.0f, 0.0f, 0.0f, 0.0f };
+quaternion out_value;
+bool status_write = writer.serialize<smallest_three<quaternion, 12>>(in_value);
+bool status_read = reader.serialize<smallest_three<quaternion, 12>>(out_value);
+```
 
 # Extensibility
 The library is made with extensibility in mind.
