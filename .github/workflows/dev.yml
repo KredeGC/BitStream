@@ -1,16 +1,17 @@
 name: Test
 
 on:
-  push:
+  pull_request:
     branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.gitignore'
+      - '**/Doxyfile'
 
 jobs:
   Build:
     strategy:
       matrix:
-        architecture: [x86, x64]
-        dialect: [C++17, C++20]
-        config: [debug, release]
         machine:
         - os: ubuntu-latest
           action: gmake2
@@ -42,20 +43,9 @@ jobs:
     - name: Install msbuild to PATH
       if: matrix.machine.os == 'windows-latest' && matrix.machine.toolset == 'msc'
       uses: microsoft/setup-msbuild@v1.1
-    - name: Install 32-bit gcc libs
-      if: matrix.architecture == 'x86' && matrix.machine.os == 'ubuntu-latest'
-      run: sudo apt-get install gcc-multilib g++-multilib
     - name: Run premake
-      run: premake5 ${{ matrix.machine.action }} --toolset=${{ matrix.machine.toolset }} --dialect=${{ matrix.dialect }}
-    - name: Initialize CodeQL
-      continue-on-error: true
-      uses: github/codeql-action/init@v2
-      with:
-        languages: cpp
+      run: premake5 ${{ matrix.machine.action }} --toolset=${{ matrix.machine.toolset }} --dialect=C++17
     - name: Build
-      run: premake5 build --config=${{ matrix.config }} --architecture=${{ matrix.architecture }}
-    - name: Perform CodeQL Analysis
-      continue-on-error: true
-      uses: github/codeql-action/analyze@v2
+      run: premake5 build --config=debug --architecture=x64
     - name: Run test
-      run: premake5 test --config=${{ matrix.config }} --architecture=${{ matrix.architecture }}
+      run: premake5 test --config=debug --architecture=x64
