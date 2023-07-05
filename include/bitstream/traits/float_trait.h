@@ -1,9 +1,9 @@
 #pragma once
 #include "../utility/assert.h"
+#include "../utility/meta.h"
+#include "../utility/parameter.h"
 
 #include "../stream/serialize_traits.h"
-#include "../stream/bit_reader.h"
-#include "../stream/bit_writer.h"
 
 #include <cstdint>
 #include <cstring>
@@ -22,7 +22,9 @@ namespace bitstream
 		 * @param value The float to serialize
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, float value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, in<float> value) noexcept
 		{
 			uint32_t tmp;
 			std::memcpy(&tmp, &value, sizeof(float));
@@ -38,7 +40,9 @@ namespace bitstream
 		 * @param value The float to serialize to
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, float& value) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, out<float> value) noexcept
 		{
 			uint32_t tmp;
 
@@ -62,7 +66,9 @@ namespace bitstream
 		 * @param value The double to serialize
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, double value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, in<double> value) noexcept
 		{
 			uint32_t tmp[2];
 			std::memcpy(tmp, &value, sizeof(double));
@@ -79,7 +85,9 @@ namespace bitstream
 		 * @param value The double to serialize to
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, double& value) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, out<double> value) noexcept
 		{
 			uint32_t tmp[2];
 
