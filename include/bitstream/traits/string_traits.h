@@ -1,10 +1,10 @@
 #pragma once
 #include "../utility/assert.h"
 #include "../utility/bits.h"
+#include "../utility/meta.h"
+#include "../utility/parameter.h"
 
 #include "../stream/serialize_traits.h"
-#include "../stream/bit_reader.h"
-#include "../stream/bit_writer.h"
 
 #include <cstdint>
 #include <string>
@@ -31,7 +31,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, const char* value, uint32_t max_size) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, const char* value, uint32_t max_size) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(std::char_traits<char>::length(value));
 
@@ -54,7 +56,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, char* value, uint32_t max_size) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, char* value, uint32_t max_size) noexcept
 		{
 			uint32_t num_bits = utility::bits_to_represent(max_size);
 
@@ -90,7 +94,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, const char* value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, const char* value) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(std::char_traits<char>::length(value));
 
@@ -113,7 +119,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, char* value) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, char* value) noexcept
 		{
 			constexpr uint32_t num_bits = utility::bits_to_represent(MaxSize);
 
@@ -151,7 +159,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, const char8_t* value, uint32_t max_size) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, const char8_t* value, uint32_t max_size) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(std::char_traits<char8_t>::length(value));
 
@@ -174,7 +184,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, char8_t* value, uint32_t max_size) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, char8_t* value, uint32_t max_size) noexcept
 		{
 			uint32_t num_bits = utility::bits_to_represent(max_size);
 
@@ -215,7 +227,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, excluding the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, const std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, in<std::basic_string<T, Traits, Alloc>> value, uint32_t max_size) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(value.size());
 
@@ -238,7 +252,9 @@ namespace bitstream
 		 * @param max_size The maximum expected length of the string, excluding the null terminator
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value, uint32_t max_size) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, out<std::basic_string<T, Traits, Alloc>> value, uint32_t max_size) noexcept
 		{
 			uint32_t num_bits = utility::bits_to_represent(max_size);
 
@@ -249,13 +265,13 @@ namespace bitstream
 
 			if (length == 0)
 			{
-				value.clear();
+				value->clear();
 				return true;
 			}
 
-			value.resize(length);
+			value->resize(length);
 
-			BS_ASSERT(reader.serialize_bytes(reinterpret_cast<uint8_t*>(value.data()), length * sizeof(T) * 8));
+			BS_ASSERT(reader.serialize_bytes(reinterpret_cast<uint8_t*>(value->data()), length * sizeof(T) * 8));
 
 			return true;
 		}
@@ -276,7 +292,9 @@ namespace bitstream
 		 * @param value The string to serialize
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, const std::basic_string<T, Traits, Alloc>& value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, in<std::basic_string<T, Traits, Alloc>> value) noexcept
 		{
 			uint32_t length = static_cast<uint32_t>(value.size());
 
@@ -298,7 +316,9 @@ namespace bitstream
 		 * @param value The string to read into. It will be resized if the read string won't fit
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, std::basic_string<T, Traits, Alloc>& value) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, out<std::basic_string<T, Traits, Alloc>> value) noexcept
 		{
 			constexpr uint32_t num_bits = utility::bits_to_represent(MaxSize);
 
@@ -309,13 +329,13 @@ namespace bitstream
 
 			if (length == 0)
 			{
-				value.clear();
+				value->clear();
 				return true;
 			}
 
-            value.resize(length);
+            value->resize(length);
 
-			BS_ASSERT(reader.serialize_bytes(reinterpret_cast<uint8_t*>(value.data()), length * sizeof(T) * 8));
+			BS_ASSERT(reader.serialize_bytes(reinterpret_cast<uint8_t*>(value->data()), length * sizeof(T) * 8));
 
 			return true;
 		}
