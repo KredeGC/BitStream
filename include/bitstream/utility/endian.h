@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-#if __cplusplus < 202002L
+#if defined(__cpp_lib_endian) && __cpp_lib_endian >= 201907L
+#include <bit>
+#else // __cpp_lib_endian
 #ifndef BS_LITTLE_ENDIAN
 // Detect with GCC 4.6's macro.
 #if defined(__BYTE_ORDER__)
@@ -39,9 +41,7 @@
 #error "Unknown machine byteorder endianness detected. Need to manually define BS_LITTLE_ENDIAN."
 #endif
 #endif // BS_LITTLE_ENDIAN
-#else // __cplusplus < 202002L
-#include <bit>
-#endif // __cplusplus < 202002L
+#endif // __cpp_lib_endian
 
 
 #if defined(_WIN32)

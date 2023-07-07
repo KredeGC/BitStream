@@ -20,6 +20,7 @@ namespace bitstream::utility
 	constexpr bool has_serialize_v = has_serialize<void, T, Stream, Args...>::value;
 
 
+	// Check if stream is writing or reading
 	template<typename T, typename R = bool>
 	using is_writing_t = std::enable_if_t<T::writing, R>;
 

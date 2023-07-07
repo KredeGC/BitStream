@@ -42,7 +42,7 @@ namespace bitstream
 		*/
 		template<typename Stream>
 		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, out<float> value) noexcept
+		static serialize(Stream& reader, float& value) noexcept
 		{
 			uint32_t tmp;
 
@@ -87,7 +87,7 @@ namespace bitstream
 		*/
 		template<typename Stream>
 		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, out<double> value) noexcept
+		static serialize(Stream& reader, double& value) noexcept
 		{
 			uint32_t tmp[2];
 

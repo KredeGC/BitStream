@@ -1,10 +1,9 @@
 #pragma once
 #include "../utility/assert.h"
 #include "../utility/bits.h"
+#include "../utility/meta.h"
 
 #include "../stream/serialize_traits.h"
-#include "../stream/bit_reader.h"
-#include "../stream/bit_writer.h"
 
 #include <cstdint>
 #include <limits>
@@ -37,7 +36,9 @@ namespace bitstream
 		 * @param max The maximum bound that @p value can be. Inclusive
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, T value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, T value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
             
@@ -77,7 +78,9 @@ namespace bitstream
 		 * @param max The maximum bound that @p value can be. Inclusive
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, T& value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
 
@@ -138,7 +141,9 @@ namespace bitstream
 		 * @param value The value to serialize
 		 * @return Success
 		*/
-		static bool serialize(bit_writer& writer, T value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, T value) noexcept
 		{
 			static_assert(Min < Max);
             
@@ -173,7 +178,9 @@ namespace bitstream
 		 * @param value The value to serialize
 		 * @return Success
 		*/
-		static bool serialize(bit_reader& reader, T& value) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, T& value) noexcept
 		{
 			static_assert(Min < Max);
 

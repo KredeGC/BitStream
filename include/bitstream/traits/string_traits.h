@@ -83,6 +83,7 @@ namespace bitstream
 
 	/**
 	 * @brief A trait used to serialize bounded c-style strings with compiletime bounds
+	 * @tparam MaxSize The maximum expected length of the string, including the null terminator
 	*/
 	template<size_t MaxSize>
 	struct serialize_traits<bounded_string<const char*, MaxSize>>
@@ -91,7 +92,6 @@ namespace bitstream
 		 * @brief Writes a c-style string into the @p writer
 		 * @param writer The stream to write to
 		 * @param value The string to serialize
-		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
 		template<typename Stream>
@@ -116,7 +116,6 @@ namespace bitstream
 		 * @brief Read a c-style string from the @p reader into @p value
 		 * @param reader The stream to read from
 		 * @param value A pointer to the buffer that should be read into. The size of this buffer should be at least @p max_size
-		 * @param max_size The maximum expected length of the string, including the null terminator
 		 * @return Success
 		*/
 		template<typename Stream>
@@ -282,6 +281,7 @@ namespace bitstream
 	 * @tparam T The character type to use
 	 * @tparam Traits The trait type for the T type
 	 * @tparam Alloc The allocator to use
+	 * @tparam MaxSize The maximum expected length of the string, excluding the null terminator
 	*/
 	template<typename T, typename Traits, typename Alloc, size_t MaxSize>
 	struct serialize_traits<bounded_string<std::basic_string<T, Traits, Alloc>, MaxSize>>
