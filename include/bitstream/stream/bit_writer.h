@@ -153,7 +153,7 @@ namespace bitstream
 			{
 				uint32_t* ptr = m_Buffer + m_WordIndex;
 				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32U);
-				*ptr = utility::endian_swap_32(ptr_value);
+				*ptr = utility::to_big_endian32(ptr_value);
 
 				m_Scratch = 0U;
 				m_ScratchBits = 0U;
@@ -242,6 +242,16 @@ namespace bitstream
 		}
 
 		/**
+		 * @brief Pads the buffer up with the given number of bytes
+		 * @param num_bytes The amount of bytes to pad
+		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes or if the padded bits are not zeros.
+		*/
+		[[nodiscard]] bool pad(uint32_t num_bytes) noexcept
+		{
+			return pad_to_size(get_num_bytes_serialized() + num_bytes);
+		}
+
+		/**
 		 * @brief Pads the buffer with up to 8 zeros, so that the next write is byte-aligned
 		 * @return Success
 		*/
@@ -281,7 +291,7 @@ namespace bitstream
 			{
 				uint32_t* ptr = m_Buffer + m_WordIndex;
 				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32U);
-				*ptr = utility::endian_swap_32(ptr_value);
+				*ptr = utility::to_big_endian32(ptr_value);
 				m_Scratch <<= 32ULL;
 				m_ScratchBits -= 32U;
 				m_WordIndex++;
@@ -321,7 +331,7 @@ namespace bitstream
                 {
                     // Casting a byte-array to an int is wrong on little-endian systems
                     // We have to swap the bytes around
-                    uint32_t value = utility::endian_swap_32(word_buffer[i]);
+                    uint32_t value = utility::to_big_endian32(word_buffer[i]);
                     BS_ASSERT(serialize_bits(value, 32U));
                 }
             }
