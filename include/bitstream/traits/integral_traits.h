@@ -2,6 +2,7 @@
 #include "../utility/assert.h"
 #include "../utility/bits.h"
 #include "../utility/meta.h"
+#include "../utility/parameter.h"
 
 #include "../stream/serialize_traits.h"
 
@@ -38,7 +39,7 @@ namespace bitstream
 		*/
 		template<typename Stream>
 		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, T value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
+		static serialize(Stream& writer, in<T> value, T min = (std::numeric_limits<T>::min)(), T max = (std::numeric_limits<T>::max)()) noexcept
 		{
 			BS_ASSERT(min < max);
             
@@ -143,7 +144,7 @@ namespace bitstream
 		*/
 		template<typename Stream>
 		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, T value) noexcept
+		static serialize(Stream& writer, in<T> value) noexcept
 		{
 			static_assert(Min < Max);
             

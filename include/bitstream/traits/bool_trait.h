@@ -15,7 +15,7 @@ namespace bitstream
 	{
 		template<typename Stream>
 		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, bool value) noexcept
+		static serialize(Stream& writer, in<bool> value) noexcept
 		{
 			uint32_t unsigned_value = value;
 

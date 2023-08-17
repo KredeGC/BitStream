@@ -91,7 +91,7 @@ namespace bitstream
 	 * @brief Passes by const or const reference depending on size
 	*/
 	template<typename T>
-	using in = std::conditional_t<(sizeof(T) <= 16), std::add_const_t<T>, std::add_lvalue_reference_t<std::add_const_t<T>>>;
+	using in = std::conditional_t<(sizeof(T) <= 16 && std::is_trivially_copy_constructible_v<T>), std::add_const_t<T>, std::add_lvalue_reference_t<std::add_const_t<T>>>;
 
 	/**
 	 * @brief Passes by reference
