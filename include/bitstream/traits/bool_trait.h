@@ -1,9 +1,9 @@
 #pragma once
 #include "../utility/assert.h"
+#include "../utility/meta.h"
+#include "../utility/parameter.h"
 
 #include "../stream/serialize_traits.h"
-#include "../stream/bit_reader.h"
-#include "../stream/bit_writer.h"
 
 namespace bitstream
 {
@@ -13,14 +13,18 @@ namespace bitstream
 	template<>
 	struct serialize_traits<bool>
 	{
-		static bool serialize(bit_writer& writer, bool value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, in<bool> value) noexcept
 		{
 			uint32_t unsigned_value = value;
 
 			return writer.serialize_bits(unsigned_value, 1U);
 		}
 
-		static bool serialize(bit_reader& reader, bool& value) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, out<bool> value) noexcept
 		{
 			uint32_t unsigned_value;
 
@@ -38,7 +42,9 @@ namespace bitstream
 	template<size_t Size>
 	struct serialize_traits<bool[Size]>
 	{
-		static bool serialize(bit_writer& writer, const bool* values) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& writer, const bool* values) noexcept
 		{
 			uint32_t unsigned_value;
 			for (size_t i = 0; i < Size; i++)
@@ -50,7 +56,9 @@ namespace bitstream
 			return writer.serialize_bits(unsigned_value, 1U);
 		}
 
-		static bool serialize(bit_reader& reader, bool* values) noexcept
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& reader, bool* values) noexcept
 		{
 			uint32_t unsigned_value;
 			for (size_t i = 0; i < Size; i++)

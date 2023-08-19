@@ -201,6 +201,16 @@ namespace bitstream
 		}
 
 		/**
+		 * @brief Pads the buffer up with the given number of bytes
+		 * @param num_bytes The amount of bytes to pad
+		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes or if the padded bits are not zeros.
+		*/
+		[[nodiscard]] bool pad(uint32_t num_bytes) noexcept
+		{
+			return pad_to_size(get_num_bytes_serialized() + num_bytes);
+		}
+
+		/**
 		 * @brief Pads the buffer with up to 8 zeros, so that the next read is byte-aligned
 		 * @notes Return false if the padded bits are not zeros
 		 * @return Returns false if the padded bits are not zeros
@@ -235,7 +245,7 @@ namespace bitstream
 			{
 				const uint32_t* ptr = m_Buffer + m_WordIndex;
 
-				uint64_t ptr_value = static_cast<uint64_t>(utility::endian_swap_32(*ptr)) << (32U - m_ScratchBits);
+				uint64_t ptr_value = static_cast<uint64_t>(utility::to_big_endian32(*ptr)) << (32U - m_ScratchBits);
 				m_Scratch |= ptr_value;
 				m_ScratchBits += 32U;
 				m_WordIndex++;
@@ -285,7 +295,7 @@ namespace bitstream
                     
                     // Casting a byte-array to an int is wrong on little-endian systems
                     // We have to swap the bytes around
-                    word_buffer[i] = utility::endian_swap_32(value);
+                    word_buffer[i] = utility::to_big_endian32(value);
                 }
             }
             

@@ -3,10 +3,10 @@
 #include "../quantization/half_precision.h"
 #include "../quantization/smallest_three.h"
 #include "../utility/assert.h"
+#include "../utility/meta.h"
+#include "../utility/parameter.h"
 
 #include "../stream/serialize_traits.h"
-#include "../stream/bit_reader.h"
-#include "../stream/bit_writer.h"
 
 #include <cstdint>
 
@@ -18,17 +18,26 @@ namespace bitstream
 	template<>
 	struct serialize_traits<half_precision>
 	{
-        template<typename Stream>
-        static bool serialize(Stream& stream, float& value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+        static serialize(Stream& stream, in<float> value) noexcept
+		{
+			uint32_t int_value = half_precision::quantize(value);
+            
+			BS_ASSERT(stream.serialize_bits(int_value, 16));
+
+			return true;
+		}
+
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+        static serialize(Stream& stream, out<float> value) noexcept
 		{
 			uint32_t int_value;
-            if constexpr (Stream::writing)
-                int_value = half_precision::quantize(value);
             
 			BS_ASSERT(stream.serialize_bits(int_value, 16));
             
-            if constexpr (Stream::reading)
-			    value = half_precision::dequantize(int_value);
+			value = half_precision::dequantize(int_value);
 
 			return true;
 		}
@@ -40,17 +49,26 @@ namespace bitstream
 	template<>
 	struct serialize_traits<bounded_range>
 	{
-        template<typename Stream>
-		static bool serialize(Stream& stream, const bounded_range& range, float& value) noexcept
+		template<typename Stream>
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& stream, in<bounded_range> range, in<float> value) noexcept
 		{
-			uint32_t int_value;
-            if constexpr (Stream::writing)
-                int_value = range.quantize(value);
+			uint32_t int_value = range.quantize(value);
             
 			BS_ASSERT(stream.serialize_bits(int_value, range.get_bits_required()));
 
-            if constexpr (Stream::reading)
-			    value = range.dequantize(int_value);
+			return true;
+		}
+
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& stream, in<bounded_range> range, out<float> value) noexcept
+		{
+			uint32_t int_value;
+
+			BS_ASSERT(stream.serialize_bits(int_value, range.get_bits_required()));
+
+			value = range.dequantize(int_value);
 
 			return true;
 		}
@@ -63,23 +81,31 @@ namespace bitstream
 	struct serialize_traits<smallest_three<Q, BitsPerElement>>
 	{
 		template<typename Stream>
-		static bool serialize(Stream& stream, Q& value) noexcept
+		typename utility::is_writing_t<Stream>
+		static serialize(Stream& stream, in<Q> value) noexcept
+		{
+			quantized_quaternion quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
+
+			BS_ASSERT(stream.serialize_bits(quantized_quat.m, 2));
+			BS_ASSERT(stream.serialize_bits(quantized_quat.a, BitsPerElement));
+			BS_ASSERT(stream.serialize_bits(quantized_quat.b, BitsPerElement));
+			BS_ASSERT(stream.serialize_bits(quantized_quat.c, BitsPerElement));
+
+			return true;
+		}
+
+		template<typename Stream>
+		typename utility::is_reading_t<Stream>
+		static serialize(Stream& stream, out<Q> value) noexcept
 		{
 			quantized_quaternion quantized_quat;
 
-			if constexpr (Stream::writing)
-				quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
-
 			BS_ASSERT(stream.serialize_bits(quantized_quat.m, 2));
-
 			BS_ASSERT(stream.serialize_bits(quantized_quat.a, BitsPerElement));
-
 			BS_ASSERT(stream.serialize_bits(quantized_quat.b, BitsPerElement));
-
 			BS_ASSERT(stream.serialize_bits(quantized_quat.c, BitsPerElement));
 
-			if constexpr (Stream::reading)
-				value = smallest_three<Q, BitsPerElement>::dequantize(quantized_quat);
+			value = smallest_three<Q, BitsPerElement>::dequantize(quantized_quat);
 
 			return true;
 		}
