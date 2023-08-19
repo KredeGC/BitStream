@@ -70,8 +70,8 @@ namespace bitstream
 
 		out(out&&) = delete;
 
-		template<typename U, typename = std::enable_if_t<std::is_assignable_v<T, U>>>
-		BS_CONSTEXPR out& operator=(U&& arg) noexcept(std::is_nothrow_assignable_v<T, U>)
+		template<typename U, typename = std::enable_if_t<std::is_assignable_v<T&, U>>>
+		BS_CONSTEXPR out& operator=(U&& arg) noexcept(std::is_nothrow_assignable_v<T&, U>)
 		{
 			m_Value = std::forward<U>(arg);
 
