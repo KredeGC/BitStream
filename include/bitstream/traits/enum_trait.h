@@ -30,7 +30,7 @@ namespace bitstream
 		{
 			value_type unsigned_value = static_cast<value_type>(value);
 
-			return writer.serialize<value_type>(unsigned_value, min, max);
+			return writer.template serialize<value_type>(unsigned_value, min, max);
 		}
 
 		template<typename Stream>
@@ -39,7 +39,7 @@ namespace bitstream
 		{
 			value_type unsigned_value;
 
-			BS_ASSERT(reader.serialize<value_type>(unsigned_value, min, max));
+			BS_ASSERT(reader.template serialize<value_type>(unsigned_value, min, max));
 
 			value = static_cast<T>(unsigned_value);
 
@@ -62,7 +62,7 @@ namespace bitstream
 		{
 			value_type unsigned_value = static_cast<value_type>(value);
 
-			return writer.serialize<bound_type>(unsigned_value);
+			return writer.template serialize<bound_type>(unsigned_value);
 		}
 
 		template<typename Stream>
@@ -71,7 +71,7 @@ namespace bitstream
 		{
 			value_type unsigned_value;
 
-			BS_ASSERT(reader.serialize<bound_type>(unsigned_value));
+			BS_ASSERT(reader.template serialize<bound_type>(unsigned_value));
 
 			value = static_cast<T>(unsigned_value);
 
