@@ -64,8 +64,42 @@ The files are stored in categories:
 * [`stream/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/stream/) - Files relating to streams that read and write bits
 * [`traits/`](https://github.com/KredeGC/BitStream/tree/master/include/bitstream/traits/) - Files relating to various serialization traits, like serializble strings, integrals etc.
 
+Unlike most serilization libraries the default type traits are setup to use `in` and `out` parameters and thus share the same interface.
+This greatly simplifies user-defined serialization logic, as you can now share the same template function for both reading and writing.
+
+```cpp
+// Some user-defined type that isn't inherently serializable
+struct custom_type
+{
+    bool enabled = true;
+    int count = 42;
+};
+
+// Writing and reading share the same interface, so we can template it
+template<typename Stream>
+bool serialize_custom_type(Stream& stream, custom_type& value)
+{
+    if (!stream.serialize<bool>(value.enabled))
+        return false;
+    
+    return stream.serialize<int>(value.count);
+}
+
+byte_buffer<32> buffer;
+bit_writer writer(buffer);
+
+custom_type in_value;
+serialize_custom_type(writer, in_value); // Serialize the value
+
+uint32_t num_bits = writer.flush();
+bit_reader reader(buffer, num_bits);
+
+custom_type out_value;
+serialize_custom_type(reader, out_value); // Deserialize the value
+```
+
 An important aspect of the serialiaztion is performance, since the library is meant to be used in a tight loop, like with networking.
-This is why most operations don't use exceptions, but instead return true or false depending on whether the operation was a success.
+This is why the default operations don't use exceptions, but instead return true on success and false on failure.
 It's important to check these return values after every operation, especially when reading from an unknown source.
 You can check it manually or use the `BS_ASSERT(x)` macro for this, if you want your function to return false on failure.
 

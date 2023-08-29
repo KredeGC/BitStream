@@ -96,6 +96,29 @@ namespace bitstream
 	/**
 	 * @brief Passes by reference
 	*/
-	template<typename T>
-	using inout = std::add_lvalue_reference_t<T>;
+	template<typename Stream, typename T>
+	using inout = std::conditional_t<Stream::writing, in<T>, std::add_lvalue_reference_t<T>>;
+
+
+	/**
+	 * @brief Test type
+	*/
+	template<typename Lambda>
+	class finally
+	{
+	public:
+		constexpr finally(Lambda func) noexcept :
+			m_Lambda(func) {}
+
+		~finally()
+		{
+			m_Lambda();
+		}
+
+	private:
+		Lambda m_Lambda;
+	};
+
+	template<typename Lambda>
+	finally(Lambda func) -> finally<Lambda>;
 }
