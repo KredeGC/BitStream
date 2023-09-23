@@ -1,6 +1,7 @@
 #include "../shared/assert.h"
 #include "../shared/test.h"
 
+#include <bitstream/stream/bit_measure.h>
 #include <bitstream/stream/bit_reader.h>
 #include <bitstream/stream/bit_writer.h>
 #include <bitstream/utility/bits.h>
@@ -424,5 +425,22 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(out_nested_value1 == nested_value);
 		BS_TEST_ASSERT(out_nested_value2 == nested_value);
 		BS_TEST_ASSERT(out_nested_value3 == nested_value);
+	}
+
+	BS_ADD_TEST(test_serialize_measure)
+	{
+		// Test serializing bytes
+		uint8_t in_value[10]{ 0xDE, 0xAD, 0xBE, 0xEE, 0xEE, 0xEF, 0xFE, 0xAA, 0xC0, 0x1F }; // The last element is 2^5-1, which just barely fits
+		uint8_t in_padding = 27;
+		uint32_t serialize_bits = 10 * 8 - 3;
+
+		// Measure some values with a few bits
+		bit_measure writer(16);
+
+		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
+		BS_TEST_ASSERT(writer.serialize_bytes(in_value, serialize_bits));
+
+		BS_TEST_ASSERT(writer.get_num_bits_serialized() == 5 + serialize_bits);
+		BS_TEST_ASSERT(writer.get_num_bytes_serialized() == 11);
 	}
 }

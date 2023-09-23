@@ -6,6 +6,7 @@
 #include "quantization/smallest_three.h"
 
 // Stream
+#include "stream/bit_measure.h"
 #include "stream/bit_reader.h"
 #include "stream/bit_writer.h"
 #include "stream/byte_buffer.h"

@@ -14,17 +14,12 @@
 
 namespace bitstream
 {
-    class bit_reader;
-    
 	/**
 	 * @brief A stream for writing objects tightly into a buffer
 	 * @note Does not take ownership of the buffer
 	*/
 	class bit_writer
 	{
-    private:
-        friend class bit_reader;
-        
 	public:
 		static constexpr bool writing = true;
 		static constexpr bool reading = false;
