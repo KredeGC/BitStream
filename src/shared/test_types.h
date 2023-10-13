@@ -17,8 +17,6 @@ namespace bitstream::test
 		// The constructor order must be the same as the operator[]
 		float operator[](size_t index) const
 		{
-            BS_TEST_ASSERT(index < 4);
-            
             return values[index];
 		}
 	};

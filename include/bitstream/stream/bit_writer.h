@@ -27,7 +27,7 @@ namespace bitstream
 		/**
 		 * @brief Default construct a writer pointing to a null buffer
 		*/
-		bit_writer() noexcept :
+		constexpr bit_writer() noexcept :
 			m_Buffer(nullptr),
 			m_NumBitsWritten(0),
 			m_TotalBits(0),
@@ -36,12 +36,12 @@ namespace bitstream
 			m_WordIndex(0) {}
 
 		/**
-		 * @brief Construct a writer pointing to the given byte array with @p num_bytes size
+		 * @brief Construct a writer pointing to the given @p buffer
 		 * @param bytes The byte array to write to. Must be 4-byte aligned and the size must be a multiple of 4
 		 * @param num_bytes The number of bytes in the array
 		*/
-		explicit bit_writer(void* bytes, uint32_t num_bytes) noexcept :
-			m_Buffer(static_cast<uint32_t*>(bytes)),
+		constexpr explicit bit_writer(uint32_t* bytes, uint32_t num_bytes) noexcept :
+			m_Buffer(bytes),
 			m_NumBitsWritten(0),
 			m_TotalBits(num_bytes * 8),
 			m_Scratch(0),
@@ -63,7 +63,7 @@ namespace bitstream
 
 		bit_writer(const bit_writer&) = delete;
         
-		bit_writer(bit_writer&& other) noexcept :
+		constexpr bit_writer(bit_writer&& other) noexcept :
             m_Buffer(other.m_Buffer),
             m_NumBitsWritten(other.m_NumBitsWritten),
             m_TotalBits(other.m_TotalBits),
@@ -81,7 +81,7 @@ namespace bitstream
 
 		bit_writer& operator=(const bit_writer&) = delete;
 
-		bit_writer& operator=(bit_writer&& rhs) noexcept
+		constexpr bit_writer& operator=(bit_writer&& rhs) noexcept
 		{
 			m_Buffer = rhs.m_Buffer;
 			m_NumBitsWritten = rhs.m_NumBitsWritten;
@@ -110,39 +110,39 @@ namespace bitstream
 		 * @brief Returns the number of bits which have been written to the buffer
 		 * @return The number of bits which have been written
 		*/
-		[[nodiscard]] uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsWritten; }
+		[[nodiscard]] constexpr uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsWritten; }
 
 		/**
 		 * @brief Returns the number of bytes which have been written to the buffer
 		 * @return The number of bytes which have been written
 		*/
-		[[nodiscard]] uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsWritten > 0U ? ((m_NumBitsWritten - 1U) / 8U + 1U) : 0U; }
+		[[nodiscard]] constexpr uint32_t get_num_bytes_serialized() const noexcept { return m_NumBitsWritten > 0U ? ((m_NumBitsWritten - 1U) / 8U + 1U) : 0U; }
 
 		/**
 		 * @brief Returns whether the @p num_bits can fit in the buffer
 		 * @param num_bits The number of bits to test
 		 * @return Whether the number of bits can fit in the buffer
 		*/
-		[[nodiscard]] bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsWritten + num_bits <= m_TotalBits; }
+		[[nodiscard]] constexpr bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsWritten + num_bits <= m_TotalBits; }
 
 		/**
 		 * @brief Returns the number of bits which have not been written yet
 		 * @note The same as get_total_bits() - get_num_bits_serialized()
 		 * @return The remaining space in the buffer
 		*/
-		[[nodiscard]] uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsWritten; }
+		[[nodiscard]] constexpr uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsWritten; }
 
         /**
          * @brief Returns the size of the buffer, in bits
          * @return The size of the buffer, in bits
         */
-		[[nodiscard]] uint32_t get_total_bits() const noexcept { return m_TotalBits; }
+		[[nodiscard]] constexpr uint32_t get_total_bits() const noexcept { return m_TotalBits; }
         
 		/**
 		 * @brief Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer.
 		 * @return The number of bytes written to the buffer
 		*/
-		uint32_t flush() noexcept
+		constexpr uint32_t flush() noexcept
 		{
 			if (m_ScratchBits > 0U)
 			{
@@ -162,7 +162,7 @@ namespace bitstream
 		 * @brief Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits.
 		 * @return Returns false if anything has already been written to the buffer or if there's no space to write the checksum
 		*/
-		[[nodiscard]] bool prepend_checksum() noexcept
+		[[nodiscard]] constexpr bool prepend_checksum() noexcept
 		{
 			BS_ASSERT(m_NumBitsWritten == 0);
 
@@ -180,7 +180,7 @@ namespace bitstream
 		 * @param protocol_version A unique version number
 		 * @return The number of bytes written to the buffer
 		*/
-		uint32_t serialize_checksum(uint32_t protocol_version) noexcept
+		constexpr uint32_t serialize_checksum(uint32_t protocol_version) noexcept
 		{
 			uint32_t num_bits = flush();
 
@@ -201,7 +201,7 @@ namespace bitstream
 		 * @param num_bytes The byte number to pad to
 		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes
 		*/
-		[[nodiscard]] bool pad_to_size(uint32_t num_bytes) noexcept
+		[[nodiscard]] BS_CONSTEXPR bool pad_to_size(uint32_t num_bytes) noexcept
 		{
 			BS_ASSERT(num_bytes * 8U <= m_TotalBits);
 
@@ -209,7 +209,16 @@ namespace bitstream
             
             if (m_NumBitsWritten == 0)
             {
-                std::memset(m_Buffer, 0, num_bytes);
+				if BS_CONST_EVALUATED()
+				{
+					uint32_t num_words = (num_bytes - 1U) / 8U + 1U;
+					for (size_t i = 0; i < num_words; i++)
+						m_Buffer[i] = 0;
+				}
+				else
+				{
+					std::memset(m_Buffer, 0, num_bytes);
+				}
                 
                 m_NumBitsWritten = num_bytes * 8;
                 m_Scratch = 0;
@@ -241,7 +250,7 @@ namespace bitstream
 		 * @param num_bytes The amount of bytes to pad
 		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes or if the padded bits are not zeros.
 		*/
-		[[nodiscard]] bool pad(uint32_t num_bytes) noexcept
+		[[nodiscard]] BS_CONSTEXPR bool pad(uint32_t num_bytes) noexcept
 		{
 			return pad_to_size(get_num_bytes_serialized() + num_bytes);
 		}
@@ -250,7 +259,7 @@ namespace bitstream
 		 * @brief Pads the buffer with up to 8 zeros, so that the next write is byte-aligned
 		 * @return Success
 		*/
-		[[nodiscard]] bool align() noexcept
+		[[nodiscard]] constexpr bool align() noexcept
 		{
 			uint32_t remainder = m_ScratchBits % 8U;
 			if (remainder != 0U)
@@ -269,7 +278,7 @@ namespace bitstream
 		 * @param num_bits The number of bits of the @p value to serialize
 		 * @return Returns false if @p num_bits is less than 1 or greater than 32 or if writing the given number of bits would overflow the buffer
 		*/
-		[[nodiscard]] bool serialize_bits(uint32_t value, uint32_t num_bits) noexcept
+		[[nodiscard]] constexpr bool serialize_bits(uint32_t value, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U && num_bits <= 32U);
 
@@ -301,7 +310,7 @@ namespace bitstream
 		 * @param num_bits The number of bits of the @p bytes to serialize
 		 * @return Returns false if @p num_bits is less than 1 or if writing the given number of bits would overflow the buffer
 		*/
-		[[nodiscard]] bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits) noexcept
+		[[nodiscard]] constexpr bool serialize_bytes(const uint8_t* bytes, uint32_t num_bits) noexcept
 		{
 			BS_ASSERT(num_bits > 0U);
             
@@ -314,7 +323,10 @@ namespace bitstream
             if (m_ScratchBits % 32U == 0U && num_words > 0U)
             {
                 // If the written buffer is word-aligned, just memcpy it
-                std::memcpy(m_Buffer + m_WordIndex, word_buffer, num_words * 4U);
+				if BS_CONST_EVALUATED()
+					std::copy(word_buffer, word_buffer + num_words * 4U, m_Buffer + m_WordIndex);
+				else
+					std::memcpy(m_Buffer + m_WordIndex, word_buffer, num_words * 4U);
                 
                 m_NumBitsWritten += num_words * 32U;
                 m_WordIndex += num_words;

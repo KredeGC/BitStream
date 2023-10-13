@@ -17,6 +17,8 @@ namespace bitstream
 
 		alignas(uint32_t) uint8_t Bytes[Size];
 
+		constexpr byte_buffer() = default;
+
 		uint8_t& operator[](size_t i) noexcept { return Bytes[i]; }
 	};
 }

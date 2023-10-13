@@ -1,15 +1,10 @@
 #pragma once
 
 #include "assert.h"
+#include "platform.h"
 
 #include <utility>
 #include <type_traits>
-
-#ifdef __cpp_constexpr_dynamic_alloc
-#define BS_CONSTEXPR constexpr
-#else // __cpp_constexpr_dynamic_alloc
-#define BS_CONSTEXPR
-#endif // __cpp_constexpr_dynamic_alloc
 
 namespace bitstream
 {

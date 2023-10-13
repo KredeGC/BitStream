@@ -37,6 +37,8 @@ namespace bitstream::test::stream
 
 		BS_TEST_ASSERT(out_value1 == in_value1);
 		BS_TEST_ASSERT(out_value2 == in_value2);
+
+		return {};
     }
     
 	BS_ADD_TEST(test_serialize_bits)
@@ -72,6 +74,8 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(out_value1 == in_value1);
 		BS_TEST_ASSERT(out_value2 == in_value2);
 		BS_TEST_ASSERT(out_value3 == in_value3);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_checksum)
@@ -96,6 +100,8 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(reader.serialize_bits(out_value, 3));
 
 		BS_TEST_ASSERT(out_value == value);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_padding_small)
@@ -125,6 +131,8 @@ namespace bitstream::test::stream
 
 		BS_TEST_ASSERT(out_value1 == in_value1);
 		BS_TEST_ASSERT(out_value2 == in_value2);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_padding_large)
@@ -154,6 +162,8 @@ namespace bitstream::test::stream
 
 		BS_TEST_ASSERT(out_value1 == in_value1);
 		BS_TEST_ASSERT(out_value2 == in_value2);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_padding_empty)
@@ -170,6 +180,8 @@ namespace bitstream::test::stream
 		bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.pad_to_size(30));
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_padding_full)
@@ -194,9 +206,11 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(reader.pad_to_size(32));
 
 		BS_TEST_ASSERT(out_value == in_value);
+
+		return {};
 	}
 
-	void test_serialize_align()
+	BS_ADD_TEST(test_serialize_align)
 	{
 		// Test align
 		uint32_t value = 3;
@@ -221,6 +235,8 @@ namespace bitstream::test::stream
 
 		BS_TEST_ASSERT(out_value == value);
 		BS_TEST_ASSERT(reader.get_remaining_bits() == 0);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_bytes_small)
@@ -252,7 +268,39 @@ namespace bitstream::test::stream
 
 		for (int i = 0; i < 2; i++)
 			BS_TEST_ASSERT(out_value[i] == in_value[i]);
+
+		return {};
 	}
+
+	BS_ADD_CONST_TEST(test_serialize_bytes_small_const,
+		// Test serializing bytes
+		uint8_t in_value[2]{ 0xDE, 0x3F }; // The last element is 2^6-1, which just barely fits
+		uint8_t in_padding = 27;
+		uint32_t serialize_bits = 2 * 8 - 2;
+
+		// Write some values with a few bits
+		uint32_t buffer[2];
+		bit_writer writer(buffer, 8);
+
+		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
+		//BS_TEST_ASSERT(writer.serialize_bytes(in_value, serialize_bits)); // TODO: reinterpret_cast...
+		uint32_t num_bits = writer.flush();
+
+		BS_TEST_ASSERT(writer.get_num_bytes_serialized() == 1);
+
+		// Read the values back and validate
+		/*uint8_t out_value[2];
+		uint32_t out_padding;
+		bit_reader reader(buffer, num_bits);
+
+		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
+		BS_TEST_ASSERT(reader.serialize_bytes(out_value, serialize_bits));
+
+		BS_TEST_ASSERT(out_padding == in_padding);
+
+		for (int i = 0; i < 2; i++)
+			BS_TEST_ASSERT(out_value[i] == in_value[i]);*/
+	);
 
 	BS_ADD_TEST(test_serialize_bytes_medium)
 	{
@@ -283,6 +331,8 @@ namespace bitstream::test::stream
 
 		for (int i = 0; i < 5; i++)
 			BS_TEST_ASSERT(out_value[i] == in_value[i]);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_bytes_large)
@@ -314,6 +364,8 @@ namespace bitstream::test::stream
 
 		for (int i = 0; i < 10; i++)
 			BS_TEST_ASSERT(out_value[i] == in_value[i]);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_nested_write)
@@ -366,6 +418,8 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(out_nested_value1 == nested_value);
 		BS_TEST_ASSERT(out_nested_value2 == nested_value);
 		BS_TEST_ASSERT(out_nested_value3 == nested_value);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_nested_read)
@@ -425,6 +479,8 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(out_nested_value1 == nested_value);
 		BS_TEST_ASSERT(out_nested_value2 == nested_value);
 		BS_TEST_ASSERT(out_nested_value3 == nested_value);
+
+		return {};
 	}
 
 	BS_ADD_TEST(test_serialize_measure)
@@ -442,5 +498,7 @@ namespace bitstream::test::stream
 
 		BS_TEST_ASSERT(writer.get_num_bits_serialized() == 5 + serialize_bits);
 		BS_TEST_ASSERT(writer.get_num_bytes_serialized() == 11);
+
+		return {};
 	}
 }

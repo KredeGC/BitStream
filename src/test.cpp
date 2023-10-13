@@ -27,17 +27,16 @@ namespace bitstream::test
 				std::cout << "[" << count << "] " << s_TestNames[i] << " running" << std::endl;
 				try
 				{
-					s_TestFunctions[i]();
-					std::cout << "  ->passed" << std::endl;
-					passed++;
-				}
-				catch (const char* e)
-				{
-					std::cout << "  ->failed assertion: " << e << std::endl;
-				}
-				catch (const std::string& e)
-				{
-					std::cout << "  ->failed assertion: " << e << std::endl;
+					auto result = s_TestFunctions[i]();
+					if (result.Success)
+					{
+						std::cout << "  ->passed" << std::endl;
+						passed++;
+					}
+					else
+					{
+						std::cout << "  ->failed assertion: " << result.Message << std::endl;
+					}
 				}
 				catch (const std::exception& e)
 				{
