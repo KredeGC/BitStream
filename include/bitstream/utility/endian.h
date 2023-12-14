@@ -79,29 +79,6 @@ namespace bitstream::utility
 #endif // _WIN32 || __linux__
     }
 
-    constexpr inline uint32_t endian_swap24(uint32_t value)
-    {
-        const uint32_t first = (value << 16) & 0x00FF0000;
-        const uint32_t second = (value << 8) & 0x0000FF00;
-        const uint32_t third = (value >> 16) & 0x000000FF;
-
-        return first | second | third;
-    }
-
-    inline uint32_t endian_swap16(uint32_t value)
-    {
-#if defined(_WIN32)
-        return _byteswap_ushort(static_cast<uint16_t>(value));
-#elif defined(__linux__)
-        return __builtin_bswap16(static_cast<uint16_t>(value));
-#else
-        const uint32_t first = (value << 8) & 0x0000FF00;
-        const uint32_t second = (value >> 8) & 0x000000FF;
-
-        return first | second;
-#endif // _WIN32 || __linux__
-    }
-
     inline uint32_t to_big_endian32(uint32_t value)
     {
         if constexpr (little_endian())

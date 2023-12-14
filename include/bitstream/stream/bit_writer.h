@@ -275,6 +275,19 @@ namespace bitstream
 
 			BS_ASSERT(can_serialize_bits(num_bits));
 
+			// Fast path
+			if (num_bits == 32U && m_ScratchBits == 0U)
+			{
+				uint32_t* ptr = m_Buffer + m_WordIndex;
+
+				*ptr = utility::to_big_endian32(value);
+
+				m_NumBitsWritten += num_bits;
+				m_WordIndex++;
+
+				return true;
+			}
+
 			uint32_t offset = 64U - num_bits - m_ScratchBits;
 			uint64_t ls_value = static_cast<uint64_t>(value) << offset;
 
