@@ -15,7 +15,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<4> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         int32_t value = -45; // We can choose any value within the range below
@@ -40,7 +40,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<32> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         const char* value = "Hello world!";
@@ -63,7 +63,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<32> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         std::string value = "Hello world!";
@@ -86,7 +86,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<4> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); // Min, Max, Precision

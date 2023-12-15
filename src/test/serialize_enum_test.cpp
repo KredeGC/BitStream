@@ -16,7 +16,7 @@ namespace bitstream::test::traits
 
 		// Write a an enum
 		byte_buffer<4> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
         
 		BS_TEST_ASSERT(writer.serialize<test_enum>(value, 1, 3));
 		uint32_t num_bits = writer.flush();
@@ -41,7 +41,7 @@ namespace bitstream::test::traits
 
 		// Write a an enum
 		byte_buffer<4> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<bounded_type>(value));
 		uint32_t num_bits = writer.flush();

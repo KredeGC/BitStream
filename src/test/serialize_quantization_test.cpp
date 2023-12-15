@@ -17,7 +17,7 @@ namespace bitstream::test::traits
 		float value_in = 3.141592f;
 
 		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<half_precision>(value_in));
 		uint32_t num_bits = writer.flush();
@@ -42,7 +42,7 @@ namespace bitstream::test::traits
 		constexpr bounded_range range(0.0f, 5.0f, 0.0001f);
 
 		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<bounded_range>(range, value_in));
 		uint32_t num_bits = writer.flush();
@@ -67,7 +67,7 @@ namespace bitstream::test::traits
 		quaternion value_in{ 0.0f, std::sin(2.0f), std::cos(2.0f), 0.0f };
 
 		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(value_in));
 		uint32_t num_bits = writer.flush();

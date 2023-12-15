@@ -16,7 +16,7 @@ namespace bitstream::test::stream
         
 		// Write some values with too many bits
 		byte_buffer<4> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
         
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 11));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 11));
@@ -50,7 +50,7 @@ namespace bitstream::test::stream
 
 		// Write some values with a few bits
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, bits_required));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, bits_required));
@@ -82,7 +82,7 @@ namespace bitstream::test::stream
 
 		// Write some initial values and finish with a checksum
 		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.prepend_checksum());
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
@@ -106,7 +106,7 @@ namespace bitstream::test::stream
 
 		// Write some initial value, pad it, and then write another value
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 3));
 		BS_TEST_ASSERT(writer.pad_to_size(2));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 5));
@@ -135,7 +135,7 @@ namespace bitstream::test::stream
 
 		// Write some initial value, pad it, and then write another value
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 		BS_TEST_ASSERT(writer.serialize_bits(in_value1, 3));
 		BS_TEST_ASSERT(writer.pad_to_size(31));
 		BS_TEST_ASSERT(writer.serialize_bits(in_value2, 5));
@@ -160,7 +160,7 @@ namespace bitstream::test::stream
 	{
 		// Write some initial value, pad it, and then write another value
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 		BS_TEST_ASSERT(writer.pad_to_size(30));
 		uint32_t num_bits = writer.flush();
 
@@ -179,7 +179,7 @@ namespace bitstream::test::stream
 
 		// Write some initial value, pad it, and then write another value
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 		BS_TEST_ASSERT(writer.serialize_bits(in_value, 3));
 		BS_TEST_ASSERT(writer.pad_to_size(32));
 		uint32_t num_bits = writer.flush();
@@ -203,7 +203,7 @@ namespace bitstream::test::stream
 
 		// Write a bit offset and the align to byte
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.align());
@@ -232,7 +232,7 @@ namespace bitstream::test::stream
 
 		// Write some values with a few bits
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, serialize_bits));
@@ -263,7 +263,7 @@ namespace bitstream::test::stream
 
 		// Write some values with a few bits
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, serialize_bits));
@@ -294,7 +294,7 @@ namespace bitstream::test::stream
 
 		// Write some values with a few bits
 		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(in_padding, 5));
 		BS_TEST_ASSERT(writer.serialize_bytes(in_value, serialize_bits));
@@ -324,7 +324,7 @@ namespace bitstream::test::stream
 
 		// Write some initial value with a bit offset
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
@@ -332,7 +332,7 @@ namespace bitstream::test::stream
 		{
 			// Write nested values
             byte_buffer<8> nested_buffer;
-            bit_writer nested_writer(nested_buffer);
+			fixed_bit_writer nested_writer(nested_buffer);
 
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));
@@ -376,7 +376,7 @@ namespace bitstream::test::stream
 
 		// Write some initial value with a bit offset
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(value, 2));
 		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
@@ -384,7 +384,7 @@ namespace bitstream::test::stream
 		{
 			// Write nested values
             byte_buffer<8> nested_buffer;
-            bit_writer nested_writer(nested_buffer);
+			fixed_bit_writer nested_writer(nested_buffer);
 
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 11));
 			BS_TEST_ASSERT(nested_writer.serialize_bits(nested_value, 13));

@@ -17,7 +17,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -45,7 +45,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but with an uneven bit offset
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 6));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -75,7 +75,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<bounded_type>(value));
@@ -173,7 +173,7 @@ namespace bitstream::test::traits
 
 		// Write a string, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<std::string>(value, 32U));
@@ -200,7 +200,7 @@ namespace bitstream::test::traits
 
 		// Write a widechar string, but make sure the word count isn't whole
 		byte_buffer<64> buffer; // wchar_t is apparently platform dependent and can be 16 or 32 bits
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<std::wstring>(value, 32U));
 		uint32_t num_bits = writer.flush();
@@ -226,7 +226,7 @@ namespace bitstream::test::traits
 
 		// Write a string, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<bounded_type>(value));

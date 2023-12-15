@@ -19,6 +19,7 @@ namespace bitstream
 	 * @brief A stream for writing objects tightly into a buffer
 	 * @note Does not take ownership of the buffer
 	*/
+	template<typename Policy>
 	class bit_writer
 	{
 	public:
@@ -30,9 +31,9 @@ namespace bitstream
 		 * @param ...args The arguments to pass to the policy
 		*/
 		template<typename... Ts,
-			typename = std::enable_if_t<std::is_constructible_v<fixed_policy, Ts...>>>
+			typename = std::enable_if_t<std::is_constructible_v<Policy, Ts...>>>
 		bit_writer(Ts&&... args)
-			noexcept(std::is_nothrow_constructible_v<fixed_policy, Ts...>) :
+			noexcept(std::is_nothrow_constructible_v<Policy, Ts...>) :
 			m_Policy(std::forward<Ts>(args) ...),
 			m_Scratch(0),
 			m_ScratchBits(0),
@@ -97,14 +98,13 @@ namespace bitstream
 		 * @note The same as get_total_bits() - get_num_bits_serialized()
 		 * @return The remaining space in the buffer
 		*/
-		//[[nodiscard]] uint32_t get_remaining_bits() const noexcept { return m_TotalBits - m_NumBitsWritten; }
+		[[nodiscard]] uint32_t get_remaining_bits() const noexcept { return get_total_bits() - get_num_bits_serialized(); }
 
-		// TODO: Use SFINAE to deduce whether m_Policy has get_total_bits()
         /**
          * @brief Returns the size of the buffer, in bits
          * @return The size of the buffer, in bits
         */
-		//[[nodiscard]] uint32_t get_total_bits() const noexcept { return m_TotalBits; }
+		[[nodiscard]] uint32_t get_total_bits() const noexcept { return m_Policy.get_total_bits(); }
         
 		/**
 		 * @brief Flushes any remaining bits into the buffer. Use this when you no longer intend to write anything to the buffer.
@@ -385,14 +385,15 @@ namespace bitstream
 		}
 
 	private:
-		fixed_policy m_Policy;
-
-		//uint32_t* m_Buffer;
-		//uint32_t m_NumBitsWritten;
-		//uint32_t m_TotalBits;
+		Policy m_Policy;
 
 		uint64_t m_Scratch;
 		uint32_t m_ScratchBits;
 		uint32_t m_WordIndex;
 	};
+
+	using fixed_bit_writer = bit_writer<fixed_policy<true>>;
+
+	template<typename T>
+	using growing_bit_writer = bit_writer<growing_policy<T>>;
 }

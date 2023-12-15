@@ -8,10 +8,11 @@
 
 namespace bitstream
 {
+	template<bool Writing>
 	struct fixed_policy
 	{
-		using void_ptr = std::conditional_t<true, void*, const void*>;
-		using buffer_ptr = std::conditional_t<true, uint32_t*, const uint32_t*>;
+		using void_ptr = std::conditional_t<Writing, void*, const void*>;
+		using buffer_ptr = std::conditional_t<Writing, uint32_t*, const uint32_t*>;
 
 		/**
 		 * @brief Construct a stream pointing to the given byte array with @p num_bytes size
@@ -51,6 +52,8 @@ namespace bitstream
 
 		bool can_serialize_bits(uint32_t num_bits) const noexcept { return m_NumBitsSerialized + num_bits <= m_TotalBits; }
 
+		uint32_t get_total_bits() const noexcept { return m_TotalBits; }
+
 		bool extend(uint32_t num_bits)
 		{
 			bool status = can_serialize_bits(num_bits);
@@ -66,10 +69,28 @@ namespace bitstream
 	template<typename T>
 	struct growing_policy
 	{
-		bool can_serialize_bits(uint32_t bits_written, uint32_t num_bits) const noexcept { return true; }
+		growing_policy(T& container) noexcept :
+			m_Buffer(container),
+			m_NumBitsSerialized(0) {}
 
-		bool extend(uint32_t bits_written, uint32_t num_bits) { return ; }
+		uint32_t* get_buffer() const noexcept { return m_Buffer.data(); }
 
-		T Buffer;
+		uint32_t get_num_bits_serialized() const noexcept { return m_NumBitsSerialized; }
+
+		bool can_serialize_bits(uint32_t num_bits) const noexcept { return true; }
+
+		uint32_t get_total_bits() const noexcept { return std::numeric_limits<uint32_t>::max(); }
+
+		bool extend(uint32_t num_bits)
+		{
+			m_NumBitsSerialized += num_bits;
+			uint32_t num_bytes = (m_NumBitsSerialized - 1) / 8U + 1;
+			m_Buffer.resize(num_bytes);
+			return true;
+		}
+
+		T& m_Buffer;
+
+		uint32_t m_NumBitsSerialized;
 	};
 }

@@ -9,14 +9,16 @@
 #include <bitstream/traits/quantization_traits.h>
 #include <bitstream/traits/string_traits.h>
 
+#include <vector>
+
 namespace bitstream::test::example
 {
     // Writing the first 5 bits of an int to the buffer, then reading it back
     BS_ADD_TEST(test_example1)
     {
         // Create a writer, referencing the buffer and its size
-        byte_buffer<4> buffer; // Buffer must be a multiple of 4 bytes / 32 bits
-        bit_writer writer(buffer);
+        std::vector<uint32_t> buffer;
+        growing_bit_writer<std::vector<uint32_t>> writer(buffer);
 
         // Write the value
         uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more than 5 bits
@@ -28,7 +30,7 @@ namespace bitstream::test::example
 		BS_TEST_ASSERT_OPERATION(num_bits, == , 5);
 
         // Create a reader, referencing the buffer and bytes written
-        bit_reader reader(buffer, num_bits);
+        bit_reader reader(buffer.data(), num_bits);
 
         // Read the value back
         uint32_t out_value; // We don't have to initialize it yet
@@ -42,7 +44,7 @@ namespace bitstream::test::example
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<4> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         int32_t value = -45; // We can choose any value within the range below
@@ -68,7 +70,7 @@ namespace bitstream::test::example
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<32> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         const char* value = "Hello world!";
@@ -92,7 +94,7 @@ namespace bitstream::test::example
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<32> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         std::string value = "Hello world!";
@@ -116,7 +118,7 @@ namespace bitstream::test::example
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<4> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); // Min, Max, Precision
