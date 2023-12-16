@@ -1,9 +1,9 @@
 #pragma once
 #include "../utility/assert.h"
+#include "../utility/meta.h"
+#include "../utility/parameter.h"
 
 #include "../stream/serialize_traits.h"
-#include "../stream/bit_reader.h"
-#include "../stream/bit_writer.h"
 
 #include "../traits/bool_trait.h"
 #include "../traits/integral_traits.h"
