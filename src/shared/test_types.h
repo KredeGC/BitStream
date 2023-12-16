@@ -1,6 +1,9 @@
 #pragma once
 
+#include <bitstream/stream/serialize_traits.h>
+
 #include <bitstream/utility/assert.h>
+#include <bitstream/utility/parameter.h>
 
 #include <cstddef>
 
@@ -19,11 +22,33 @@ namespace bitstream::test
             return values[index];
 		}
 	};
+
+    struct custom_type
+    {
+        bool enabled = true;
+        int count = 42;
+    };
     
     enum class test_enum
     {
         FirstValue = 3,
         SecondValue = 1,
         ThirdValue
+    };
+}
+
+namespace bitstream
+{
+    template<>
+    struct serialize_traits<bitstream::test::custom_type>
+    {
+        template<typename Stream>
+        static bool serialize(Stream& stream, inout<Stream, bitstream::test::custom_type> value) noexcept
+        {
+            if (!stream.template serialize<bool>(value.enabled))
+                return false;
+
+            return stream.template serialize<int>(value.count);
+        }
     };
 }

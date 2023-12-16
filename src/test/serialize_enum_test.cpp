@@ -16,7 +16,7 @@ namespace bitstream::test::traits
 
 		// Write a an enum
 		byte_buffer<4> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
         
 		BS_TEST_ASSERT(writer.serialize<test_enum>(value, 1, 3));
 		uint32_t num_bits = writer.flush();
@@ -25,7 +25,7 @@ namespace bitstream::test::traits
 
 		// Read the enum back and validate
 		test_enum out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<test_enum>(out_value, 1, 3));
 
@@ -41,7 +41,7 @@ namespace bitstream::test::traits
 
 		// Write a an enum
 		byte_buffer<4> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<bounded_type>(value));
 		uint32_t num_bits = writer.flush();
@@ -50,7 +50,7 @@ namespace bitstream::test::traits
 
 		// Read the enum back and validate
 		test_enum out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<bounded_type>(out_value));
 

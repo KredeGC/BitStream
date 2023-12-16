@@ -13,7 +13,7 @@ namespace bitstream::test::traits
 	{
 		// Test integral numbers
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<T>(value, Min, Max));
 		uint32_t num_bits = writer.flush();
@@ -23,7 +23,7 @@ namespace bitstream::test::traits
 
 
 		T out_value = 0;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<T>(out_value, Min, Max));
 
@@ -37,7 +37,7 @@ namespace bitstream::test::traits
 
 		// Test integral numbers
 		byte_buffer<8> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<trait>(value));
 		uint32_t num_bits = writer.flush();
@@ -47,7 +47,7 @@ namespace bitstream::test::traits
 
 
 		T out_value = 0;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<trait>(out_value));
 

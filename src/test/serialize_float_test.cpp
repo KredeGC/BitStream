@@ -15,7 +15,7 @@ namespace bitstream::test::traits
 		float value_in = 3.141592f;
 
 		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<float>(value_in));
 		uint32_t num_bits = writer.flush();
@@ -24,7 +24,7 @@ namespace bitstream::test::traits
 
 
 		float value_out;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<float>(value_out));
 
@@ -37,7 +37,7 @@ namespace bitstream::test::traits
 		double value_in = 3.141592;
 
 		byte_buffer<16> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<double>(value_in));
 		uint32_t num_bits = writer.flush();
@@ -46,7 +46,7 @@ namespace bitstream::test::traits
 
 
 		double value_out;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<double>(value_out));
 

@@ -15,7 +15,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but make sure the word count isn't whole
 		byte_buffer<4> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<bool>(value));
 		uint32_t num_bits = writer.flush();
@@ -24,7 +24,7 @@ namespace bitstream::test::traits
 
 		// Read the bool back and validate
 		bool out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<bool>(out_value));
 
@@ -39,7 +39,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but make sure the word count isn't whole
 		byte_buffer<4> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 5U));
 		BS_TEST_ASSERT(writer.serialize<bool>(value));
@@ -50,7 +50,7 @@ namespace bitstream::test::traits
 		// Read the bool back and validate
 		uint32_t out_padding;
 		bool out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5U));
 		BS_TEST_ASSERT(reader.serialize<bool>(out_value));

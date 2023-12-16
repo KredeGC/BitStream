@@ -9,13 +9,12 @@
 
 #include <cstdint>
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <type_traits>
 
 namespace bitstream
 {
-	class bit_reader;
-
 	/**
 	 * @brief A stream for writing objects tightly into a buffer
 	 * @note Does not take ownership of the buffer
@@ -31,13 +30,13 @@ namespace bitstream
 		*/
 		bit_measure() noexcept :
 			m_NumBitsWritten(0),
-			m_TotalBits(0) {}
+			m_TotalBits((std::numeric_limits<uint32_t>::max)()) {}
 
 		/**
 		 * @brief Construct a writer pointing to the given byte array with @p num_bytes size
 		 * @param num_bytes The number of bytes in the array
 		*/
-		explicit bit_measure(uint32_t num_bytes) noexcept :
+		bit_measure(uint32_t num_bytes) noexcept :
 			m_NumBitsWritten(0),
 			m_TotalBits(num_bytes * 8) {}
 

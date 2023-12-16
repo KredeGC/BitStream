@@ -15,7 +15,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<4> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         int32_t value = -45; // We can choose any value within the range below
@@ -27,7 +27,7 @@ namespace bitstream::test::deduction
         BS_TEST_ASSERT_OPERATION(num_bits, <= , 32);
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         int32_t out_value; // We don't have to initialize it yet
@@ -40,7 +40,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<32> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         const char* value = "Hello world!";
@@ -50,7 +50,7 @@ namespace bitstream::test::deduction
         uint32_t num_bits = writer.flush();
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         char out_value[32]; // Set the size to the max size
@@ -63,7 +63,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<32> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         std::string value = "Hello world!";
@@ -73,7 +73,7 @@ namespace bitstream::test::deduction
         uint32_t num_bits = writer.flush();
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         std::string out_value; // The string will be resized if the output doesn't fit
@@ -86,7 +86,7 @@ namespace bitstream::test::deduction
     {
         // Create a writer, referencing the buffer and its size
         byte_buffer<4> buffer;
-        bit_writer writer(buffer);
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); // Min, Max, Precision
@@ -99,7 +99,7 @@ namespace bitstream::test::deduction
         BS_TEST_ASSERT_OPERATION(num_bits, <= , 32);
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         float out_value;

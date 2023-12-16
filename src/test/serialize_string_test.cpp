@@ -17,7 +17,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -28,7 +28,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -45,7 +45,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but with an uneven bit offset
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 6));
 		BS_TEST_ASSERT(writer.serialize<const char*>(value, 32U));
@@ -56,7 +56,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 6));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -75,7 +75,7 @@ namespace bitstream::test::traits
 
 		// Write a char array, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<bounded_type>(value));
@@ -86,7 +86,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<bounded_type>(out_value));
@@ -173,7 +173,7 @@ namespace bitstream::test::traits
 
 		// Write a string, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<std::string>(value, 32U));
@@ -184,7 +184,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		std::string out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<std::string>(out_value, 32U));
@@ -200,7 +200,7 @@ namespace bitstream::test::traits
 
 		// Write a widechar string, but make sure the word count isn't whole
 		byte_buffer<64> buffer; // wchar_t is apparently platform dependent and can be 16 or 32 bits
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize<std::wstring>(value, 32U));
 		uint32_t num_bits = writer.flush();
@@ -209,7 +209,7 @@ namespace bitstream::test::traits
 
 		// Read the array back and validate
 		std::wstring out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<std::wstring>(out_value, 32U));
 
@@ -226,7 +226,7 @@ namespace bitstream::test::traits
 
 		// Write a string, but make sure the word count isn't whole
 		byte_buffer<32> buffer;
-		bit_writer writer(buffer);
+		fixed_bit_writer writer(buffer);
 
 		BS_TEST_ASSERT(writer.serialize_bits(padding, 26));
 		BS_TEST_ASSERT(writer.serialize<bounded_type>(value));
@@ -237,7 +237,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		std::string out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<bounded_type>(out_value));
