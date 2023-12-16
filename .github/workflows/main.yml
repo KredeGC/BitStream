@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         architecture: [x86, x64]
-        dialect: [C++17, C++20]
+        dialect: [C++17] #Uncomment once #8659 is fixed [C++17, C++20]
         config: [debug, release]
         machine:
         - os: ubuntu-latest
@@ -36,11 +36,6 @@ jobs:
     - name: Install GCC
       if: matrix.machine.toolset == 'gcc'
       run: sudo apt-get update && sudo apt-get install -y gcc g++
-    - name: Clang libstdc++ image workaround
-      if: matrix.machine.toolset == 'clang'
-      uses: mjp41/workaround8649@7929373c0fe5caf844d8115adccef39e3b5362e7
-      with:
-        os: ${{ matrix.machine.os }}
     - name: Install Clang & LLVM
       if: matrix.machine.toolset == 'clang'
       run: sudo apt-get update && sudo apt-get install -y clang llvm lld
