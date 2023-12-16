@@ -25,7 +25,7 @@ namespace bitstream::test::traits
 
 		// Read the enum back and validate
 		test_enum out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<test_enum>(out_value, 1, 3));
 
@@ -50,7 +50,7 @@ namespace bitstream::test::traits
 
 		// Read the enum back and validate
 		test_enum out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<bounded_type>(out_value));
 

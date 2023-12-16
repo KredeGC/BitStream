@@ -28,7 +28,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -56,7 +56,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 6));
 		BS_TEST_ASSERT(reader.serialize<const char*>(out_value, 32U));
@@ -86,7 +86,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		char out_value[32];
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<bounded_type>(out_value));
@@ -184,7 +184,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		std::string out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<std::string>(out_value, 32U));
@@ -209,7 +209,7 @@ namespace bitstream::test::traits
 
 		// Read the array back and validate
 		std::wstring out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<std::wstring>(out_value, 32U));
 
@@ -237,7 +237,7 @@ namespace bitstream::test::traits
 		// Read the array back and validate
 		uint32_t out_padding;
 		std::string out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 26));
 		BS_TEST_ASSERT(reader.serialize<bounded_type>(out_value));

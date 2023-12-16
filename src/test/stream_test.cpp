@@ -28,7 +28,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint32_t out_value1;
 		uint32_t out_value2;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 11));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 11));
@@ -63,7 +63,7 @@ namespace bitstream::test::stream
 		uint32_t out_value1;
 		uint32_t out_value2;
 		uint32_t out_value3;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, bits_required));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, bits_required));
@@ -90,7 +90,7 @@ namespace bitstream::test::stream
 
 		// Read the checksum and validate
 		uint32_t out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_checksum(protocol_version));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value, 3));
@@ -117,7 +117,7 @@ namespace bitstream::test::stream
 		// Read the values and validate padding
 		uint32_t out_value1;
 		uint32_t out_value2;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 3));
 		BS_TEST_ASSERT(reader.pad_to_size(2));
@@ -146,7 +146,7 @@ namespace bitstream::test::stream
 		// Read the values and validate padding
 		uint32_t out_value1;
 		uint32_t out_value2;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 3));
 		BS_TEST_ASSERT(reader.pad_to_size(31));
@@ -167,7 +167,7 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(num_bits == 8 * 30);
 
 		// Read the values and validate padding
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.pad_to_size(30));
 	}
@@ -188,7 +188,7 @@ namespace bitstream::test::stream
 
 		// Read the values and validate padding
 		uint32_t out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value, 3));
 		BS_TEST_ASSERT(reader.pad_to_size(32));
@@ -213,7 +213,7 @@ namespace bitstream::test::stream
 
 		// Read back the the bit offset and validate the alignment
 		uint32_t out_value;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value, 2));
 		BS_TEST_ASSERT(reader.get_remaining_bits() > 0);
@@ -243,7 +243,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint8_t out_value[2];
 		uint32_t out_padding;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, serialize_bits));
@@ -274,7 +274,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint8_t out_value[5];
 		uint32_t out_padding;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, serialize_bits));
@@ -305,7 +305,7 @@ namespace bitstream::test::stream
 		// Read the values back and validate
 		uint8_t out_value[10];
 		uint32_t out_padding;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_padding, 5));
 		BS_TEST_ASSERT(reader.serialize_bytes(out_value, serialize_bits));
@@ -353,7 +353,7 @@ namespace bitstream::test::stream
 		uint32_t out_nested_value1;
 		uint32_t out_nested_value2;
 		uint32_t out_nested_value3;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 2));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 3));
@@ -394,7 +394,7 @@ namespace bitstream::test::stream
 			BS_TEST_ASSERT(num_nested_bits == 2 * 11 + 13);
 
 			// Read the values as a byte array
-			bit_reader nested_reader(nested_buffer, num_nested_bits);
+			fixed_bit_reader nested_reader(nested_buffer, num_nested_bits);
 			uint8_t nested_bytes[8]{ 0 };
 			BS_TEST_ASSERT(nested_reader.serialize_bytes(nested_bytes, nested_writer.get_num_bits_serialized()));
 
@@ -412,7 +412,7 @@ namespace bitstream::test::stream
 		uint32_t out_nested_value1;
 		uint32_t out_nested_value2;
 		uint32_t out_nested_value3;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize_bits(out_value1, 2));
 		BS_TEST_ASSERT(reader.serialize_bits(out_value2, 3));

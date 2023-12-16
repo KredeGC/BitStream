@@ -392,7 +392,7 @@ namespace bitstream
 		uint32_t m_WordIndex;
 	};
 
-	using fixed_bit_writer = bit_writer<fixed_policy<true>>;
+	using fixed_bit_writer = bit_writer<fixed_policy>;
 
 	template<typename T>
 	using growing_bit_writer = bit_writer<growing_policy<T>>;

@@ -23,7 +23,7 @@ namespace bitstream::test::traits
 
 
 		T out_value = 0;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<T>(out_value, Min, Max));
 
@@ -47,7 +47,7 @@ namespace bitstream::test::traits
 
 
 		T out_value = 0;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<trait>(out_value));
 

@@ -24,7 +24,7 @@ namespace bitstream::test::traits
 
 
 		float value_out;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<float>(value_out));
 
@@ -46,7 +46,7 @@ namespace bitstream::test::traits
 
 
 		double value_out;
-		bit_reader reader(buffer, num_bits);
+		fixed_bit_reader reader(buffer, num_bits);
 
 		BS_TEST_ASSERT(reader.serialize<double>(value_out));
 

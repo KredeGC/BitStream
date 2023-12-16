@@ -27,7 +27,7 @@ namespace bitstream::test::deduction
         BS_TEST_ASSERT_OPERATION(num_bits, <= , 32);
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         int32_t out_value; // We don't have to initialize it yet
@@ -50,7 +50,7 @@ namespace bitstream::test::deduction
         uint32_t num_bits = writer.flush();
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         char out_value[32]; // Set the size to the max size
@@ -73,7 +73,7 @@ namespace bitstream::test::deduction
         uint32_t num_bits = writer.flush();
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         std::string out_value; // The string will be resized if the output doesn't fit
@@ -99,7 +99,7 @@ namespace bitstream::test::deduction
         BS_TEST_ASSERT_OPERATION(num_bits, <= , 32);
 
         // Create a reader by moving and invalidating the writer
-        bit_reader reader(buffer, num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         float out_value;
