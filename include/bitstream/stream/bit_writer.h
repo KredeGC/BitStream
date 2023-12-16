@@ -17,7 +17,7 @@ namespace bitstream
 {
 	/**
 	 * @brief A stream for writing objects tightly into a buffer
-	 * @note Does not take ownership of the buffer
+	 * @tparam Policy The underlying representation of the buffer
 	*/
 	template<typename Policy>
 	class bit_writer

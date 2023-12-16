@@ -53,9 +53,11 @@ namespace bitstream
 
 		bool extend(uint32_t num_bits)
 		{
-			bool status = can_serialize_bits(num_bits);
+			if (!can_serialize_bits(num_bits))
+				return false;
+
 			m_NumBitsSerialized += num_bits;
-			return status;
+			return true;
 		}
 
 		uint32_t* m_Buffer;

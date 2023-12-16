@@ -86,13 +86,13 @@ bool serialize_custom_type(Stream& stream, custom_type& value)
 }
 
 byte_buffer<32> buffer;
-bit_writer writer(buffer);
+fixed_bit_writer writer(buffer);
 
 custom_type in_value;
 serialize_custom_type(writer, in_value); // Serialize the value
 
 uint32_t num_bits = writer.flush();
-bit_reader reader(buffer, num_bits);
+fixed_bit_reader reader(buffer, num_bits);
 
 custom_type out_value;
 serialize_custom_type(reader, out_value); // Deserialize the value
@@ -119,7 +119,7 @@ Writing the first 5 bits of an int to the buffer, then reading it back:
 ```cpp
 // Create a writer, referencing the buffer and its size
 alignas(uint32_t) uint8_t buffer[4]; // Buffer must be a multiple of 4 bytes / 32 bits and 4-byte-aligned
-bit_writer writer(buffer, 4);
+fixed_bit_writer writer(buffer, 4);
 
 // Write the value
 uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more than 5 bits
@@ -129,7 +129,7 @@ writer.serialize_bits(value, 5);
 uint32_t num_bits = writer.flush();
 
 // Create a reader, referencing the buffer and bits written
-bit_reader reader(buffer, num_bits);
+fixed_bit_reader reader(buffer, num_bits);
 
 // Read the value back
 uint32_t out_value; // We don't have to initialize it yet
@@ -140,7 +140,7 @@ Writing a signed int to the buffer, within a range:
 ```cpp
 // Create a writer, referencing the buffer and its size
 byte_buffer<4> buffer; // byte_bufer is just a wrapper for a 4-byte aligned buffer
-bit_writer writer(buffer);
+fixed_bit_writer writer(buffer);
 
 // Write the value
 int32_t value = -45; // We can choose any value within the range below
@@ -150,7 +150,7 @@ writer.serialize<int32_t>(value, -90, 40); // A lower and upper bound which the 
 uint32_t num_bits = writer.flush();
 
 // Create a reader, referencing the buffer and bits written
-bit_reader reader(buffer, num_bits);
+fixed_bit_reader reader(buffer, num_bits);
 
 // Read the value back
 int32_t out_value; // We don't have to initialize it yet
@@ -161,7 +161,7 @@ Writing a c-style string into the buffer:
 ```cpp
 // Create a writer, referencing the buffer and its size
 byte_buffer<32> buffer;
-bit_writer writer(buffer);
+fixed_bit_writer writer(buffer);
 
 // Write the value
 const char* value = "Hello world!";
@@ -171,7 +171,7 @@ writer.serialize<const char*>(value, 32U); // The second argument is the maximum
 uint32_t num_bits = writer.flush();
 
 // Create a reader, referencing the buffer and bits written
-bit_reader reader(buffer, num_bits);
+fixed_bit_reader reader(buffer, num_bits);
 
 // Read the value back
 char out_value[32]; // Set the size to the max size
@@ -182,7 +182,7 @@ Writing a std::string into the buffer:
 ```cpp
 // Create a writer, referencing the buffer and its size
 byte_buffer<32> buffer;
-bit_writer writer(buffer);
+fixed_bit_writer writer(buffer);
 
 // Write the value
 std::string value = "Hello world!";
@@ -192,7 +192,7 @@ writer.serialize<std::string>(value, 32U); // The second argument is the maximum
 uint32_t num_bits = writer.flush();
 
 // Create a reader, referencing the buffer and bits written
-bit_reader reader(buffer, num_bits);
+fixed_bit_reader reader(buffer, num_bits);
 
 // Read the value back
 std::string out_value; // The string will be resized if the output doesn't fit
@@ -203,7 +203,7 @@ Writing a float into the buffer with a bounded range and precision:
 ```cpp
 // Create a writer, referencing the buffer and its size
 byte_buffer<4> buffer;
-bit_writer writer(buffer);
+fixed_bit_writer writer(buffer);
 
 // Write the value
 bounded_range range(1.0f, 4.0f, 1.0f / 128.0f); // Min, Max, Precision
@@ -214,7 +214,7 @@ writer.serialize<bounded_range>(range, value);
 uint32_t num_bits = writer.flush();
 
 // Create a reader, referencing the buffer and bits written
-bit_reader reader(buffer, num_bits);
+fixed_bit_reader reader(buffer, num_bits);
 
 // Read the value back
 float out_value;
@@ -445,8 +445,8 @@ bool status_read = reader.serialize<smallest_three<quaternion, 12>>(out_value);
 
 # Extensibility
 The library is made with extensibility in mind.
-The `bit_writer` and `bit_reader` use a template trait specialization of the given type to deduce how to serialize and deserialize the object.
-The only requirements of the trait is that it has (or can deduce) 2 static functions which take a `bit_writer&` and a `bit_reader&` respectively as their first argument.
+The `bit_writer<T>` and `bit_reader<T>` use a template trait specialization of the given type to deduce how to serialize and deserialize the object.
+The only requirements of the trait is that it has (or can deduce) 2 static functions which take a `bit_writer<T>&` and a `bit_reader<T>&` respectively as their first argument.
 The 2 functions must also return a bool indicating whether the serialization was a success or not, but can otherwise take any number of additional arguments.
 
 ## Adding new serializables types
@@ -457,17 +457,21 @@ template<>
 struct serialize_traits<TRAIT_TYPE> // The type to use when referencing this specific trait
 {
     // Will be called when writing the object to a stream
-    static bool serialize(bit_writer& stream, ...)
+    template<typename Stream>
+    typename utility::is_writing_t<Stream>
+    static serialize(Stream& stream, ...)
     { ... }
     
     // Will be called when reading the object from a stream
-    static bool serialize(bit_reader& stream, ...)
+    template<typename Stream>
+    typename utility::is_reading_t<Stream>
+    static serialize(Stream& stream, ...)
     { ... }
 };
 ```
 
 As with any functions, you are free to overload them if you want to serialize an object differently, depending on any parameters you pass.
-As long as their list of parameters starts with `bit_writer&` and `bit_reader&` respectively they will be able to be called.
+As long as the first parameter can be deduced to `bit_writer<T>&` and `bit_reader<T>&` respectively they will be able to be called.
 
 ## Unified serialization
 The serialization can also be unified with templating, if writing and reading look similar.
@@ -488,7 +492,7 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when serializing
         }
         
         // A variable that differs if the stream is writing or reading
-        int value = Stream::reading ? 0 : 1;
+        int value = Stream::reading ? 500 : 200;
         
         ...
     }
@@ -525,11 +529,15 @@ template<>
 struct serialize_traits<TRAIT_TYPE> // The type to use when referencing this specific trait
 {
     // The second argument is the same as TRAIT_TYPE (const and lvalue references are removed when deducing)
-    static bool serialize(bit_writer& stream, const TRAIT_TYPE&, ...)
+    template<typename Stream>
+    typename utility::is_writing_t<Stream>
+    static serialize(Stream& stream, const TRAIT_TYPE&, ...)
     { ... }
     
     // The second argument is the same as TRAIT_TYPE (lvalue is removed)
-    static bool serialize(bit_reader& stream, TRAIT_TYPE&, ...)
+    template<typename Stream>
+    typename utility::is_reading_t<Stream>
+    static serialize(Stream& stream, TRAIT_TYPE&, ...)
     { ... }
 };
 ```
@@ -537,7 +545,7 @@ struct serialize_traits<TRAIT_TYPE> // The type to use when referencing this spe
 The above trait could then be used when implicitly serializing an object of type `TRAIT_TYPE`:
 ```cpp
 TRAIT_TYPE value;
-bool status = writer.serialize(value, ...);
+bool status = writer.serialize(value, ...); // No need for "serialize<TRAIT_TYPE>"
 ```
 
 It doesn't work on all types, and there is some guesswork involved relating to const qualifiers.
