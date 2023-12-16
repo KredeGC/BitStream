@@ -125,7 +125,7 @@ namespace bitstream
 
                 BS_ASSERT(serialize_index(writer, prev_index, index, max_size));
 
-				BS_ASSERT(writer.serialize<Trait>(values[index], std::forward<Args>(args)...));
+				BS_ASSERT(writer.template serialize<Trait>(values[index], std::forward<Args>(args)...));
 			}
 
             BS_ASSERT(serialize_index(writer, prev_index, max_size, max_size));
@@ -156,7 +156,7 @@ namespace bitstream
 				if (index == max_size)
 					break;
 
-				BS_ASSERT(reader.serialize<Trait>(values[index], std::forward<Args>(args)...));
+				BS_ASSERT(reader.template serialize<Trait>(values[index], std::forward<Args>(args)...));
 			}
 
 			return true;
