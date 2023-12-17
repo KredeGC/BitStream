@@ -47,7 +47,11 @@ namespace bitstream::test::performance
         // Should just use straight memcpy
         profile_time([&]
         {
-            return writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t));
+            BS_ASSERT(writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t)));
+
+            writer.flush();
+
+            return true;
         });
     }
 
@@ -66,7 +70,11 @@ namespace bitstream::test::performance
         // Has to use serialize_bits individually
         profile_time([&]
         {
-            return writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t));
+            BS_ASSERT(writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t)));
+
+            writer.flush();
+
+            return true;
         });
     }
 
@@ -80,9 +88,10 @@ namespace bitstream::test::performance
         {
             for (uint32_t i = 0U; i < 1024U; i++)
             {
-                if (!writer.serialize_bits(24U, 32U))
-                    return false;
+                BS_ASSERT(writer.serialize_bits(24U, 32U));
             }
+
+            writer.flush();
 
             return true;
         });
@@ -98,9 +107,10 @@ namespace bitstream::test::performance
         {
             for (uint32_t i = 0U; i < 1024U; i++)
             {
-                if (!writer.serialize_bits(24U, 31U))
-                    return false;
+                BS_ASSERT(writer.serialize_bits(24U, 31U));
             }
+
+            writer.flush();
 
             return true;
         });

@@ -54,6 +54,28 @@ namespace bitstream::test::traits
 		BS_TEST_ASSERT_OPERATION(out_value, == , value);
 	}
 
+	BS_ADD_TEST(test_manual_serialize_uint32)
+	{
+		uint32_t value = 511;
+
+		// Test integral numbers
+		byte_buffer<8> buffer;
+		fixed_bit_writer writer(buffer);
+
+		BS_TEST_ASSERT(writer.serialize<uint32_t>(value));
+		uint32_t num_bits = writer.flush();
+
+		BS_TEST_ASSERT_OPERATION(num_bits, ==, 8 * sizeof(uint32_t));
+
+
+		uint32_t out_value = 0;
+		fixed_bit_reader reader(buffer, num_bits);
+
+		BS_TEST_ASSERT(reader.serialize<uint32_t>(out_value));
+
+		BS_TEST_ASSERT_OPERATION(out_value, == , value);
+	}
+
 #pragma region unsigned integral types
 	BS_ADD_TEST(test_serialize_uint8)
 	{
