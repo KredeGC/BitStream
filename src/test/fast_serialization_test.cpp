@@ -23,12 +23,12 @@ namespace bitstream::test::performance
 
         auto end = std::chrono::steady_clock::now();
 
-        auto start_time = std::chrono::time_point_cast<std::chrono::microseconds>(start).time_since_epoch();
-        auto end_time = std::chrono::time_point_cast<std::chrono::microseconds>(end).time_since_epoch();
+        auto start_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(start).time_since_epoch();
+        auto end_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(end).time_since_epoch();
 
-        auto time = (end - start).count();
+        auto time = (end_time - start_time).count();
 
-        std::cout << "  ->time spent: " << time << "us\n";
+        std::cout << "  ->time spent: " << time << "ns\n";
 
         BS_TEST_ASSERT(status);
     }
