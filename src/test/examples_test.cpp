@@ -17,8 +17,8 @@ namespace bitstream::test::example
     BS_ADD_TEST(test_example1)
     {
         // Create a writer, referencing the buffer and its size
-        std::vector<uint32_t> buffer;
-        growing_bit_writer<std::vector<uint32_t>> writer(buffer);
+        byte_buffer<4> buffer;
+        fixed_bit_writer writer(buffer);
 
         // Write the value
         uint32_t value = 27; // We can choose any value below 2^5. Otherwise we need more than 5 bits
@@ -30,7 +30,7 @@ namespace bitstream::test::example
 		BS_TEST_ASSERT_OPERATION(num_bits, == , 5);
 
         // Create a reader, referencing the buffer and bytes written
-        fixed_bit_reader reader(buffer.data(), num_bits);
+        fixed_bit_reader reader(buffer, num_bits);
 
         // Read the value back
         uint32_t out_value; // We don't have to initialize it yet

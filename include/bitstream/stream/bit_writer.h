@@ -115,8 +115,8 @@ namespace bitstream
 			if (m_ScratchBits > 0U)
 			{
 				uint32_t* ptr = m_Policy.get_buffer() + m_WordIndex;
-				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32U);
-				*ptr = utility::to_big_endian32(ptr_value);
+				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch);
+				*ptr = ptr_value; // TODO: Little endian
 
 				m_Scratch = 0U;
 				m_ScratchBits = 0U;
@@ -261,7 +261,7 @@ namespace bitstream
 				return true;
 			}*/
 
-			uint32_t offset = 64U - num_bits - m_ScratchBits;
+			uint32_t offset = m_ScratchBits;
 			uint64_t ls_value = static_cast<uint64_t>(value) << offset;
 
 			m_Scratch |= ls_value;
@@ -270,9 +270,9 @@ namespace bitstream
 			if (m_ScratchBits >= 32U)
 			{
 				uint32_t* ptr = m_Policy.get_buffer() + m_WordIndex;
-				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch >> 32U);
-				*ptr = utility::to_big_endian32(ptr_value);
-				m_Scratch <<= 32ULL;
+				uint32_t ptr_value = static_cast<uint32_t>(m_Scratch);
+				*ptr = ptr_value; // TODO: Convert to little endian
+				m_Scratch >>= 32ULL;
 				m_ScratchBits -= 32U;
 				m_WordIndex++;
 			}

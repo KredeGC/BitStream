@@ -229,16 +229,15 @@ namespace bitstream
 			{
 				const uint32_t* ptr = m_Policy.get_buffer() + m_WordIndex;
 
-				uint64_t ptr_value = static_cast<uint64_t>(utility::to_big_endian32(*ptr)) << (32U - m_ScratchBits);
-				m_Scratch |= ptr_value;
+				uint64_t ptr_value = static_cast<uint64_t>(*ptr) << m_ScratchBits;
+				m_Scratch |= ptr_value; // TODO: Little endian
 				m_ScratchBits += 32U;
 				m_WordIndex++;
 			}
 
-			uint32_t offset = 64U - num_bits;
-			value = static_cast<uint32_t>(m_Scratch >> offset);
+			value = (static_cast<uint32_t>(m_Scratch) << (32 - num_bits)) >> (32 - num_bits);
 
-			m_Scratch <<= num_bits;
+			m_Scratch >>= num_bits;
 			m_ScratchBits -= num_bits;
 
 			return true;
