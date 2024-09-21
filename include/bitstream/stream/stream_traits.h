@@ -51,7 +51,7 @@ namespace bitstream
 
 		uint32_t get_total_bits() const noexcept { return m_TotalBits; }
 
-		bool extend(uint32_t num_bits)
+		bool extend(uint32_t num_bits) noexcept
 		{
 			if (!can_serialize_bits(num_bits))
 				return false;
