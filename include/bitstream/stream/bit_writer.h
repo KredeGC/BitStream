@@ -127,46 +127,6 @@ namespace bitstream
 		}
 
 		/**
-		 * @brief Instructs the writer that you intend to use `serialize_checksum()` later on, and to reserve the first 32 bits.
-		 * @return Returns false if anything has already been written to the buffer or if there's no space to write the checksum
-		*/
-		[[nodiscard]] bool prepend_checksum() noexcept
-		{
-			BS_ASSERT(get_num_bits_serialized() == 0);
-
-            BS_ASSERT(m_Policy.extend(32U));
-            
-			// Advance the reader by the size of the checksum (32 bits / 1 word)
-			m_WordIndex++;
-            
-            return true;
-		}
-
-		/**
-		 * @brief Writes a checksum of the @p protocol_version and the rest of the buffer as the first 32 bits
-		 * @param protocol_version A unique version number
-		 * @return The number of bytes written to the buffer
-		*/
-		uint32_t serialize_checksum(uint32_t protocol_version) noexcept
-		{
-			uint32_t num_bits = flush();
-
-			BS_ASSERT(num_bits > 32U);
-
-			// Copy protocol version to buffer
-			uint32_t* buffer = m_Policy.get_buffer();
-			*buffer = protocol_version;
-
-			// Generate checksum of version + data
-			uint32_t checksum = utility::crc_uint32(reinterpret_cast<uint8_t*>(buffer), get_num_bytes_serialized());
-
-			// Put checksum at beginning
-			*buffer = checksum;
-
-			return num_bits;
-		}
-
-		/**
 		 * @brief Pads the buffer up to the given number of bytes with zeros
 		 * @param num_bytes The byte number to pad to
 		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes
@@ -338,7 +298,8 @@ namespace bitstream
 		 * @param writer The writer to copy into
 		 * @return Returns false if writing would overflow the buffer
 		*/
-		[[nodiscard]] bool serialize_into(bit_writer& writer) const noexcept
+		template<typename T>
+		[[nodiscard]] bool serialize_into(bit_writer<T>& writer) const noexcept
 		{
 			uint8_t* buffer = reinterpret_cast<uint8_t*>(m_Policy.get_buffer());
 			uint32_t num_bits = get_num_bits_serialized();

@@ -107,35 +107,6 @@ namespace bitstream
 		[[nodiscard]] uint32_t get_total_bits() const noexcept { return m_Policy.get_total_bits(); }
 
 		/**
-		 * @brief Reads the first 32 bits of the buffer and compares it to a checksum of the @p protocol_version and the rest of the buffer
-		 * @param protocol_version A unique version number
-		 * @return Whether the checksum matches what was written
-		*/
-		[[nodiscard]] bool serialize_checksum(uint32_t protocol_version) noexcept
-		{
-			BS_ASSERT(get_num_bits_serialized() == 0);
-
-			BS_ASSERT(can_serialize_bits(32U));
-
-			uint32_t num_bytes = (get_total_bits() - 1U) / 8U + 1U;
-			const uint32_t* buffer = m_Policy.get_buffer();
-
-			// Generate checksum to compare against
-			uint32_t generated_checksum = utility::crc_uint32(reinterpret_cast<const uint8_t*>(&protocol_version), reinterpret_cast<const uint8_t*>(buffer + 1), num_bytes - 4);
-
-			// Advance the reader by the size of the checksum (32 bits / 1 word)
-			m_WordIndex++;
-
-			BS_ASSERT(m_Policy.extend(32U));
-
-			// Read the checksum
-			uint32_t checksum = *buffer;
-
-			// Compare the checksum
-			return generated_checksum == checksum;
-		}
-
-		/**
 		 * @brief Pads the buffer up to the given number of bytes
 		 * @param num_bytes The byte number to pad to
 		 * @return Returns false if the current size of the buffer is bigger than @p num_bytes or if the padded bits are not zeros.

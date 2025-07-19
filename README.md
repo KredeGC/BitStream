@@ -35,6 +35,7 @@ Based on [Glenn Fiedler's articles](https://gafferongames.com/post/reading_and_w
   * [Half-precision float - half_precision](#half-precision-float---half_precision)
   * [Bounded float - bounded_range](#bounded-float---bounded_range)
   * [Quaternion - smallest_three\<Q, BitsPerElement\>](#quaternion---smallest_threeq-bitsperelement)
+  * [Checksum\<V\>](#checksumversion)
 * [Extensibility](#extensibility)
   * [Adding new serializables types](#adding-new-serializables-types)
   * [Unified serialization](#unified-serialization)
@@ -441,6 +442,27 @@ quaternion in_value{ 1.0f, 0.0f, 0.0f, 0.0f };
 quaternion out_value;
 bool status_write = writer.serialize<smallest_three<quaternion, 12>>(in_value);
 bool status_read = reader.serialize<smallest_three<quaternion, 12>>(out_value);
+```
+
+## Checksum\<Version\>
+A trait that creates a checksum based on the 32-bit number given.<br/>
+If the checksum that was written does not match when reading, it returns false.
+Must be called before anything else is serizalized, and again once everything is fully serialized.
+When reading you can omit the last serialize, as it is a noop.
+
+The call signature can be seen below:
+```cpp
+bool serialize<checksum<Version>>();
+```
+As well as a short example of its usage:
+```cpp
+bool status_write = writer.serialize<checksum<0x12345678>>();
+// Serialize some stuff...
+status_write = writer.serialize<checksum<0x12345678>>();
+
+bool status_read = reader.serialize<checksum<0x12345678>>();
+// Deserialize some stuff...
+status_read = reader.serialize<checksum<0x12345678>>(); // Last deserialize on read is optional (a noop)
 ```
 
 # Extensibility

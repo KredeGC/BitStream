@@ -74,30 +74,6 @@ namespace bitstream::test::stream
 		BS_TEST_ASSERT(out_value3 == in_value3);
 	}
 
-	BS_ADD_TEST(test_serialize_checksum)
-	{
-		// Test checksum
-		uint32_t protocol_version = 0xDEADBEEF;
-		uint32_t value = 5;
-
-		// Write some initial values and finish with a checksum
-		byte_buffer<16> buffer;
-		fixed_bit_writer writer(buffer);
-
-		BS_TEST_ASSERT(writer.prepend_checksum());
-		BS_TEST_ASSERT(writer.serialize_bits(value, 3));
-		uint32_t num_bits = writer.serialize_checksum(protocol_version);
-
-		// Read the checksum and validate
-		uint32_t out_value;
-		fixed_bit_reader reader(buffer, num_bits);
-
-		BS_TEST_ASSERT(reader.serialize_checksum(protocol_version));
-		BS_TEST_ASSERT(reader.serialize_bits(out_value, 3));
-
-		BS_TEST_ASSERT(out_value == value);
-	}
-
 	BS_ADD_TEST(test_serialize_padding_small)
 	{
 		// Test padding
