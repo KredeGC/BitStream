@@ -8,22 +8,8 @@
 
 namespace bitstream
 {
-	namespace utility
-	{
-		// Check if type has a serializable trait
-		template<typename T, typename Stream, typename Void = void>
-		struct has_instance_serialize : std::false_type {};
-
-		template<typename T, typename Stream>
-		struct has_instance_serialize<T, Stream, std::void_t<decltype(std::declval<T&>().serialize(std::declval<Stream&>()))>> : std::true_type {};
-
-		template<typename T, typename Stream>
-		constexpr bool has_instance_serialize_v = has_instance_serialize<T, Stream>::value;
-	}
-
-
 	template<typename T, typename... Ts>
-	struct multi_tuple
+	struct multi_args
 	{
 		std::tuple<Ts...> Args;
 
@@ -35,8 +21,8 @@ namespace bitstream
 	};
 
 	template<typename T, typename... Args>
-	multi_tuple<T, Args&&...> multi(Args&&... args) noexcept
+	multi_args<T, Args&&...> multi(Args&&... args) noexcept
 	{
-		return multi_tuple<T, Args&&...>{ std::forward_as_tuple(std::forward<Args>(args) ...) };
+		return multi_args<T, Args&&...>{ std::forward_as_tuple(std::forward<Args>(args) ...) };
 	}
 }
