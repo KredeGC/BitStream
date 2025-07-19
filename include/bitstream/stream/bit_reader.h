@@ -1,16 +1,15 @@
 #pragma once
 #include "../utility/assert.h"
-#include "../utility/crc.h"
 #include "../utility/endian.h"
 #include "../utility/meta.h"
 
 #include "byte_buffer.h"
+#include "multi.h"
 #include "serialize_traits.h"
 #include "stream_traits.h"
 
 #include <cstdint>
 #include <cstring>
-#include <string>
 #include <type_traits>
 
 namespace bitstream
@@ -270,6 +269,20 @@ namespace bitstream
 			}
 
 			return true;
+		}
+
+		/**
+		 * @brief Reads from the buffer into mulitple variables.
+		 * @note Pass multi<T>(...) to this in place of multiple calls to the regular serialize functions.
+		 * @tparam ...Args The types of the arguments to pass to the serialize function
+		 * @param ...args The arguments to pass to the serialize function
+		 * @return Whether successful or not
+		*/
+		template<typename... Args, typename = std::enable_if_t<(utility::has_instance_serialize_v<Args, bit_reader> && ...)>>
+		[[nodiscard]] bool serialize(Args&&... args)
+			noexcept((noexcept(std::declval<Args&>().serialize(std::declval<bit_reader&>())) && ...))
+		{
+			return (std::forward<Args>(args).serialize(*this) && ...);
 		}
 
 		/**

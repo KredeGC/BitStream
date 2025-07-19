@@ -6,6 +6,17 @@
 
 namespace bitstream::utility
 {
+	// Check if instance has a serializable trait
+	template<typename T, typename Stream, typename Void = void>
+	struct has_instance_serialize : std::false_type {};
+
+	template<typename T, typename Stream>
+	struct has_instance_serialize<T, Stream, std::void_t<decltype(std::declval<T&>().serialize(std::declval<Stream&>()))>> : std::true_type {};
+
+	template<typename T, typename Stream>
+	constexpr bool has_instance_serialize_v = has_instance_serialize<T, Stream>::value;
+
+
 	// Check if type has a serializable trait
 	template<typename Void, typename T, typename Stream, typename... Args>
 	struct has_serialize : std::false_type {};
