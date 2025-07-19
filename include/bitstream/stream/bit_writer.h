@@ -9,6 +9,7 @@
 #include "stream_traits.h"
 
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <type_traits>
 
