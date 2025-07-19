@@ -23,12 +23,12 @@ namespace bitstream::test::performance
 
         auto end = std::chrono::steady_clock::now();
 
-        auto start_time = std::chrono::time_point_cast<std::chrono::microseconds>(start).time_since_epoch();
-        auto end_time = std::chrono::time_point_cast<std::chrono::microseconds>(end).time_since_epoch();
+        auto start_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(start).time_since_epoch();
+        auto end_time = std::chrono::time_point_cast<std::chrono::nanoseconds>(end).time_since_epoch();
 
-        auto time = (end - start).count();
+        auto time = (end_time - start_time).count();
 
-        std::cout << "  ->time spent: " << time << "us\n";
+        std::cout << "  ->time spent: " << time << "ns\n";
 
         BS_TEST_ASSERT(status);
     }
@@ -47,7 +47,11 @@ namespace bitstream::test::performance
         // Should just use straight memcpy
         profile_time([&]
         {
-            return writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t));
+            BS_ASSERT(writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t)));
+
+            writer.flush();
+
+            return true;
         });
     }
 
@@ -66,7 +70,11 @@ namespace bitstream::test::performance
         // Has to use serialize_bits individually
         profile_time([&]
         {
-            return writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t));
+            BS_ASSERT(writer.serialize_bytes(reinterpret_cast<uint8_t*>(numbers), 1024U * 8U * sizeof(uint32_t)));
+
+            writer.flush();
+
+            return true;
         });
     }
 
@@ -80,9 +88,10 @@ namespace bitstream::test::performance
         {
             for (uint32_t i = 0U; i < 1024U; i++)
             {
-                if (!writer.serialize_bits(24U, 32U))
-                    return false;
+                BS_ASSERT(writer.serialize_bits(24U, 32U));
             }
+
+            writer.flush();
 
             return true;
         });
@@ -98,9 +107,10 @@ namespace bitstream::test::performance
         {
             for (uint32_t i = 0U; i < 1024U; i++)
             {
-                if (!writer.serialize_bits(24U, 31U))
-                    return false;
+                BS_ASSERT(writer.serialize_bits(24U, 31U));
             }
+
+            writer.flush();
 
             return true;
         });

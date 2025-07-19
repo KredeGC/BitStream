@@ -183,8 +183,9 @@ namespace bitstream
 
 			BS_ASSERT(m_Policy.extend(num_bits));
 
-			// Fast path
-			if (num_bits == 32U && m_ScratchBits == 0U)
+			// This is actually slower
+			// Possibly due to unlikely branching
+			/*if (num_bits == 32U && m_ScratchBits == 0U)
 			{
 				const uint32_t* ptr = m_Policy.get_buffer() + m_WordIndex;
 
@@ -193,7 +194,7 @@ namespace bitstream
 				m_WordIndex++;
 
 				return true;
-			}
+			}*/
 
 			if (m_ScratchBits < num_bits)
 			{

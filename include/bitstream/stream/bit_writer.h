@@ -208,8 +208,9 @@ namespace bitstream
 
 			BS_ASSERT(m_Policy.extend(num_bits));
 
-			// Fast path
-			if (num_bits == 32U && m_ScratchBits == 0U)
+			// This is actually slower
+			// Possibly due to unlikely branching
+			/*if (num_bits == 32U && m_ScratchBits == 0U)
 			{
 				uint32_t* ptr = m_Policy.get_buffer() + m_WordIndex;
 
@@ -218,7 +219,7 @@ namespace bitstream
 				m_WordIndex++;
 
 				return true;
-			}
+			}*/
 
 			uint32_t offset = 64U - num_bits - m_ScratchBits;
 			uint64_t ls_value = static_cast<uint64_t>(value) << offset;
@@ -349,8 +350,8 @@ namespace bitstream
 		Policy m_Policy;
 
 		uint64_t m_Scratch;
-		uint32_t m_ScratchBits;
-		uint32_t m_WordIndex;
+		int m_ScratchBits;
+		size_t m_WordIndex;
 	};
 
 	using fixed_bit_writer = bit_writer<fixed_policy>;
