@@ -27,8 +27,7 @@ namespace bitstream
 		constexpr static uint32_t protocol_size = sizeof(uint32_t);
 
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer) noexcept
 		{
 			if (writer.get_num_bits_serialized() == 0)
 				return writer.pad_to_size(4);
@@ -52,8 +51,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader) noexcept
 		{
 			if (reader.get_num_bits_serialized() > 0)
 				return true;

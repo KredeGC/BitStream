@@ -38,8 +38,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, in<T> value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, in<T> value) noexcept
 		{
 			static_assert(Min < Max);
 
@@ -75,8 +74,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, T& value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, T& value) noexcept
 		{
 			static_assert(Min < Max);
 
@@ -133,8 +131,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, in<T> value, T min, T max) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, in<T> value, T min, T max) noexcept
 		{
 			BS_ASSERT(min < max);
             
@@ -175,8 +172,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, T& value, T min, T max) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, T& value, T min, T max) noexcept
 		{
 			BS_ASSERT(min < max);
 

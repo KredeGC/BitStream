@@ -186,7 +186,7 @@ namespace bitstream
 		[[nodiscard]] bool align() noexcept
 		{
 			uint32_t remainder = m_ScratchBits % 8U;
-			if (remainder != 0U)
+			if (remainder != 0U) BS_LIKELY
 			{
 				uint32_t zero = 0U;
 				bool status = serialize_bits(zero, 8U - remainder);

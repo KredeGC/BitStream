@@ -25,8 +25,7 @@ namespace bitstream
         using value_type = std::underlying_type_t<T>;
 
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, T value, value_type min = 0, value_type max = (std::numeric_limits<value_type>::max)()) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, T value, value_type min = 0, value_type max = (std::numeric_limits<value_type>::max)()) noexcept
 		{
 			value_type unsigned_value = static_cast<value_type>(value);
 
@@ -34,8 +33,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, T& value, value_type min = 0, value_type max = (std::numeric_limits<value_type>::max)()) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, T& value, value_type min = 0, value_type max = (std::numeric_limits<value_type>::max)()) noexcept
 		{
 			value_type unsigned_value;
 
@@ -57,8 +55,7 @@ namespace bitstream
 		using bound_type = bounded_int<value_type, Min, Max>;
 
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, T value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, T value) noexcept
 		{
 			value_type unsigned_value = static_cast<value_type>(value);
 
@@ -66,8 +63,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, T& value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, T& value) noexcept
 		{
 			value_type unsigned_value;
 

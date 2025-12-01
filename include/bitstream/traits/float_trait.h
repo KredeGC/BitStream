@@ -23,8 +23,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, in<float> value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, in<float> value) noexcept
 		{
 			uint32_t tmp;
 			std::memcpy(&tmp, &value, sizeof(float));
@@ -41,8 +40,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, float& value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, float& value) noexcept
 		{
 			uint32_t tmp;
 
@@ -67,8 +65,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, in<double> value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, in<double> value) noexcept
 		{
 			uint32_t tmp[2];
 			std::memcpy(tmp, &value, sizeof(double));
@@ -86,8 +83,7 @@ namespace bitstream
 		 * @return Success
 		*/
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, double& value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, double& value) noexcept
 		{
 			uint32_t tmp[2];
 

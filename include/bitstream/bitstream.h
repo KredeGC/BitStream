@@ -1,5 +1,9 @@
 #pragma once
 
+// Possible defines
+// #define BS_DEBUG_BREAK // Stops execution when serialization fails (debug break, trap etc.)
+// #define BS_EQUAL_PATH // Stops optimization of the happy path
+
 // Quantization
 #include "quantization/bounded_range.h"
 #include "quantization/half_precision.h"

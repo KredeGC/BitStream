@@ -159,7 +159,7 @@ namespace bitstream
 		[[nodiscard]] bool align() noexcept
 		{
 			uint32_t remainder = get_num_bits_serialized() % 8U;
-			if (remainder != 0U)
+			if (remainder != 0U) BS_LIKELY
 			{
 				uint32_t zero;
 				bool status = serialize_bits(zero, 8U - remainder);
