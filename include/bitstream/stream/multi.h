@@ -25,12 +25,12 @@ namespace bitstream
 	template<typename T, typename... Args>
 	[[nodiscard]] multi_args<T, Args&&...> multi(Args&&... args) noexcept
 	{
-		return multi_args<T, Args&&...>{ std::forward_as_tuple(std::forward<Args>(args) ...) };
+		return { std::forward_as_tuple(std::forward<Args>(args) ...) };
 	}
 
 	template<typename... Args, typename Trait, typename = utility::has_deduce_serialize_t<Trait, bit_noop, Args...>>
 	[[nodiscard]] multi_args<utility::deduce_trait_t<Trait, bit_noop, Args...>, Trait&&, Args&&...> multi(Trait&& arg, Args&&... args) noexcept
 	{
-		return multi_args<utility::deduce_trait_t<Trait, bit_noop, Args...>, Trait&&, Args&&...>{ std::forward_as_tuple(std::forward<Trait>(arg), std::forward<Args>(args) ...) };
+		return { std::forward_as_tuple(std::forward<Trait>(arg), std::forward<Args>(args) ...) };
 	}
 }
