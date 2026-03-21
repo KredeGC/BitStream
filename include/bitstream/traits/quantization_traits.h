@@ -19,8 +19,7 @@ namespace bitstream
 	struct serialize_traits<half_precision>
 	{
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-        static serialize(Stream& stream, in<float> value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& stream, in<float> value) noexcept
 		{
 			uint32_t int_value = half_precision::quantize(value);
             
@@ -30,8 +29,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-        static serialize(Stream& stream, out<float> value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& stream, out<float> value) noexcept
 		{
 			uint32_t int_value;
             
@@ -50,8 +48,7 @@ namespace bitstream
 	struct serialize_traits<bounded_range>
 	{
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& stream, in<bounded_range> range, in<float> value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& stream, in<bounded_range> range, in<float> value) noexcept
 		{
 			uint32_t int_value = range.quantize(value);
             
@@ -61,8 +58,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& stream, in<bounded_range> range, out<float> value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& stream, in<bounded_range> range, out<float> value) noexcept
 		{
 			uint32_t int_value;
 
@@ -81,8 +77,7 @@ namespace bitstream
 	struct serialize_traits<smallest_three<Q, BitsPerElement>>
 	{
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& stream, in<Q> value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& stream, in<Q> value) noexcept
 		{
 			quantized_quaternion quantized_quat = smallest_three<Q, BitsPerElement>::quantize(value);
 
@@ -95,8 +90,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& stream, out<Q> value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& stream, out<Q> value) noexcept
 		{
 			quantized_quaternion quantized_quat;
 

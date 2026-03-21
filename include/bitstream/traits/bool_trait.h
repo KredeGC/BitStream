@@ -14,8 +14,7 @@ namespace bitstream
 	struct serialize_traits<bool>
 	{
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, in<bool> value) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, in<bool> value) noexcept
 		{
 			uint32_t unsigned_value = value;
 
@@ -23,8 +22,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, out<bool> value) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, out<bool> value) noexcept
 		{
 			uint32_t unsigned_value;
 
@@ -43,8 +41,7 @@ namespace bitstream
 	struct serialize_traits<bool[Size]>
 	{
 		template<typename Stream>
-		typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, const bool* values) noexcept
+		static stream_writing_t<Stream> serialize(Stream& writer, const bool* values) noexcept
 		{
 			uint32_t unsigned_value;
 			for (size_t i = 0; i < Size; i++)
@@ -57,8 +54,7 @@ namespace bitstream
 		}
 
 		template<typename Stream>
-		typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, bool* values) noexcept
+		static stream_reading_t<Stream> serialize(Stream& reader, bool* values) noexcept
 		{
 			uint32_t unsigned_value;
 			for (size_t i = 0; i < Size; i++)

@@ -6,6 +6,17 @@
 
 namespace bitstream::utility
 {
+	// Check if instance has a serializable trait
+	template<typename T, typename Stream, typename Void = void>
+	struct has_instance_serialize : std::false_type {};
+
+	template<typename T, typename Stream>
+	struct has_instance_serialize<T, Stream, std::void_t<decltype(std::declval<T&>().serialize(std::declval<Stream&>()))>> : std::true_type {};
+
+	template<typename T, typename Stream>
+	constexpr bool has_instance_serialize_v = has_instance_serialize<T, Stream>::value;
+
+
 	// Check if type has a serializable trait
 	template<typename Void, typename T, typename Stream, typename... Args>
 	struct has_serialize : std::false_type {};
@@ -18,14 +29,6 @@ namespace bitstream::utility
 
 	template<typename T, typename Stream, typename... Args>
 	constexpr bool has_serialize_v = has_serialize<void, T, Stream, Args...>::value;
-
-
-	// Check if stream is writing or reading
-	template<typename T, typename R = bool>
-	using is_writing_t = std::enable_if_t<T::writing, R>;
-
-	template<typename T, typename R = bool>
-	using is_reading_t = std::enable_if_t<T::reading, R>;
 
 
 	// Check if type is noexcept, if it exists
@@ -102,4 +105,14 @@ namespace bitstream::utility
 
 	template<typename Trait, typename Stream, typename... Args>
 	constexpr bool is_deduce_serialize_noexcept_v = is_serialize_noexcept_v<deduce_trait_t<Trait, Stream, Args...>, Stream, Trait, Args...>;
+}
+
+namespace bitstream
+{
+	// Check if stream is writing or reading
+	template<typename T, typename R = bool>
+	using stream_writing_t = std::enable_if_t<T::writing, R>;
+
+	template<typename T, typename R = bool>
+	using stream_reading_t = std::enable_if_t<T::reading, R>;
 }

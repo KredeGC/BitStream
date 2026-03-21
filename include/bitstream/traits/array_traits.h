@@ -114,8 +114,7 @@ namespace bitstream
 		 * @return Success
 		*/
         template<typename Stream, typename Compare, typename... Args>
-        typename utility::is_writing_t<Stream>
-		static serialize(Stream& writer, T* values, int max_size, Compare compare, Args&&... args) noexcept
+        static stream_writing_t<Stream> serialize(Stream& writer, T* values, int max_size, Compare compare, Args&&... args) noexcept
 		{
 			int prev_index = -1;
 			for (int index = 0; index < max_size; index++)
@@ -144,8 +143,7 @@ namespace bitstream
 		 * @return Success
 		*/
         template<typename Stream, typename... Args>
-        typename utility::is_reading_t<Stream>
-		static serialize(Stream& reader, T* values, int max_size, Args&&... args) noexcept
+        static stream_reading_t<Stream> serialize(Stream& reader, T* values, int max_size, Args&&... args) noexcept
 		{
 			int prev_index = -1;
             int index = 0;

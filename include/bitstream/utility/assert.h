@@ -1,5 +1,7 @@
 #pragma once
 
+#include "likely.h"
+
 #ifdef BS_DEBUG_BREAK
 #if defined(_WIN32) // Windows
 #define BS_BREAKPOINT() __debugbreak()
@@ -10,9 +12,9 @@
 #define BS_BREAKPOINT() throw
 #endif
 
-#define BS_ASSERT(...) if (!(__VA_ARGS__)) { BS_BREAKPOINT(); return false; }
+#define BS_ASSERT(...) if (!(__VA_ARGS__)) BS_UNLIKELY { BS_BREAKPOINT(); return false; }
 #else // BS_DEBUG_BREAK
-#define BS_ASSERT(...) if (!(__VA_ARGS__)) { return false; }
+#define BS_ASSERT(...) if (!(__VA_ARGS__)) BS_UNLIKELY { return false; }
 
 #define BS_BREAKPOINT() throw
 #endif // BS_DEBUG_BREAK
